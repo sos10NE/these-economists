@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Economist</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Serif+Text:ital@0;1&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -13,20 +13,36 @@
   --gris:#999;
   --gris-clair:#E8E8E8;
   --blanc:#FFFFFF;
-  --blanc-pur:#FFFFFF;
   --serif:'DM Serif Display',Georgia,serif;
   --serif-text:'DM Serif Text',Georgia,serif;
   --sans:'Jost',sans-serif;
 }
 html{font-size:16px;scroll-behavior:smooth}
-body{background:var(--blanc);color:var(--noir);font-family:var(--serif-text);overflow-x:hidden;position:relative;}
+body{background:var(--blanc);color:var(--noir);font-family:var(--serif-text);overflow-x:hidden}
 
 /* ── PLANET CANVASES ── */
 .planet-canvas{position:fixed;pointer-events:none;z-index:0;border-radius:50%;overflow:hidden;}
-#planet-tr{top:-12%;right:-10%;width:600px;height:600px;}
-#planet-bl{bottom:-18%;left:-10%;width:460px;height:460px;}
+#planet-tr{top:-10%;right:-8%;width:520px;height:520px;}
+#planet-bl{bottom:-15%;left:-8%;width:400px;height:400px;}
+@media(max-width:768px){
+  #planet-tr{top:-5%;right:-15%;width:260px;height:260px;}
+  #planet-bl{bottom:-8%;left:-15%;width:200px;height:200px;}
+}
 
-/* ── MODAL OVERLAY ── */
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;
+  background:var(--noir);color:white;
+  font-family:var(--sans);font-size:.82rem;letter-spacing:.05em;
+  padding:.85rem 1.4rem;max-width:320px;
+  border-left:3px solid var(--rouge);
+  transform:translateY(100px);opacity:0;
+  transition:all .35s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* ── MODAL ── */
 .modal-overlay{
   display:none;position:fixed;inset:0;z-index:500;
   background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);
@@ -85,79 +101,123 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .logo-e::after{content:'';position:absolute;bottom:3px;right:-1px;width:9px;height:9px;background:var(--rouge);clip-path:polygon(100% 0,100% 100%,0 100%);}
 .logo-text{font-family:var(--sans);font-size:9px;letter-spacing:.42em;font-weight:400;text-transform:uppercase;margin-top:-2px;color:var(--noir)}
 .logo-underline{width:28px;height:1px;background:var(--rouge);margin-top:2px}
-.nav-actions{display:flex;align-items:center;gap:1rem}
-.btn-red{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;background:var(--rouge);color:white;border:none;padding:9px 20px;cursor:pointer;font-weight:400;transition:opacity .2s;}
+.nav-actions{display:flex;align-items:center;gap:.8rem}
+.btn-red{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;background:var(--rouge);color:white;border:none;padding:9px 16px;cursor:pointer;font-weight:400;transition:opacity .2s;white-space:nowrap;}
 .btn-red:hover{opacity:.85}
-.btn-outline{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:none;color:var(--noir);border:.5px solid var(--gris-clair);padding:8px 16px;cursor:pointer;transition:all .2s;}
+.btn-outline{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:none;color:var(--noir);border:.5px solid var(--gris-clair);padding:8px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .btn-outline:hover{border-color:var(--rouge);color:var(--rouge)}
 .nav-user{display:flex;align-items:center;gap:.5rem;font-family:var(--sans);font-size:10px;color:#555;cursor:pointer;}
 .nav-user-dot{width:7px;height:7px;border-radius:50%;background:var(--rouge);flex-shrink:0}
-.nav-cats{display:flex;align-items:center;justify-content:center;padding:0 3.5rem;height:42px;overflow-x:auto;gap:0;}
-.cat{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#444;padding:0 1.3rem;height:100%;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-weight:400;}
+
+/* hamburger mobile */
+.nav-hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;flex-direction:column;gap:5px}
+.nav-hamburger span{display:block;width:22px;height:1.5px;background:var(--noir);transition:all .25s}
+.nav-hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.nav-hamburger.open span:nth-child(2){opacity:0}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+.nav-mobile-menu{
+  display:none;position:fixed;top:0;right:0;bottom:0;width:280px;
+  background:white;z-index:300;padding:5rem 2rem 2rem;
+  border-left:1px solid var(--gris-clair);
+  transform:translateX(100%);transition:transform .3s ease;
+}
+.nav-mobile-menu.open{transform:translateX(0)}
+.nav-mobile-overlay{display:none;position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.25)}
+.nav-mobile-overlay.open{display:block}
+.nav-mobile-item{
+  font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  display:block;padding:.9rem 0;border-bottom:.5px solid var(--gris-clair);
+  cursor:pointer;color:var(--noir);transition:color .2s;
+}
+.nav-mobile-item:hover{color:var(--rouge)}
+.nav-mobile-actions{margin-top:2rem;display:flex;flex-direction:column;gap:.8rem}
+
+.nav-cats{display:flex;align-items:center;padding:0 3.5rem;height:42px;overflow-x:auto;gap:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.nav-cats::-webkit-scrollbar{display:none}
+.cat{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#444;padding:0 1.3rem;height:100%;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-weight:400;flex-shrink:0}
 .cat:hover,.cat.active{color:var(--rouge);border-bottom-color:var(--rouge)}
+
+/* search bar in nav */
+.nav-search-wrap{position:relative;display:flex;align-items:center}
+.nav-search-input{
+  font-family:var(--sans);font-size:.82rem;
+  border:.5px solid var(--gris-clair);
+  padding:.45rem .9rem .45rem 2rem;
+  outline:none;transition:all .2s;width:180px;
+  background:#fafafa;
+}
+.nav-search-input:focus{border-color:var(--rouge);width:220px;background:white}
+.nav-search-icon{position:absolute;left:.65rem;pointer-events:none;color:#bbb}
+.search-results-drop{
+  position:absolute;top:calc(100% + 6px);right:0;width:320px;
+  background:white;border:.5px solid var(--gris-clair);
+  border-top:2px solid var(--rouge);
+  box-shadow:0 8px 24px rgba(0,0,0,.08);
+  z-index:300;max-height:400px;overflow-y:auto;display:none;
+}
+.search-results-drop.open{display:block}
+.srd-item{padding:1rem 1.2rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;transition:background .15s}
+.srd-item:hover{background:#fff8f8}
+.srd-cat{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.25rem}
+.srd-title{font-family:var(--serif);font-size:.95rem;font-weight:400;line-height:1.3}
+.srd-author{font-family:var(--sans);font-size:9.5px;color:var(--gris);margin-top:.25rem}
+.srd-section{padding:.6rem 1.2rem;background:#f8f8f8;font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#888;border-bottom:.5px solid var(--gris-clair)}
 
 /* ── PAGES ── */
 .page{display:none;position:relative;z-index:1}
 .page.active{display:block}
 
 /* ── EMPTY STATE ── */
+/* ── EMPTY ANIM ── */
+.empty-anim{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin:0 auto 2.8rem;height:48px;
+}
+.empty-anim span{
+  display:block;width:2px;background:var(--rouge);border-radius:2px;
+  animation:barPulse 1.4s ease-in-out infinite;
+  transform-origin:center;
+}
+.empty-anim span:nth-child(1){height:16px;animation-delay:0s;}
+.empty-anim span:nth-child(2){height:40px;animation-delay:.2s;}
+.empty-anim span:nth-child(3){height:16px;animation-delay:.4s;}
+@keyframes barPulse{
+  0%,100%{transform:scaleY(1);opacity:.35}
+  50%{transform:scaleY(1.9);opacity:1}
+}
 .empty-state{max-width:680px;margin:7rem auto;padding:0 2rem;text-align:center;}
-.empty-globe{width:140px;height:140px;margin:0 auto 2.5rem;border-radius:50%;border:1px solid rgba(139,26,26,0.12);position:relative;background:radial-gradient(circle at center, rgba(139,26,26,0.03) 0%, transparent 70%);}
-.empty-globe::before,.empty-globe::after{content:'';position:absolute;inset:0;border-radius:50%;}
-.empty-globe::before{background:repeating-linear-gradient(0deg,transparent,transparent 17px,rgba(139,26,26,0.07) 17px,rgba(139,26,26,0.07) 18px);clip-path:circle(50% at 50% 50%);}
-.empty-globe::after{background:repeating-linear-gradient(90deg,transparent,transparent 17px,rgba(139,26,26,0.07) 17px,rgba(139,26,26,0.07) 18px);clip-path:circle(50% at 50% 50%);}
+
 .empty-state h2{font-family:var(--serif);font-size:2rem;font-weight:400;margin-bottom:1rem;line-height:1.2;}
 .empty-state h2 em{font-style:italic;color:var(--rouge)}
 .empty-state p{font-family:var(--sans);font-size:.95rem;line-height:1.8;color:#666;font-weight:300;margin-bottom:.8rem;}
-.empty-divider{width:32px;height:1px;background:var(--rouge);margin:1.8rem auto}
+.empty-divider{display:none}
 .empty-cta{font-family:var(--sans);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--rouge);cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
-.empty-cta::before{content:'';display:inline-block;width:20px;height:1px;background:var(--rouge)}
 
 /* ── ARTICLES GRID ── */
-.sec-wrap{max-width:1200px;margin:0 auto;padding:3.5rem 3.5rem;position:relative;z-index:1}
+.sec-wrap{max-width:1200px;margin:0 auto;padding:3.5rem;position:relative;z-index:1}
 .sec-head{display:flex;align-items:center;gap:1.2rem;margin-bottom:2.5rem;padding-bottom:1rem;border-bottom:1px solid var(--noir);}
 .sec-name{font-family:var(--sans);font-size:10px;letter-spacing:.28em;text-transform:uppercase;font-weight:500}
-.sec-rule{flex:1;height:.5px;background:var(--gris-clair)}
-.grid-articles{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:3rem 2.5rem}
+.sec-rule{display:none}
+.grid-articles{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:3rem 2.5rem}
 
-/* ── CARD: image en haut, titre en bas ── */
-.art-card{
-  cursor:pointer;
-  display:flex;flex-direction:column;
-  border-bottom:.5px solid var(--gris-clair);
-  padding-bottom:1.5rem;
-  overflow:hidden;
-}
+.art-card{cursor:pointer;display:flex;flex-direction:column;border-bottom:.5px solid var(--gris-clair);padding-bottom:1.5rem;overflow:hidden;}
 .art-card:hover .art-title{color:var(--rouge)}
 .art-card:hover .art-thumb-img{transform:scale(1.03)}
-.art-thumb{
-  width:100%;aspect-ratio:3/2;
-  overflow:hidden;margin-bottom:0;
-  position:relative;
-  background:#f0f0f0;
-}
-.art-thumb-img{
-  width:100%;height:100%;object-fit:cover;
-  display:block;
-  transition:transform .45s ease;
-}
-.art-thumb-empty{
-  width:100%;height:100%;
-  background:linear-gradient(135deg,#f5f5f5 0%,#eee 100%);
-  display:flex;align-items:center;justify-content:center;
-}
+.art-thumb{width:100%;aspect-ratio:3/2;overflow:hidden;margin-bottom:0;position:relative;background:#f0f0f0;}
+.art-thumb-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease;}
+.art-thumb-empty{width:100%;height:100%;background:linear-gradient(135deg,#f5f5f5 0%,#eee 100%);display:flex;align-items:center;justify-content:center;}
 .art-card-body{padding:1.1rem 0 0;}
 .art-k{font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.5rem;font-weight:400;}
 .art-title{font-family:var(--serif);font-size:1.15rem;font-weight:400;line-height:1.35;margin-bottom:.55rem;transition:color .2s;}
 .art-excerpt{font-family:var(--sans);font-size:.85rem;line-height:1.7;color:#666;font-weight:300;margin-bottom:.8rem;}
-.art-foot{display:flex;align-items:center;gap:.8rem;font-family:var(--sans);font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.06em;}
+.art-foot{display:flex;align-items:center;gap:.8rem;font-family:var(--sans);font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.06em;flex-wrap:wrap}
 .dot{width:3px;height:3px;border-radius:50%;background:var(--rouge);display:inline-block;flex-shrink:0}
 
 /* ── ARTICLE FULL ── */
 .article-page{max-width:720px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
 .back-btn{font-family:var(--sans);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--rouge);cursor:pointer;display:inline-flex;align-items:center;gap:7px;border-bottom:1px solid var(--rouge);padding-bottom:2px;margin-bottom:3rem;background:none;border-top:none;border-left:none;border-right:none;}
 .art-full-k{font-family:var(--sans);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--rouge);margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;}
-.art-full-k::before{content:'';display:inline-block;width:22px;height:1px;background:var(--rouge)}
 .art-full-title{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);font-weight:400;line-height:1.15;margin-bottom:1.3rem;}
 .art-full-deck{font-family:var(--serif-text);font-size:1.15rem;font-style:italic;line-height:1.75;color:#444;margin-bottom:1.8rem;border-left:3px solid var(--rouge);padding-left:1.3rem;}
 .art-full-meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;font-family:var(--sans);font-size:10.5px;letter-spacing:.08em;color:var(--gris);text-transform:uppercase;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:.5px solid var(--gris-clair);}
@@ -173,12 +233,14 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .art-full-body .art-inline-img{margin:2rem 0}
 .art-full-body .art-inline-img img{width:100%;max-height:480px;object-fit:cover;display:block}
 .art-full-body .art-inline-caption{font-family:var(--sans);font-size:10.5px;color:var(--gris);font-style:italic;margin-top:.5rem;text-align:center}
+.author-chip{display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;border-bottom:1px dashed var(--gris-clair);transition:border-color .2s}
+.author-chip:hover{border-bottom-color:var(--rouge);color:var(--rouge)}
 
-/* ── PAGE INSCRIPTION ── */
-.register-page{max-width:600px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1}
-.register-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem}
-.register-page h2 em{font-style:italic;color:var(--rouge)}
-.register-sub{font-family:var(--sans);font-size:.9rem;color:var(--gris);margin-bottom:3rem;font-weight:300;line-height:1.65}
+/* ── PAGE PROPOSER ARTICLE ── */
+.propose-page{max-width:600px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1}
+.propose-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem}
+.propose-page h2 em{font-style:italic;color:var(--rouge)}
+.propose-sub{font-family:var(--sans);font-size:.9rem;color:var(--gris);margin-bottom:3rem;font-weight:300;line-height:1.65}
 .reg-card{border:.5px solid var(--gris-clair);padding:2.5rem;margin-bottom:1.5rem}
 .reg-section{font-family:var(--sans);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--rouge);margin-bottom:1.5rem;padding-bottom:.6rem;border-bottom:.5px solid var(--gris-clair);}
 .reg-row{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem}
@@ -198,10 +260,10 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .write-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem;line-height:1.2}
 .write-page h2 em{font-style:italic;color:var(--rouge)}
 .write-sub{font-family:var(--sans);font-size:.92rem;color:var(--gris);margin-bottom:3rem;font-weight:300;line-height:1.6}
-.gate{background:var(--blanc-pur);border:1px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.2rem 2.5rem;margin-bottom:2.5rem;}
+.gate{background:var(--blanc);border:1px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.2rem 2.5rem;margin-bottom:2.5rem;}
 .gate-label{font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:1rem;font-weight:400}
 .gate p{font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.5rem;font-weight:300;line-height:1.65}
-.gate-row{display:flex;gap:1rem;align-items:center}
+.gate-row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
 .gate input[type=password]{font-family:var(--sans);font-size:1rem;letter-spacing:.3em;border:.5px solid var(--gris-clair);background:var(--blanc);padding:.65rem 1rem;width:200px;outline:none;transition:border .2s;}
 .gate input:focus{border-color:var(--rouge)}
 .gate-err{font-family:var(--sans);font-size:.82rem;color:var(--rouge);margin-top:.7rem;display:none}
@@ -209,7 +271,7 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .form-wrap{display:flex;flex-direction:column;gap:1.6rem}
 .form-row{display:flex;flex-direction:column;gap:.5rem}
 .form-row label{font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);font-weight:400;}
-.form-row input,.form-row select,.form-row textarea{font-family:var(--serif-text);font-size:1rem;border:.5px solid var(--gris-clair);background:var(--blanc-pur);padding:.75rem 1rem;outline:none;transition:border .2s;color:var(--noir);width:100%);}
+.form-row input,.form-row select,.form-row textarea{font-family:var(--serif-text);font-size:1rem;border:.5px solid var(--gris-clair);background:var(--blanc);padding:.75rem 1rem;outline:none;transition:border .2s;color:var(--noir);width:100%;}
 .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--rouge)}
 .form-row textarea{resize:vertical;min-height:360px;line-height:1.8}
 .form-row select{font-family:var(--sans);font-size:.9rem;cursor:pointer}
@@ -218,18 +280,13 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .form-two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem}
 .btn-publish{font-family:var(--sans);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;background:var(--rouge);color:white;border:none;padding:14px 36px;cursor:pointer;transition:opacity .2s;font-weight:400;align-self:flex-start;}
 .btn-publish:hover{opacity:.85}
-.success-msg{display:none;background:var(--blanc-pur);border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2rem 2.5rem;margin-top:1.5rem;}
+.success-msg{display:none;background:var(--blanc);border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2rem 2.5rem;margin-top:1.5rem;}
 .success-msg h3{font-family:var(--serif);font-size:1.5rem;font-weight:400;margin-bottom:.8rem}
 .success-msg p{font-family:var(--sans);font-size:.9rem;color:#555;font-weight:300;line-height:1.65}
 .view-link{font-family:var(--sans);display:inline-block;margin-top:1rem;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--rouge);cursor:pointer;border-bottom:1px solid var(--rouge);padding-bottom:1px;}
-
-/* Image upload zone */
 .img-upload-zone{width:100%;height:160px;border:.5px dashed var(--gris-clair);background:#fafafa;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s;overflow:hidden;position:relative;}
 .img-upload-zone:hover{border-color:var(--rouge);background:#fff8f8}
 #cover-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;color:#bbb;font-family:var(--sans);font-size:.82rem}
-#cover-placeholder svg{color:#ccc}
-
-/* Toolbar */
 .editor-toolbar{display:flex;gap:.4rem;flex-wrap:wrap}
 .tb-btn{font-family:var(--sans);font-size:10px;letter-spacing:.1em;border:.5px solid var(--gris-clair);background:white;padding:5px 10px;cursor:pointer;color:#555;transition:all .15s;text-transform:uppercase;}
 .tb-btn:hover{border-color:var(--rouge);color:var(--rouge)}
@@ -244,14 +301,40 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .block-h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;border:none;border-bottom:.5px solid var(--gris-clair);background:transparent;padding:.4rem 0;outline:none;width:100%;color:var(--noir);}
 .block-h3{font-family:var(--serif);font-size:1.15rem;font-weight:400;border:none;background:transparent;padding:.3rem 0;outline:none;width:100%;color:var(--noir);}
 .block-quote{font-family:var(--serif-text);font-size:1rem;font-style:italic;border:none;border-left:3px solid var(--rouge);padding:.5rem 1rem;outline:none;width:100%;background:#fff8f8;color:#444;line-height:1.75;resize:vertical;min-height:60px;}
-.block-quote:focus{background:#fff5f5}
-.block-sep{text-align:center;padding:.8rem 0;font-family:var(--sans);font-size:1.1rem;letter-spacing:.6em;color:var(--rouge);user-select:none;width:100%;background:none;border:none;}
-.block-img-wrap{width:100%;background:#f5f5f5;position:relative;display:flex;flex-direction:column;align-items:center;}
+.block-sep{text-align:center;padding:.8rem 0;font-family:var(--sans);font-size:1.1rem;letter-spacing:.6em;color:var(--rouge);user-select:none;width:100%;}
+.block-img-wrap{width:100%;background:#f5f5f5;display:flex;flex-direction:column;align-items:center;}
 .block-img-wrap img{width:100%;max-height:400px;object-fit:cover;display:block}
 .block-img-caption{font-family:var(--sans);font-size:.82rem;border:none;background:transparent;outline:none;width:100%;padding:.4rem .6rem;color:#888;font-style:italic;text-align:center;}
 .add-block-row{margin-top:.6rem;text-align:center}
 .add-block-btn{font-family:var(--sans);font-size:10px;letter-spacing:.16em;text-transform:uppercase;background:none;border:.5px dashed #ccc;color:#aaa;padding:8px 22px;cursor:pointer;transition:all .2s;}
 .add-block-btn:hover{border-color:var(--rouge);color:var(--rouge)}
+
+/* ── PAGE STATS ── */
+.stats-page{max-width:1100px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
+.stats-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem}
+.stats-page h2 em{font-style:italic;color:var(--rouge)}
+.stats-sub{font-family:var(--sans);font-size:.9rem;color:var(--gris);margin-bottom:3rem;font-weight:300}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:3rem}
+.stat-card{border:.5px solid var(--gris-clair);padding:2rem;text-align:center;border-top:3px solid var(--rouge);}
+.stat-num{font-family:var(--serif);font-size:3rem;font-weight:400;color:var(--rouge);line-height:1}
+.stat-label{font-family:var(--sans);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gris);margin-top:.6rem}
+.stats-section-title{font-family:var(--sans);font-size:9px;letter-spacing:.28em;text-transform:uppercase;margin-bottom:1.5rem;padding-bottom:.7rem;border-bottom:1px solid var(--noir);color:var(--noir)}
+.stats-table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.88rem}
+.stats-table th{text-align:left;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);padding:.6rem 1rem;border-bottom:.5px solid var(--gris-clair);font-weight:400}
+.stats-table td{padding:.8rem 1rem;border-bottom:.5px solid var(--gris-clair);vertical-align:middle}
+.stats-table tr:hover td{background:#fafafa}
+.stats-table .td-title{font-family:var(--serif-text);font-size:.95rem;cursor:pointer;color:var(--rouge)}
+.stats-table .td-title:hover{text-decoration:underline}
+.stats-cat-badge{font-family:var(--sans);font-size:8.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--rouge);border:.5px solid rgba(139,26,26,0.25);padding:2px 7px;display:inline-block}
+
+/* ── PAGE PROFIL ── */
+.profile-page{max-width:900px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
+.profile-header{display:flex;align-items:center;gap:2rem;margin-bottom:3rem;padding-bottom:2rem;border-bottom:.5px solid var(--gris-clair);flex-wrap:wrap}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:2rem;color:white;flex-shrink:0}
+.profile-name{font-family:var(--serif);font-size:2rem;font-weight:400}
+.profile-meta{font-family:var(--sans);font-size:10px;letter-spacing:.1em;color:var(--gris);margin-top:.4rem}
+.profile-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;border:.5px solid rgba(139,26,26,0.3);padding:3px 10px;color:var(--rouge);margin-top:.6rem}
+.profile-empty{font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:3rem 0}
 
 /* ── FOOTER ── */
 footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;position:relative;z-index:1;}
@@ -259,7 +342,7 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 .foot-logo-e{font-family:var(--serif);font-size:30px;font-weight:400;display:inline-block;position:relative;color:white}
 .foot-logo-e::after{content:'';position:absolute;bottom:2px;right:-1px;width:7px;height:7px;background:var(--rouge);clip-path:polygon(100% 0,100% 100%,0 100%)}
 .foot-sub{font-family:var(--sans);font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:#555;margin-top:3px}
-.foot-links{display:flex;gap:2.5rem;flex-wrap:wrap}
+.foot-links{display:flex;gap:2rem;flex-wrap:wrap}
 .foot-link{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#555;cursor:pointer;transition:color .2s}
 .foot-link:hover{color:var(--rouge)}
 .foot-copy{font-family:var(--sans);font-size:10.5px;color:#3a3a3a;letter-spacing:.03em}
@@ -270,21 +353,56 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 .revealed{opacity:1;transform:translateY(0)}
 
 /* ── RESPONSIVE ── */
-@media(max-width:768px){
-  .nav-top{padding:0 1.2rem}
+@media(max-width:900px){
+  .nav-top{padding:0 1.2rem;height:60px}
   .nav-cats{padding:0 .5rem}
-  .sec-wrap,.write-page,.article-page,.register-page{padding:2rem 1.2rem}
+  .nav-date{display:none}
+  .nav-search-wrap{display:none}
+  .nav-hamburger{display:flex}
+  .nav-actions .btn-red,.nav-actions .btn-outline,.nav-actions .nav-user{display:none}
+  .sec-wrap{padding:2rem 1.2rem}
+  .write-page,.article-page,.propose-page,.stats-page,.profile-page{padding:2rem 1.2rem}
   .form-two-col{grid-template-columns:1fr}
   .grid-articles{grid-template-columns:1fr;gap:2rem}
   .modal-box{padding:1.8rem}
+  footer{padding:2rem 1.2rem}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:500px){
+  .logo-e{font-size:32px}
+  .logo-text{font-size:8px;letter-spacing:.3em}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .stat-num{font-size:2.2rem}
+  .profile-header{flex-direction:column;align-items:flex-start}
 }
 </style>
 </head>
 <body>
+
 <canvas id="planet-tr" class="planet-canvas"></canvas>
 <canvas id="planet-bl" class="planet-canvas"></canvas>
 
-<!-- ── MODAL CONNEXION / INSCRIPTION ── -->
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MOBILE OVERLAY -->
+<div class="nav-mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
+<div class="nav-mobile-menu" id="mob-menu">
+  <button class="modal-close" onclick="closeMobileMenu()" style="top:.8rem;right:1rem;position:absolute">×</button>
+  <div class="nav-mobile-item" onclick="navGo('home')">La Une</div>
+  <div class="nav-mobile-item" onclick="navGo('stats')">Statistiques</div>
+  <div class="nav-mobile-item" onclick="navGo('propose')">Proposer un article</div>
+  <div class="nav-mobile-item" onclick="navGo('write')">Écrire</div>
+  <!-- search mobile -->
+  <div style="margin-top:1.2rem;position:relative">
+    <input type="text" id="mob-search" placeholder="Rechercher…" oninput="doMobSearch(this.value)"
+      style="width:100%;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.6rem 1rem;outline:none">
+    <div id="mob-search-results" style="margin-top:.5rem;border:.5px solid var(--gris-clair);display:none;max-height:240px;overflow-y:auto"></div>
+  </div>
+  <div class="nav-mobile-actions" id="mob-actions"></div>
+</div>
+
+<!-- MODAL AUTH -->
 <div class="modal-overlay" id="auth-modal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal()">×</button>
@@ -294,8 +412,6 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
       <div class="modal-tab active" onclick="switchTab('login')">Connexion</div>
       <div class="modal-tab" onclick="switchTab('signup')">Créer un compte</div>
     </div>
-
-    <!-- LOGIN -->
     <div class="modal-panel active" id="tab-login">
       <div class="m-row">
         <label>Adresse e-mail</label>
@@ -310,27 +426,13 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
       <div class="m-divider"></div>
       <span style="font-family:var(--sans);font-size:.8rem;color:#888">Pas encore de compte ? <span class="m-link" onclick="switchTab('signup')">Créer un compte</span></span>
     </div>
-
-    <!-- SIGNUP -->
     <div class="modal-panel" id="tab-signup">
       <div class="form-two-col" style="gap:.9rem">
-        <div class="m-row">
-          <label>Prénom</label>
-          <input type="text" id="su-first" placeholder="Jean">
-        </div>
-        <div class="m-row">
-          <label>Nom</label>
-          <input type="text" id="su-last" placeholder="Dupont">
-        </div>
+        <div class="m-row"><label>Prénom</label><input type="text" id="su-first" placeholder="Jean"></div>
+        <div class="m-row"><label>Nom</label><input type="text" id="su-last" placeholder="Dupont"></div>
       </div>
-      <div class="m-row">
-        <label>Adresse e-mail</label>
-        <input type="email" id="su-email" placeholder="votre@email.com">
-      </div>
-      <div class="m-row">
-        <label>Mot de passe</label>
-        <input type="password" id="su-pwd" placeholder="8 caractères minimum">
-      </div>
+      <div class="m-row"><label>Adresse e-mail</label><input type="email" id="su-email" placeholder="votre@email.com"></div>
+      <div class="m-row"><label>Mot de passe</label><input type="password" id="su-pwd" placeholder="8 caractères minimum"></div>
       <div class="m-err" id="su-err">Veuillez remplir tous les champs.</div>
       <div class="m-ok" id="su-ok">Compte créé ! Vous êtes maintenant connecté.</div>
       <button class="btn-modal" onclick="doSignup()">Créer mon compte</button>
@@ -347,8 +449,15 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
       <div class="logo-underline"></div>
     </div>
     <div class="nav-actions" id="nav-actions">
-      <!-- filled by JS -->
+      <div class="nav-search-wrap">
+        <svg class="nav-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="nav-search-input" type="text" id="nav-search" placeholder="Rechercher…" oninput="doSearch(this.value)" onfocus="doSearch(this.value)" onblur="setTimeout(()=>document.getElementById('srd').classList.remove('open'),200)">
+        <div class="search-results-drop" id="srd"></div>
+      </div>
     </div>
+    <button class="nav-hamburger" id="hamburger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
   </div>
   <div class="nav-cats">
     <div class="cat active" onclick="filterCat(this,'all')">La Une</div>
@@ -373,49 +482,35 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   <div class="article-page" id="article-content"></div>
 </div>
 
-<!-- PAGE INSCRIPTION RÉDACTEUR -->
-<div id="page-register" class="page">
-  <div class="register-page">
-    <h2>Rejoindre la <em>rédaction</em></h2>
-    <p class="register-sub">Vous souhaitez contribuer à Economist ? Envoyez votre demande à la rédaction.<br>Après examen, vous recevrez un code personnel pour accéder au formulaire d'écriture.</p>
+<!-- PAGE PROPOSER UN ARTICLE -->
+<div id="page-propose" class="page">
+  <div class="propose-page">
+    <h2>Proposer un <em>article</em></h2>
+    <p class="propose-sub">Vous souhaitez écrire pour Economist ? Laissez votre adresse e-mail et décrivez votre idée.<br>Si votre proposition est retenue, vous recevrez un code personnel pour accéder à l'espace de rédaction.</p>
 
     <div class="reg-card">
-      <div class="reg-section">Votre identité</div>
+      <div class="reg-section">Votre contact</div>
       <div class="form-two-col" style="gap:1.2rem">
-        <div class="reg-row">
-          <label>Prénom *</label>
-          <input type="text" id="r-first" placeholder="Jean">
-        </div>
-        <div class="reg-row">
-          <label>Nom *</label>
-          <input type="text" id="r-last" placeholder="Dupont">
-        </div>
+        <div class="reg-row"><label>Prénom *</label><input type="text" id="r-first" placeholder="Jean"></div>
+        <div class="reg-row"><label>Nom *</label><input type="text" id="r-last" placeholder="Dupont"></div>
       </div>
       <div class="reg-row">
         <label>Adresse e-mail *</label>
         <input type="email" id="r-email" placeholder="votre@email.com">
-        <span class="reg-note">C'est à cette adresse que vous recevrez votre code d'accès si votre demande est acceptée.</span>
+        <span class="reg-note">Vous recevrez votre code d'accès personnel à cette adresse si votre idée est retenue.</span>
       </div>
-      <div class="reg-row">
-        <label>Profession / Formation</label>
-        <input type="text" id="r-job" placeholder="Économiste, étudiant en finance…">
-      </div>
+      <div class="reg-row"><label>Profession / Formation</label><input type="text" id="r-job" placeholder="Économiste, étudiant en finance…"></div>
     </div>
 
     <div class="reg-card">
-      <div class="reg-section">Votre demande</div>
+      <div class="reg-section">Votre idée</div>
       <div class="reg-row">
         <label>Rubrique souhaitée *</label>
         <select id="r-cat">
           <option value="">— Sélectionner —</option>
-          <option>Macroéconomie</option>
-          <option>Finance</option>
-          <option>Marchés</option>
-          <option>Politiques publiques</option>
-          <option>Afrique</option>
-          <option>Monde</option>
-          <option>Analyses</option>
-          <option>Tribunes</option>
+          <option>Macroéconomie</option><option>Finance</option><option>Marchés</option>
+          <option>Politiques publiques</option><option>Afrique</option><option>Monde</option>
+          <option>Analyses</option><option>Tribunes</option>
         </select>
       </div>
       <div class="reg-row">
@@ -423,20 +518,20 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
         <textarea id="r-subject" placeholder="Décrivez brièvement le sujet que vous souhaitez traiter…"></textarea>
       </div>
       <div class="reg-row">
-        <label>Pourquoi souhaitez-vous contribuer ?</label>
-        <textarea id="r-why" style="min-height:80px" placeholder="Votre motivation en quelques lignes…"></textarea>
+        <label>Motivation (optionnel)</label>
+        <textarea id="r-why" style="min-height:80px" placeholder="Pourquoi ce sujet vous tient-il à cœur ?"></textarea>
       </div>
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
-      <button class="reg-submit" onclick="submitRequest()">Envoyer ma demande →</button>
+      <button class="reg-submit" onclick="submitRequest()">Envoyer ma proposition →</button>
       <span style="font-family:var(--sans);font-size:.78rem;color:#bbb">* champs obligatoires</span>
     </div>
 
     <div class="reg-success" id="reg-success">
-      <h3>Demande envoyée.</h3>
-      <p>Votre demande a bien été transmise à la rédaction à l'adresse <strong>theseeconomists@gmail.com</strong>.<br>
-      Si votre candidature est retenue, vous recevrez un code d'accès personnel par e-mail.<br>
+      <h3>Proposition envoyée.</h3>
+      <p>Votre demande a bien été transmise à la rédaction.<br>
+      Si votre idée est retenue, vous recevrez un code d'accès personnel par e-mail à <strong id="reg-email-shown"></strong>.<br>
       Ce code vous permettra de rédiger et publier votre article directement sur le site.</p>
     </div>
   </div>
@@ -446,15 +541,21 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 <div id="page-write" class="page">
   <div class="write-page">
     <h2>Écrire un <em>article</em></h2>
-    <p class="write-sub">Entrez votre code d'accès personnel pour déverrouiller le formulaire de rédaction.</p>
+    <p class="write-sub" id="write-gate-sub">Connectez-vous ou entrez votre code d'accès pour rédiger.</p>
+
+    <div id="write-login-gate" style="display:none;border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2rem 2.5rem;margin-bottom:2rem">
+      <p style="font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.2rem;font-weight:300">Vous devez être connecté pour rédiger un article.</p>
+      <button class="btn-red" onclick="openModal('login')">Se connecter</button>
+      <span style="margin:0 .8rem;color:#bbb;font-family:var(--sans);font-size:.85rem">ou</span>
+      <button class="btn-outline" onclick="openModal('signup')">Créer un compte</button>
+    </div>
 
     <div class="gate" id="code-gate">
       <div class="gate-label">Code d'accès rédacteur</div>
-      <p>Ce formulaire est réservé aux rédacteurs autorisés. Votre code vous a été envoyé par e-mail après validation de votre demande.<br><br>
-      Vous n'avez pas encore de code ? <span style="color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('register')">Déposez votre candidature →</span></p>
+      <p>Ce formulaire est réservé aux rédacteurs autorisés. Votre code vous a été envoyé par e-mail après validation de votre proposition.<br><br>
+      Vous n'avez pas encore de code ? <span style="color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('propose')">Proposer un article →</span></p>
       <div class="gate-row">
-        <input type="password" id="access-code" placeholder="••••••" maxlength="30"
-          onkeydown="if(event.key==='Enter')checkCode()">
+        <input type="password" id="access-code" placeholder="••••••" maxlength="30" onkeydown="if(event.key==='Enter')checkCode()">
         <button class="btn-red" onclick="checkCode()">Déverrouiller</button>
       </div>
       <div class="gate-err" id="gate-err">Code incorrect. Veuillez réessayer.</div>
@@ -467,14 +568,9 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
             <label>Rubrique *</label>
             <select id="f-cat">
               <option value="">— Sélectionner —</option>
-              <option>Macroéconomie</option>
-              <option>Finance</option>
-              <option>Marchés</option>
-              <option>Politiques publiques</option>
-              <option>Afrique</option>
-              <option>Monde</option>
-              <option>Analyses</option>
-              <option>Tribunes</option>
+              <option>Macroéconomie</option><option>Finance</option><option>Marchés</option>
+              <option>Politiques publiques</option><option>Afrique</option><option>Monde</option>
+              <option>Analyses</option><option>Tribunes</option>
             </select>
           </div>
           <div class="form-row">
@@ -482,43 +578,29 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
             <input type="text" id="f-author" placeholder="Prénom Nom">
           </div>
         </div>
-
         <div class="form-row">
           <label>Titre *</label>
-          <input type="text" id="f-title" placeholder="Un titre précis et accrocheur…"
-            oninput="updateCount('f-title','tc',80)">
-          <div style="display:flex;justify-content:space-between">
-            <span class="hint">80 caractères recommandés</span>
-            <span class="char-count" id="tc">0 / 80</span>
-          </div>
+          <input type="text" id="f-title" placeholder="Un titre précis et accrocheur…" oninput="updateCount('f-title','tc',80)">
+          <div style="display:flex;justify-content:space-between"><span class="hint">80 caractères recommandés</span><span class="char-count" id="tc">0 / 80</span></div>
         </div>
-
         <div class="form-row">
           <label>Chapeau *</label>
-          <textarea id="f-deck" rows="3"
-            placeholder="Un résumé de 2-3 lignes qui donne envie de lire l'article…"
-            oninput="updateCount('f-deck','dc',250)"></textarea>
-          <div style="display:flex;justify-content:space-between">
-            <span class="hint">Affiché en italique sous le titre</span>
-            <span class="char-count" id="dc">0 / 250</span>
-          </div>
+          <textarea id="f-deck" rows="3" placeholder="Un résumé de 2-3 lignes…" oninput="updateCount('f-deck','dc',250)"></textarea>
+          <div style="display:flex;justify-content:space-between"><span class="hint">Affiché en italique sous le titre</span><span class="char-count" id="dc">0 / 250</span></div>
         </div>
-
         <div class="form-row">
           <label>Image de couverture (optionnel)</label>
           <div class="img-upload-zone" id="cover-zone" onclick="document.getElementById('f-img-file').click()">
             <div id="cover-placeholder">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span>Cliquer pour charger une image depuis votre ordinateur</span>
+              <span>Cliquer pour charger une image</span>
               <span class="hint" style="margin-top:4px">JPG, PNG, WebP · ou entrez une URL ci-dessous</span>
             </div>
             <img id="cover-preview" style="display:none;width:100%;height:100%;object-fit:cover">
           </div>
           <input type="file" id="f-img-file" accept="image/*" style="display:none" onchange="handleCoverUpload(event)">
-          <input type="url" id="f-img" placeholder="https://… (URL alternative)" style="margin-top:.5rem" oninput="handleCoverUrl(this.value)">
-          <span class="hint">Laissez vide pour un fond neutre</span>
+          <input type="url" id="f-img" placeholder="https://… (URL alternative)" style="margin-top:.5rem;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.6rem 1rem;outline:none;width:100%" oninput="handleCoverUrl(this.value)">
         </div>
-
         <div class="form-row">
           <label>Corps de l'article *</label>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem">
@@ -526,7 +608,7 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
               <button type="button" class="tb-btn" onclick="insertBlock('paragraph')">¶ Paragraphe</button>
               <button type="button" class="tb-btn" onclick="insertBlock('h2')">H2</button>
               <button type="button" class="tb-btn" onclick="insertBlock('h3')">H3</button>
-              <button type="button" class="tb-btn tb-img" onclick="triggerInlineImg()">🖼 Image</button>
+              <button type="button" class="tb-img tb-btn" onclick="triggerInlineImg()">🖼 Image</button>
               <button type="button" class="tb-btn" onclick="insertBlock('quote')">« Citation</button>
               <button type="button" class="tb-btn" onclick="insertBlock('separator')">— —</button>
             </div>
@@ -534,24 +616,52 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
           </div>
           <input type="file" id="inline-img-input" accept="image/*" style="display:none" onchange="handleInlineImage(event)">
           <div id="article-blocks" class="article-blocks-editor"></div>
-          <div class="add-block-row">
-            <button type="button" class="add-block-btn" onclick="insertBlock('paragraph')">+ Ajouter un bloc</button>
-          </div>
+          <div class="add-block-row"><button type="button" class="add-block-btn" onclick="insertBlock('paragraph')">+ Ajouter un bloc</button></div>
         </div>
-
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
           <button class="btn-publish" onclick="publishArticle()">Publier →</button>
           <span style="font-family:var(--sans);font-size:.8rem;color:#bbb">* champs obligatoires</span>
         </div>
-
         <div class="success-msg" id="success-msg">
           <h3>Article publié.</h3>
-          <p>Votre article est maintenant visible sur le site dans la rubrique choisie.</p>
+          <p>Votre article est maintenant visible sur le site.</p>
           <span class="view-link" onclick="goToNewArticle()">Lire mon article →</span>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+<!-- PAGE STATISTIQUES -->
+<div id="page-stats" class="page">
+  <div class="stats-page">
+    <h2>Statistiques <em>du site</em></h2>
+    <p class="stats-sub">Vue d'ensemble de l'activité de la plateforme.</p>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div style="margin-bottom:3rem">
+      <div class="stats-section-title">Articles publiés</div>
+      <div style="overflow-x:auto">
+        <table class="stats-table" id="stats-articles-table">
+          <thead><tr><th>Titre</th><th>Auteur</th><th>Rubrique</th><th>Date</th><th>Lecture</th></tr></thead>
+          <tbody id="stats-articles-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div class="stats-section-title">Abonnés & rédacteurs</div>
+      <div style="overflow-x:auto">
+        <table class="stats-table">
+          <thead><tr><th>Nom</th><th>Email</th><th>Inscrit le</th><th>Articles</th><th>Profil</th></tr></thead>
+          <tbody id="stats-users-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE PROFIL -->
+<div id="page-profile" class="page">
+  <div class="profile-page" id="profile-content"></div>
 </div>
 
 <footer>
@@ -562,10 +672,9 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
     </div>
     <div class="foot-links">
       <span class="foot-link">À propos</span>
-      <span class="foot-link">Rédaction</span>
-      <span class="foot-link">Archives</span>
-      <span class="foot-link" onclick="showPage('register')">Écrire</span>
-      <span class="foot-link">Contact</span>
+      <span class="foot-link" onclick="showPage('stats')">Statistiques</span>
+      <span class="foot-link" onclick="showPage('propose')">Proposer un article</span>
+      <span class="foot-link" onclick="showPage('write')">Écrire</span>
     </div>
   </div>
   <div class="foot-copy">© 2026 <span>Economist</span>. Tous droits réservés. Abidjan · Paris · Londres</div>
@@ -573,16 +682,24 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 
 <script>
 // ── CODES D'ACCÈS VALIDES ──
-// Vous pouvez ajouter ici autant de codes que vous voulez donner de rédacteurs
 const VALID_CODES = [
-  "economist2026",  // code principal (à changer)
-  // Ajoutez d'autres codes ici, ex: "REDAC-KOFFI-2026", "REDAC-SARA-01"
+  "economist2026",
 ];
 
+// ── STORAGE ──
 let articles = JSON.parse(localStorage.getItem('eco_articles') || '[]');
 let users = JSON.parse(localStorage.getItem('eco_users') || '[]');
 let currentUser = JSON.parse(localStorage.getItem('eco_session') || 'null');
 let lastPublishedId = null;
+let visitorCount = parseInt(localStorage.getItem('eco_visitors') || '0');
+let pageViews = parseInt(localStorage.getItem('eco_pageviews') || '0');
+
+// increment visitor on first load
+if(!sessionStorage.getItem('eco_visited')){
+  visitorCount++;
+  localStorage.setItem('eco_visitors', visitorCount);
+  sessionStorage.setItem('eco_visited','1');
+}
 
 function saveArticles(){ localStorage.setItem('eco_articles', JSON.stringify(articles)); }
 function saveUsers(){ localStorage.setItem('eco_users', JSON.stringify(users)); }
@@ -598,24 +715,126 @@ function readTime(body){
   return `${Math.max(1,Math.round(w/200))} min`;
 }
 
-// ── NAV ACTIONS (dynamique selon connexion) ──
+// ── TOAST ──
+function showToast(msg, duration=3200){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), duration);
+}
+
+// ── NAV RENDER ──
 function renderNav(){
   const el = document.getElementById('nav-actions');
+  const mob = document.getElementById('mob-actions');
   if(currentUser){
     el.innerHTML = `
-      <div class="nav-user" onclick="showPage('write')">
-        <div class="nav-user-dot"></div>
-        <span style="font-family:var(--sans);font-size:10px;letter-spacing:.1em">${currentUser.first} ${currentUser.last[0]}.</span>
+      <div class="nav-search-wrap">
+        <svg class="nav-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="nav-search-input" type="text" id="nav-search" placeholder="Rechercher…" oninput="doSearch(this.value)" onfocus="doSearch(this.value)" onblur="setTimeout(()=>document.getElementById('srd').classList.remove('open'),200)">
+        <div class="search-results-drop" id="srd"></div>
       </div>
-      <button class="btn-red" onclick="showPage('write')">Écrire un article</button>
+      <div class="nav-user" onclick="showPage('profile');openProfile(currentUser.email)">
+        <div class="nav-user-dot"></div>
+        <span>${currentUser.first} ${currentUser.last[0]}.</span>
+      </div>
+      <button class="btn-red" onclick="showPage('write')">Écrire</button>
       <button class="btn-outline" onclick="doLogout()">Déconnexion</button>
+    `;
+    mob.innerHTML = `
+      <div class="nav-user" onclick="closeMobileMenu();showPage('profile');openProfile(currentUser.email)" style="display:flex;align-items:center;gap:.6rem;padding:.5rem 0">
+        <div class="nav-user-dot"></div>
+        <span style="font-family:var(--sans);font-size:11px">${currentUser.first} ${currentUser.last}</span>
+      </div>
+      <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('write')">Écrire un article</button>
+      <button class="btn-outline" style="width:100%" onclick="doLogout();closeMobileMenu()">Déconnexion</button>
     `;
   } else {
     el.innerHTML = `
+      <div class="nav-search-wrap">
+        <svg class="nav-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="nav-search-input" type="text" id="nav-search" placeholder="Rechercher…" oninput="doSearch(this.value)" onfocus="doSearch(this.value)" onblur="setTimeout(()=>document.getElementById('srd').classList.remove('open'),200)">
+        <div class="search-results-drop" id="srd"></div>
+      </div>
       <button class="btn-outline" onclick="openModal('login')">Connexion</button>
-      <button class="btn-red" onclick="showPage('register')">Rejoindre la rédaction</button>
+      <button class="btn-red" onclick="showPage('propose')">Proposer un article</button>
+    `;
+    mob.innerHTML = `
+      <button class="btn-outline" style="width:100%" onclick="closeMobileMenu();openModal('login')">Connexion</button>
+      <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('propose')">Proposer un article</button>
     `;
   }
+}
+
+// ── MOBILE MENU ──
+function toggleMobileMenu(){
+  const menu=document.getElementById('mob-menu');
+  const over=document.getElementById('mob-overlay');
+  const ham=document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  over.classList.toggle('open');
+  ham.classList.toggle('open');
+}
+function closeMobileMenu(){
+  document.getElementById('mob-menu').classList.remove('open');
+  document.getElementById('mob-overlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+function navGo(page){ closeMobileMenu(); showPage(page); }
+
+// ── SEARCH ──
+function doSearch(q){
+  const srd = document.getElementById('srd');
+  if(!q || q.length < 2){ srd.classList.remove('open'); return; }
+  const ql = q.toLowerCase();
+  // search articles
+  const artMatches = articles.filter(a=>
+    a.title.toLowerCase().includes(ql)||
+    a.deck.toLowerCase().includes(ql)||
+    a.author.toLowerCase().includes(ql)||
+    a.cat.toLowerCase().includes(ql)
+  ).slice(0,5);
+  // search users
+  const userMatches = users.filter(u=>
+    (u.first+' '+u.last).toLowerCase().includes(ql)||
+    u.email.toLowerCase().includes(ql)
+  ).slice(0,3);
+
+  if(artMatches.length===0 && userMatches.length===0){
+    srd.innerHTML=`<div style="padding:1.2rem;font-family:var(--sans);font-size:.85rem;color:#aaa;text-align:center">Aucun résultat</div>`;
+    srd.classList.add('open'); return;
+  }
+  let html='';
+  if(artMatches.length){
+    html+=`<div class="srd-section">Articles</div>`;
+    html+=artMatches.map(a=>`
+      <div class="srd-item" onclick="openArticle(${a.id});document.getElementById('srd').classList.remove('open')">
+        <div class="srd-cat">${a.cat}</div>
+        <div class="srd-title">${a.title}</div>
+        <div class="srd-author">Par ${a.author} · ${a.date}</div>
+      </div>`).join('');
+  }
+  if(userMatches.length){
+    html+=`<div class="srd-section">Abonnés</div>`;
+    html+=userMatches.map(u=>`
+      <div class="srd-item" onclick="showPage('profile');openProfile('${u.email}');document.getElementById('srd').classList.remove('open')">
+        <div class="srd-title">${u.first} ${u.last}</div>
+        <div class="srd-author">${u.email} · ${articles.filter(a=>a.author===u.first+' '+u.last).length} article(s)</div>
+      </div>`).join('');
+  }
+  srd.innerHTML=html;
+  srd.classList.add('open');
+}
+function doMobSearch(q){
+  const box=document.getElementById('mob-search-results');
+  if(!q||q.length<2){box.style.display='none';return;}
+  const ql=q.toLowerCase();
+  const arts=articles.filter(a=>a.title.toLowerCase().includes(ql)||a.author.toLowerCase().includes(ql)).slice(0,4);
+  const usrs=users.filter(u=>(u.first+' '+u.last).toLowerCase().includes(ql)).slice(0,2);
+  if(!arts.length&&!usrs.length){box.innerHTML=`<div style="padding:.8rem;font-family:var(--sans);font-size:.83rem;color:#aaa">Aucun résultat</div>`;box.style.display='block';return;}
+  let html='';
+  arts.forEach(a=>{html+=`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--serif-text)" onclick="closeMobileMenu();openArticle(${a.id})">${a.title}</div>`;});
+  usrs.forEach(u=>{html+=`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--sans);font-size:.85rem" onclick="closeMobileMenu();showPage('profile');openProfile('${u.email}')">${u.first} ${u.last}</div>`;});
+  box.innerHTML=html;box.style.display='block';
 }
 
 // ── MODAL ──
@@ -623,34 +842,27 @@ function openModal(tab){
   document.getElementById('auth-modal').classList.add('open');
   switchTab(tab||'login');
 }
-function closeModal(){
-  document.getElementById('auth-modal').classList.remove('open');
-}
-document.getElementById('auth-modal').addEventListener('click',function(e){
-  if(e.target===this) closeModal();
-});
+function closeModal(){ document.getElementById('auth-modal').classList.remove('open'); }
+document.getElementById('auth-modal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
 function switchTab(tab){
   document.querySelectorAll('.modal-tab').forEach((t,i)=>{
-    t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='signup'));
+    t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='signup'));
   });
   document.getElementById('tab-login').classList.toggle('active',tab==='login');
   document.getElementById('tab-signup').classList.toggle('active',tab==='signup');
 }
 
-// ── CONNEXION ──
+// ── AUTH ──
 function doLogin(){
-  const email = document.getElementById('login-email').value.trim().toLowerCase();
-  const pwd = document.getElementById('login-pwd').value;
-  const u = users.find(u=>u.email===email && u.pwd===pwd);
-  if(!u){
-    document.getElementById('login-err').style.display='block'; return;
-  }
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const pwd=document.getElementById('login-pwd').value;
+  const u=users.find(u=>u.email===email&&u.pwd===pwd);
+  if(!u){ document.getElementById('login-err').style.display='block'; return; }
   document.getElementById('login-err').style.display='none';
   currentUser=u; saveSession(u);
   closeModal(); renderNav();
+  showToast(`Bienvenue, ${u.first} !`);
 }
-
-// ── INSCRIPTION ──
 function doSignup(){
   const first=document.getElementById('su-first').value.trim();
   const last=document.getElementById('su-last').value.trim();
@@ -659,7 +871,7 @@ function doSignup(){
   const errEl=document.getElementById('su-err');
   const okEl=document.getElementById('su-ok');
   if(!first||!last||!email||!pwd||pwd.length<8){
-    errEl.textContent=!pwd||pwd.length<8?'Le mot de passe doit faire au moins 8 caractères.':'Veuillez remplir tous les champs.';
+    errEl.textContent=(!pwd||pwd.length<8)?'Le mot de passe doit faire au moins 8 caractères.':'Veuillez remplir tous les champs.';
     errEl.style.display='block';okEl.style.display='none';return;
   }
   if(users.find(u=>u.email===email)){
@@ -670,14 +882,13 @@ function doSignup(){
   users.push(u);saveUsers();
   currentUser=u;saveSession(u);
   okEl.style.display='block';
-  setTimeout(()=>{closeModal();renderNav();},1400);
+  setTimeout(()=>{closeModal();renderNav();showToast(`Compte créé ! Bienvenue, ${first} !`);},1400);
 }
-
-// ── DÉCONNEXION ──
 function doLogout(){
   currentUser=null;
   localStorage.removeItem('eco_session');
   renderNav();
+  showToast('Vous êtes déconnecté.');
 }
 
 // ── NAVIGATION ──
@@ -685,7 +896,12 @@ function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
+  // increment page views
+  pageViews++;
+  localStorage.setItem('eco_pageviews',pageViews);
   if(name==='home') renderHome('all');
+  if(name==='write') renderWritePage();
+  if(name==='stats') renderStats();
 }
 function filterCat(el,cat){
   document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
@@ -694,21 +910,38 @@ function filterCat(el,cat){
   renderHome(cat);
 }
 
+// ── WRITE PAGE GATE ──
+function renderWritePage(){
+  const gate=document.getElementById('code-gate');
+  const loginGate=document.getElementById('write-login-gate');
+  const form=document.getElementById('write-form');
+  if(currentUser){
+    loginGate.style.display='none';
+    // already have access code unlocked OR just show the gate
+    // if code gate is hidden means they already unlocked
+  } else {
+    loginGate.style.display='block';
+    gate.style.display='none';
+    form.classList.add('form-hidden');
+    form.style.display='none';
+  }
+}
+
 // ── ACCUEIL ──
 function renderHome(cat){
-  const wrap = document.getElementById('home-content');
-  const filtered = cat==='all' ? [...articles].reverse() : [...articles].reverse().filter(a=>a.cat===cat);
+  const wrap=document.getElementById('home-content');
+  const filtered=cat==='all'?[...articles].reverse():[...articles].reverse().filter(a=>a.cat===cat);
 
   if(filtered.length===0){
-    wrap.innerHTML = `
+    wrap.innerHTML=`
       <div class="empty-state reveal">
-        <div class="empty-globe"></div>
+        <div class="empty-anim" id="empty-anim"><span></span><span></span><span></span></div>
         <h2>Something <em>powerful</em><br>is coming.</h2>
         <div class="empty-divider"></div>
         <p>Une plateforme de média économique et de recherche,<br>dédiée à l'<strong style="font-weight:500">Afrique</strong>, avec une <strong style="font-weight:500;color:var(--rouge)">perspective mondiale</strong>.</p>
         <p style="margin-top:.5rem">Les articles publiés apparaîtront ici.</p>
         <div class="empty-divider"></div>
-        <span class="empty-cta" onclick="showPage('register')">Rejoindre la rédaction</span>
+        <span class="empty-cta" onclick="showPage('propose')">Proposer un article</span>
       </div>`;
     setTimeout(()=>document.querySelectorAll('.reveal').forEach(el=>{
       const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('revealed')});},{threshold:.1});
@@ -717,73 +950,88 @@ function renderHome(cat){
     return;
   }
 
-  const hero = filtered[0];
-  const rest = filtered.slice(1);
-  const catLabel = cat==='all' ? 'Derniers articles' : cat;
+  const hero=filtered[0];
+  const rest=filtered.slice(1);
+  const catLabel=cat==='all'?'Derniers articles':cat;
 
-  // Hero: image en haut si disponible, titre en bas
-  wrap.innerHTML = `
-    <div class="sec-wrap reveal" style="padding-bottom:1rem">
-      <div style="display:grid;grid-template-columns:1fr 340px;gap:0;border-bottom:.5px solid var(--gris-clair)">
-
-        <div style="padding-right:3rem;border-right:.5px solid var(--gris-clair);padding-bottom:3rem;cursor:pointer" onclick="openArticle(${hero.id})">
-          ${hero.img ? `
-          <div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1.6rem;position:relative">
-            <img src="${hero.img}" style="width:100%;height:100%;object-fit:cover;transition:transform .4s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform=''" onerror="this.parentNode.style.display='none'">
-          </div>` : ''}
-          <div style="font-family:var(--sans);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--rouge);margin-bottom:1rem;display:flex;align-items:center;gap:10px">
-            <span style="display:inline-block;width:22px;height:1px;background:var(--rouge)"></span>${hero.cat}
-          </div>
-          <h1 style="font-family:var(--serif);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:400;line-height:1.15;margin-bottom:1rem">${hero.title}</h1>
-          <p style="font-family:var(--serif-text);font-size:1rem;line-height:1.75;color:#444;margin-bottom:1.4rem;font-style:italic">${hero.deck}</p>
-          <div style="display:flex;align-items:center;gap:1rem;font-family:var(--sans);font-size:10px;letter-spacing:.08em;color:var(--gris);text-transform:uppercase">
+  const isMobile=window.innerWidth<768;
+  if(isMobile){
+    // mobile layout: stack vertically
+    wrap.innerHTML=`
+      <div class="sec-wrap reveal" style="padding-bottom:1rem">
+        <div style="cursor:pointer;border-bottom:.5px solid var(--gris-clair);padding-bottom:2rem" onclick="openArticle(${hero.id})">
+          ${hero.img?`<div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1rem"><img src="${hero.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
+          <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.5rem">${hero.cat}</div>
+          <h1 style="font-family:var(--serif);font-size:clamp(1.6rem,5vw,2.4rem);font-weight:400;line-height:1.2;margin-bottom:.8rem">${hero.title}</h1>
+          <p style="font-family:var(--serif-text);font-size:.95rem;line-height:1.7;color:#444;margin-bottom:1rem;font-style:italic">${hero.deck}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:.6rem;font-family:var(--sans);font-size:10px;letter-spacing:.08em;color:var(--gris);text-transform:uppercase">
             <span>${hero.author}</span><span class="dot"></span><span>${hero.date}</span><span class="dot"></span><span>${readTime(hero.body)}</span>
           </div>
         </div>
-
-        <div style="padding-left:2.5rem;padding-top:.5rem">
-          <div style="font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);margin-bottom:1.5rem;padding-bottom:.7rem;border-bottom:.5px solid var(--gris-clair)">À lire aussi</div>
-          ${rest.slice(0,4).map(a=>`
-            <div style="padding:1.1rem 0;border-bottom:.5px solid var(--gris-clair);cursor:pointer;display:flex;gap:.9rem;align-items:flex-start" onclick="openArticle(${a.id})">
-              ${a.img ? `<div style="width:72px;height:52px;flex-shrink:0;overflow:hidden"><img src="${a.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>` : ''}
-              <div style="flex:1">
-                <div style="font-family:var(--sans);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--rouge);margin-bottom:.35rem">${a.cat}</div>
-                <div style="font-family:var(--serif);font-size:.95rem;font-weight:400;line-height:1.3;margin-bottom:.3rem;transition:color .2s" onmouseover="this.style.color='var(--rouge)'" onmouseout="this.style.color=''">${a.title}</div>
-                <div style="font-family:var(--sans);font-size:9.5px;color:var(--gris)">${a.date}</div>
+      </div>
+      ${rest.length>0?`
+      <div class="sec-wrap reveal" style="padding-top:1.5rem">
+        <div class="sec-head"><span class="sec-name">${catLabel}</span><div class="sec-rule"></div></div>
+        <div class="grid-articles">
+          ${rest.map(a=>`
+            <div class="art-card" onclick="openArticle(${a.id})">
+              <div class="art-thumb">${a.img?`<img class="art-thumb-img" src="${a.img}" alt="" onerror="this.parentNode.innerHTML='<div class=art-thumb-empty></div>'">`:`<div class="art-thumb-empty"></div>`}</div>
+              <div class="art-card-body">
+                <div class="art-k">${a.cat}</div>
+                <div class="art-title">${a.title}</div>
+                <div class="art-excerpt">${a.deck}</div>
+                <div class="art-foot"><span>${a.author}</span><span class="dot"></span><span>${a.date}</span></div>
               </div>
-            </div>
-          `).join('')}
-          ${rest.length===0 ? `<p style="font-family:var(--sans);font-size:.85rem;color:#bbb;font-style:italic;margin-top:1rem">D'autres articles à venir.</p>` : ''}
+            </div>`).join('')}
         </div>
-      </div>
-    </div>
-
-    ${rest.length > 0 ? `
-    <div class="sec-wrap reveal" style="padding-top:2.5rem">
-      <div class="sec-head">
-        <span class="sec-name">${catLabel}</span>
-        <div class="sec-rule"></div>
-      </div>
-      <div class="grid-articles">
-        ${rest.map(a=>`
-          <div class="art-card" onclick="openArticle(${a.id})">
-            <div class="art-thumb">
-              ${a.img
-                ? `<img class="art-thumb-img" src="${a.img}" alt="" onerror="this.parentNode.innerHTML='<div class=art-thumb-empty></div>'">`
-                : `<div class="art-thumb-empty"></div>`
-              }
-            </div>
-            <div class="art-card-body">
-              <div class="art-k">${a.cat}</div>
-              <div class="art-title">${a.title}</div>
-              <div class="art-excerpt">${a.deck}</div>
-              <div class="art-foot"><span>${a.author}</span><span class="dot"></span><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)}</span></div>
+      </div>`:''}
+    `;
+  } else {
+    wrap.innerHTML=`
+      <div class="sec-wrap reveal" style="padding-bottom:1rem">
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:0;border-bottom:.5px solid var(--gris-clair)">
+          <div style="padding-right:3rem;border-right:.5px solid var(--gris-clair);padding-bottom:3rem;cursor:pointer" onclick="openArticle(${hero.id})">
+            ${hero.img?`<div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1.5rem"><img src="${hero.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
+            <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.8rem">${hero.cat}</div>
+            <h1 style="font-family:var(--serif);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:400;line-height:1.15;margin-bottom:1rem">${hero.title}</h1>
+            <p style="font-family:var(--serif-text);font-size:1rem;line-height:1.75;color:#444;margin-bottom:1.4rem;font-style:italic">${hero.deck}</p>
+            <div style="display:flex;align-items:center;gap:1rem;font-family:var(--sans);font-size:10px;letter-spacing:.08em;color:var(--gris);text-transform:uppercase">
+              <span>${hero.author}</span><span class="dot"></span><span>${hero.date}</span><span class="dot"></span><span>${readTime(hero.body)}</span>
             </div>
           </div>
-        `).join('')}
+          <div style="padding-left:2.5rem;padding-top:.5rem">
+            <div style="font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);margin-bottom:1.5rem;padding-bottom:.7rem;border-bottom:.5px solid var(--gris-clair)">À lire aussi</div>
+            ${rest.slice(0,4).map(a=>`
+              <div style="padding:1.1rem 0;border-bottom:.5px solid var(--gris-clair);cursor:pointer;display:flex;gap:.9rem;align-items:flex-start" onclick="openArticle(${a.id})">
+                ${a.img?`<div style="width:72px;height:52px;flex-shrink:0;overflow:hidden"><img src="${a.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
+                <div style="flex:1">
+                  <div style="font-family:var(--sans);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--rouge);margin-bottom:.35rem">${a.cat}</div>
+                  <div style="font-family:var(--serif);font-size:.95rem;font-weight:400;line-height:1.3;margin-bottom:.3rem" onmouseover="this.style.color='var(--rouge)'" onmouseout="this.style.color=''">${a.title}</div>
+                  <div style="font-family:var(--sans);font-size:9.5px;color:var(--gris)">${a.date}</div>
+                </div>
+              </div>`).join('')}
+            ${rest.length===0?`<p style="font-family:var(--sans);font-size:.85rem;color:#bbb;font-style:italic;margin-top:1rem">D'autres articles à venir.</p>`:''}
+          </div>
+        </div>
       </div>
-    </div>` : ''}
-  `;
+      ${rest.length>0?`
+      <div class="sec-wrap reveal" style="padding-top:2.5rem">
+        <div class="sec-head"><span class="sec-name">${catLabel}</span><div class="sec-rule"></div></div>
+        <div class="grid-articles">
+          ${rest.map(a=>`
+            <div class="art-card" onclick="openArticle(${a.id})">
+              <div class="art-thumb">${a.img?`<img class="art-thumb-img" src="${a.img}" alt="" onerror="this.parentNode.innerHTML='<div class=art-thumb-empty></div>'">`:`<div class="art-thumb-empty"></div>`}</div>
+              <div class="art-card-body">
+                <div class="art-k">${a.cat}</div>
+                <div class="art-title">${a.title}</div>
+                <div class="art-excerpt">${a.deck}</div>
+                <div class="art-foot"><span>${a.author}</span><span class="dot"></span><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)}</span></div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`:''}
+    `;
+  }
 
   setTimeout(()=>{
     document.querySelectorAll('.reveal').forEach(el=>{
@@ -796,40 +1044,100 @@ function renderHome(cat){
 
 // ── ARTICLE FULL ──
 function openArticle(id){
-  const a = articles.find(x=>x.id===id);
+  const a=articles.find(x=>x.id===id);
   if(!a) return;
-  let bodyContent = a.bodyHtml || a.body.split(/\n\n+/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
-  document.getElementById('article-content').innerHTML = `
+  // increment read count
+  a.reads=(a.reads||0)+1;
+  saveArticles();
+  let bodyContent=a.bodyHtml||a.body.split(/\n\n+/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+  const authorName=a.author;
+  const authorUser=users.find(u=>u.first+' '+u.last===authorName);
+  document.getElementById('article-content').innerHTML=`
     <button class="back-btn" onclick="showPage('home')">← Retour</button>
     <div class="art-full-k">${a.cat}</div>
     <h1 class="art-full-title">${a.title}</h1>
     <div class="art-full-deck">${a.deck}</div>
     <div class="art-full-meta">
-      <span>Par ${a.author}</span><span class="dot"></span>
-      <span>${a.date}</span><span class="dot"></span>
-      <span>${readTime(a.body)} de lecture</span>
+      <span>Par <span class="author-chip" onclick="${authorUser?`showPage('profile');openProfile('${authorUser.email}')`:'void(0)'}">
+        ${authorName}
+      </span></span>
+      <span class="dot"></span><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)} de lecture</span>
     </div>
-    ${a.img ? `<div class="art-full-cover"><img src="${a.img}" alt="" onerror="this.parentNode.style.display='none'"></div><div class="art-full-caption">${a.cat} — ${a.date}</div>` : ''}
+    ${a.img?`<div class="art-full-cover"><img src="${a.img}" alt="" onerror="this.parentNode.style.display='none'"></div><div class="art-full-caption">${a.cat} — ${a.date}</div>`:''}
     <div class="art-full-body">${bodyContent}</div>
   `;
   showPage('article');
 }
 
-// ── CODE D'ACCÈS ──
-function checkCode(){
-  const val = document.getElementById('access-code').value.trim();
-  if(VALID_CODES.includes(val)){
-    document.getElementById('code-gate').style.display='none';
-    const f=document.getElementById('write-form');
-    f.classList.remove('form-hidden');f.style.display='block';
-  } else {
-    document.getElementById('gate-err').style.display='block';
-    document.getElementById('access-code').value='';
-    document.getElementById('access-code').focus();
-  }
+// ── PROFIL ──
+function openProfile(email){
+  const u=users.find(x=>x.email===email);
+  if(!u){ document.getElementById('profile-content').innerHTML=`<p style="font-family:var(--sans);color:#aaa">Profil introuvable.</p>`; return; }
+  const userArticles=articles.filter(a=>a.author===u.first+' '+u.last).reverse();
+  const initials=(u.first[0]+(u.last[0]||'')).toUpperCase();
+  document.getElementById('profile-content').innerHTML=`
+    <button class="back-btn" onclick="history.go(-1) || showPage('home')">← Retour</button>
+    <div class="profile-header">
+      <div class="profile-avatar">${initials}</div>
+      <div>
+        <div class="profile-name">${u.first} ${u.last}</div>
+        <div class="profile-meta">Membre depuis ${u.joined||'—'}</div>
+        ${userArticles.length>0?`<div class="profile-badge">✍ Rédacteur · ${userArticles.length} article${userArticles.length>1?'s':''}</div>`:''}
+      </div>
+    </div>
+    ${userArticles.length===0
+      ?`<div class="profile-empty">Aucun article publié pour l'instant.</div>`
+      :`<div class="stats-section-title">Articles publiés</div>
+        <div class="grid-articles">
+          ${userArticles.map(a=>`
+            <div class="art-card" onclick="openArticle(${a.id})">
+              <div class="art-thumb">${a.img?`<img class="art-thumb-img" src="${a.img}" alt="" onerror="this.parentNode.innerHTML='<div class=art-thumb-empty></div>'">`:`<div class="art-thumb-empty"></div>`}</div>
+              <div class="art-card-body">
+                <div class="art-k">${a.cat}</div>
+                <div class="art-title">${a.title}</div>
+                <div class="art-excerpt">${a.deck}</div>
+                <div class="art-foot"><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)}</span></div>
+              </div>
+            </div>`).join('')}
+        </div>`
+    }
+  `;
 }
 
-// ── DEMANDE RÉDACTEUR ──
+// ── STATS ──
+function renderStats(){
+  const totalReads=articles.reduce((s,a)=>s+(a.reads||0),0);
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat-card"><div class="stat-num">${articles.length}</div><div class="stat-label">Articles publiés</div></div>
+    <div class="stat-card"><div class="stat-num">${users.length}</div><div class="stat-label">Abonnés</div></div>
+    <div class="stat-card"><div class="stat-num">${visitorCount}</div><div class="stat-label">Visiteurs uniques</div></div>
+    <div class="stat-card"><div class="stat-num">${totalReads}</div><div class="stat-label">Lectures d'articles</div></div>
+    <div class="stat-card"><div class="stat-num">${pageViews}</div><div class="stat-label">Pages vues</div></div>
+  `;
+  document.getElementById('stats-articles-body').innerHTML=articles.length===0
+    ?`<tr><td colspan="5" style="font-family:var(--sans);font-size:.85rem;color:#aaa;padding:2rem;text-align:center;font-style:italic">Aucun article</td></tr>`
+    :[...articles].reverse().map(a=>`
+      <tr>
+        <td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td>
+        <td>${a.author}</td>
+        <td><span class="stats-cat-badge">${a.cat}</span></td>
+        <td>${a.date}</td>
+        <td>${readTime(a.body)}</td>
+      </tr>`).join('');
+  document.getElementById('stats-users-body').innerHTML=users.length===0
+    ?`<tr><td colspan="5" style="font-family:var(--sans);font-size:.85rem;color:#aaa;padding:2rem;text-align:center;font-style:italic">Aucun abonné</td></tr>`
+    :users.map(u=>{
+      const count=articles.filter(a=>a.author===u.first+' '+u.last).length;
+      return `<tr>
+        <td>${u.first} ${u.last}</td>
+        <td style="color:var(--gris)">${u.email}</td>
+        <td>${u.joined||'—'}</td>
+        <td>${count}</td>
+        <td><span style="font-family:var(--sans);font-size:9.5px;color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('profile');openProfile('${u.email}')">Voir →</span></td>
+      </tr>`;}).join('');
+}
+
+// ── PROPOSITION ──
 function submitRequest(){
   const first=document.getElementById('r-first').value.trim();
   const last=document.getElementById('r-last').value.trim();
@@ -837,28 +1145,44 @@ function submitRequest(){
   const cat=document.getElementById('r-cat').value.trim();
   const subject=document.getElementById('r-subject').value.trim();
   if(!first||!last||!email||!cat||!subject){
-    alert('Veuillez remplir tous les champs obligatoires.');return;
+    showToast('Veuillez remplir tous les champs obligatoires.');return;
   }
-  // Ouvrir le client mail avec les infos pré-remplies
   const why=document.getElementById('r-why').value.trim();
   const job=document.getElementById('r-job').value.trim();
   const mailBody=encodeURIComponent(
-    `Nouvelle demande de rédacteur sur Economist\n\n`+
-    `Nom : ${first} ${last}\n`+
-    `Email : ${email}\n`+
+    `Nouvelle proposition d'article — Economist\n\n`+
+    `Nom : ${first} ${last}\nEmail : ${email}\n`+
     (job?`Profession : ${job}\n`:``)+
-    `Rubrique souhaitée : ${cat}\n\n`+
-    `Sujet / idée d'article :\n${subject}\n\n`+
+    `Rubrique : ${cat}\n\n`+
+    `Sujet :\n${subject}\n\n`+
     (why?`Motivation :\n${why}\n\n`:``)+
-    `---\nDemande envoyée depuis le site Economist.`
+    `---\nEnvoyé depuis economist.ci`
   );
-  const mailSubject=encodeURIComponent(`[Economist] Demande de rédacteur — ${first} ${last}`);
+  const mailSubject=encodeURIComponent(`[Economist] Proposition d'article — ${first} ${last}`);
   window.open(`mailto:theseeconomists@gmail.com?subject=${mailSubject}&body=${mailBody}`,'_blank');
+  document.getElementById('reg-email-shown').textContent=email;
   document.getElementById('reg-success').style.display='block';
   document.getElementById('reg-success').scrollIntoView({behavior:'smooth',block:'center'});
+  showToast('Proposition envoyée à la rédaction !');
 }
 
-// ── COMPTEURS ──
+// ── CODE D'ACCÈS ──
+function checkCode(){
+  const val=document.getElementById('access-code').value.trim();
+  if(VALID_CODES.includes(val)){
+    document.getElementById('code-gate').style.display='none';
+    const f=document.getElementById('write-form');
+    f.classList.remove('form-hidden');f.style.display='block';
+    // auto-fill author if logged in
+    if(currentUser) document.getElementById('f-author').value=currentUser.first+' '+currentUser.last;
+  } else {
+    document.getElementById('gate-err').style.display='block';
+    document.getElementById('access-code').value='';
+    document.getElementById('access-code').focus();
+  }
+}
+
+// ── COUNTERS ──
 function updateCount(fid,cid,max){
   const v=document.getElementById(fid).value;
   const el=document.getElementById(cid);
@@ -866,90 +1190,43 @@ function updateCount(fid,cid,max){
   el.style.color=v.length>max?'var(--rouge)':'var(--gris)';
 }
 
-// ── PUBLICATION ──
+// ── PUBLISH ──
+let blockIdCounter=0, coverBase64=null, pendingInsertAfter=null;
+
 function publishArticle(){
   const cat=document.getElementById('f-cat').value.trim();
   const author=document.getElementById('f-author').value.trim();
   const title=document.getElementById('f-title').value.trim();
   const deck=document.getElementById('f-deck').value.trim();
-  const {html:bodyHtml, text:bodyText}=getBodyHtml();
+  const {html:bodyHtml,text:bodyText}=getBodyHtml();
   if(!cat||!author||!title||!deck||!bodyText.trim()){
-    alert('Veuillez remplir tous les champs obligatoires.');return;
+    showToast('Veuillez remplir tous les champs obligatoires.');return;
   }
   const imgUrl=coverBase64||document.getElementById('f-img').value.trim();
-  const a={id:Date.now(),cat,author,title,deck,body:bodyText,bodyHtml,img:imgUrl,date:today()};
-  articles.push(a); saveArticles();
+  const a={id:Date.now(),cat,author,title,deck,body:bodyText,bodyHtml,img:imgUrl,date:today(),reads:0};
+  articles.push(a);saveArticles();
   lastPublishedId=a.id;
-  document.getElementById('f-author').value='';
-  document.getElementById('f-title').value='';
-  document.getElementById('f-deck').value='';
-  document.getElementById('f-img').value='';
+  // reset
+  ['f-author','f-title','f-deck','f-img'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-cat').value='';
   coverBase64=null;
   document.getElementById('cover-preview').style.display='none';
   document.getElementById('cover-placeholder').style.display='flex';
   document.getElementById('article-blocks').innerHTML='';
-  blockIdCounter=0;
-  insertBlock('paragraph');
+  blockIdCounter=0;insertBlock('paragraph');
   ['tc','dc'].forEach(id=>document.getElementById(id).textContent='0 / '+(id==='tc'?80:250));
   document.getElementById('bc').textContent='0 mot';
   const sm=document.getElementById('success-msg');
   sm.style.display='block';
   sm.scrollIntoView({behavior:'smooth',block:'center'});
+  showToast('Article publié avec succès !');
 }
 function goToNewArticle(){
   if(lastPublishedId) openArticle(lastPublishedId);
   document.getElementById('success-msg').style.display='none';
 }
 
-// ── PLANET DOT NETWORK ──
-function initPlanet(canvasId, radius, dotCount, lineThreshold, speed){
-  const canvas = document.getElementById(canvasId);
-  if(!canvas) return;
-  const size = canvas.offsetWidth || parseInt(canvas.style.width) || 600;
-  canvas.width = size; canvas.height = size;
-  const cx=size/2, cy=size/2, r=radius*size/2;
-  const ctx=canvas.getContext('2d');
-  const col='139,26,26';
-  const dots=Array.from({length:dotCount},()=>{
-    const theta=Math.acos(1-2*Math.random());
-    const phi=2*Math.PI*Math.random();
-    return {theta,phi,vTheta:(Math.random()-.5)*0.0003*speed,vPhi:(Math.random()-.5)*0.0003*speed};
-  });
-  function project(theta,phi){
-    const x=r*Math.sin(theta)*Math.cos(phi);
-    const y=r*Math.cos(theta);
-    const z=r*Math.sin(theta)*Math.sin(phi);
-    return {x:cx+x,y:cy-y,alpha:Math.max(0,(z+r)/(2*r))};
-  }
-  function draw(){
-    ctx.clearRect(0,0,size,size);
-    const pts=dots.map(d=>project(d.theta,d.phi));
-    for(let i=0;i<pts.length;i++){
-      for(let j=i+1;j<pts.length;j++){
-        const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
-        if(d<lineThreshold){
-          const op=Math.min(pts[i].alpha,pts[j].alpha)*(1-d/lineThreshold)*0.35;
-          ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
-          ctx.strokeStyle=`rgba(${col},${op})`;ctx.lineWidth=.5;ctx.stroke();
-        }
-      }
-    }
-    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,1.4,0,Math.PI*2);ctx.fillStyle=`rgba(${col},${p.alpha*0.55})`;ctx.fill();});
-    dots.forEach(d=>{d.theta+=d.vTheta;d.phi+=d.vPhi;if(d.theta<0.1||d.theta>Math.PI-0.1)d.vTheta*=-1;});
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
-window.addEventListener('load',()=>{
-  initPlanet('planet-tr',0.92,120,90,1.2);
-  initPlanet('planet-bl',0.90,90,80,0.9);
-});
-
 // ── BLOCK EDITOR ──
-let blockIdCounter=0;
-let coverBase64=null;
-let pendingInsertAfter=null;
-
 function insertBlock(type,afterEl){
   const id='blk-'+(++blockIdCounter);
   const wrap=document.createElement('div');
@@ -957,8 +1234,7 @@ function insertBlock(type,afterEl){
   const delBtn=document.createElement('button');
   delBtn.className='block-del';delBtn.type='button';delBtn.textContent='×';
   delBtn.onclick=()=>{wrap.remove();updateWordCount()};
-  const content=document.createElement('div');
-  content.className='block-content';
+  const content=document.createElement('div');content.className='block-content';
   if(type==='paragraph'){
     const ta=document.createElement('textarea');
     ta.className='block-para';ta.placeholder='Rédigez votre paragraphe…';ta.oninput=updateWordCount;
@@ -974,7 +1250,7 @@ function insertBlock(type,afterEl){
   } else if(type==='h3'){
     const inp=document.createElement('input');inp.type='text';inp.className='block-h3';inp.placeholder='Sous-titre…';content.appendChild(inp);
   } else if(type==='quote'){
-    const ta=document.createElement('textarea');ta.className='block-quote';ta.placeholder='"Citation ou extrait mis en avant…"';ta.oninput=updateWordCount;content.appendChild(ta);
+    const ta=document.createElement('textarea');ta.className='block-quote';ta.placeholder='"Citation…"';ta.oninput=updateWordCount;content.appendChild(ta);
   } else if(type==='separator'){
     const sp=document.createElement('div');sp.className='block-sep';sp.textContent='· · ·';content.appendChild(sp);
   }
@@ -986,7 +1262,6 @@ function insertBlock(type,afterEl){
   if(f) setTimeout(()=>f.focus(),50);
   updateWordCount();
 }
-
 function triggerInlineImg(){pendingInsertAfter=null;document.getElementById('inline-img-input').click();}
 function handleInlineImage(e){
   const file=e.target.files[0];if(!file)return;
@@ -1042,16 +1317,60 @@ function getBodyHtml(){
   return {html,text};
 }
 
-// ── DATE & INIT ──
+// ── DATE ──
 const JJ=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 const MM=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 const DD=new Date();
 document.getElementById('nav-date').textContent=`${JJ[DD.getDay()]} ${DD.getDate()} ${MM[DD.getMonth()]} ${DD.getFullYear()}`;
 
-window.addEventListener('DOMContentLoaded',()=>{
+// ── PLANET NEURON NETWORK ──
+function initPlanet(canvasId,radius,dotCount,lineThreshold,speed){
+  const canvas=document.getElementById(canvasId);
+  if(!canvas) return;
+  const rect=canvas.getBoundingClientRect();
+  const size=rect.width||canvas.offsetWidth||160;
+  canvas.width=size;canvas.height=size;
+  const cx=size/2,cy=size/2,r=radius*size/2;
+  const ctx=canvas.getContext('2d');
+  const col='139,26,26';
+  const dots=Array.from({length:dotCount},()=>{
+    const theta=Math.acos(1-2*Math.random());
+    const phi=2*Math.PI*Math.random();
+    return {theta,phi,vTheta:(Math.random()-.5)*0.0003*speed,vPhi:(Math.random()-.5)*0.0003*speed};
+  });
+  function project(theta,phi){
+    const x=r*Math.sin(theta)*Math.cos(phi);
+    const y=r*Math.cos(theta);
+    const z=r*Math.sin(theta)*Math.sin(phi);
+    return {x:cx+x,y:cy-y,alpha:Math.max(0,(z+r)/(2*r))};
+  }
+  function draw(){
+    ctx.clearRect(0,0,size,size);
+    const pts=dots.map(d=>project(d.theta,d.phi));
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+        if(d<lineThreshold){
+          const op=Math.min(pts[i].alpha,pts[j].alpha)*(1-d/lineThreshold)*0.35;
+          ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.strokeStyle=`rgba(${col},${op})`;ctx.lineWidth=.5;ctx.stroke();
+        }
+      }
+    }
+    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,1.4,0,Math.PI*2);ctx.fillStyle=`rgba(${col},${p.alpha*0.55})`;ctx.fill();});
+    dots.forEach(d=>{d.theta+=d.vTheta;d.phi+=d.vPhi;if(d.theta<0.1||d.theta>Math.PI-0.1)d.vTheta*=-1;});
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+window.addEventListener('load',()=>{
   renderNav();
   insertBlock('paragraph');
   renderHome('all');
+  // init planets with correct sizes
+  initPlanet('planet-tr',0.92,120,90,1.2);
+  initPlanet('planet-bl',0.90,90,80,0.9);
 });
 </script>
 </body>
