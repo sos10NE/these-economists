@@ -137,6 +137,9 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .nav-cats::-webkit-scrollbar{display:none}
 .cat{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#444;padding:0 1.3rem;height:100%;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-weight:400;flex-shrink:0}
 .cat:hover,.cat.active{color:var(--rouge);border-bottom-color:var(--rouge)}
+.nav-cats-sep{width:.5px;height:18px;background:var(--gris-clair);flex-shrink:0;align-self:center;margin:0 .4rem}
+.nav-link-item{color:#888;font-size:10px}
+.nav-link-item:hover{color:var(--rouge);border-bottom-color:var(--rouge)}
 
 /* search bar in nav */
 .nav-search-wrap{position:relative;display:flex;align-items:center}
@@ -389,16 +392,17 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 <div class="nav-mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
 <div class="nav-mobile-menu" id="mob-menu">
   <button class="modal-close" onclick="closeMobileMenu()" style="top:.8rem;right:1rem;position:absolute">×</button>
+  <!-- search mobile — en premier pour visibilité -->
+  <div style="margin-bottom:1.2rem;position:relative">
+    <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-bottom:.5rem">Rechercher</div>
+    <input type="text" id="mob-search" placeholder="Articles, auteurs, rubriques…" oninput="doMobSearch(this.value)"
+      style="width:100%;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.65rem 1rem;outline:none;transition:border .2s"
+      onfocus="this.style.borderColor='var(--rouge)'" onblur="this.style.borderColor='var(--gris-clair)'">
+    <div id="mob-search-results" style="margin-top:.4rem;border:.5px solid var(--gris-clair);display:none;max-height:240px;overflow-y:auto"></div>
+  </div>
   <div class="nav-mobile-item" onclick="navGo('home')">La Une</div>
   <div class="nav-mobile-item" onclick="navGo('stats')">Statistiques</div>
   <div class="nav-mobile-item" onclick="navGo('propose')">Proposer un article</div>
-  <div class="nav-mobile-item" onclick="navGo('write')">Écrire</div>
-  <!-- search mobile -->
-  <div style="margin-top:1.2rem;position:relative">
-    <input type="text" id="mob-search" placeholder="Rechercher…" oninput="doMobSearch(this.value)"
-      style="width:100%;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.6rem 1rem;outline:none">
-    <div id="mob-search-results" style="margin-top:.5rem;border:.5px solid var(--gris-clair);display:none;max-height:240px;overflow-y:auto"></div>
-  </div>
   <div class="nav-mobile-actions" id="mob-actions"></div>
 </div>
 
@@ -469,6 +473,12 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
     <div class="cat" onclick="filterCat(this,'Monde')">Monde</div>
     <div class="cat" onclick="filterCat(this,'Analyses')">Analyses</div>
     <div class="cat" onclick="filterCat(this,'Tribunes')">Tribunes</div>
+    <div class="nav-cats-sep"></div>
+    <div class="cat nav-link-item" onclick="showPage('stats')">Statistiques</div>
+    <div class="cat nav-link-item" onclick="showPage('propose')">Proposer un article</div>
+    <div class="cat nav-link-item" id="nav-cats-write" style="display:none" onclick="showPage('write')">Écrire</div>
+    <div class="cat nav-link-item" id="nav-cats-login" onclick="openModal('login')">S'abonner / Connexion</div>
+    <div class="cat nav-link-item" id="nav-cats-logout" style="display:none" onclick="doLogout()">Déconnexion</div>
   </div>
 </nav>
 
@@ -686,23 +696,57 @@ const VALID_CODES = [
   "economist2026",
 ];
 
-// ── STORAGE ──
-let articles = JSON.parse(localStorage.getItem('eco_articles') || '[]');
-let users = JSON.parse(localStorage.getItem('eco_users') || '[]');
+// ── STORAGE (partagé entre tous les utilisateurs) ──
+let articles = [];
+let users = [];
 let currentUser = JSON.parse(localStorage.getItem('eco_session') || 'null');
 let lastPublishedId = null;
-let visitorCount = parseInt(localStorage.getItem('eco_visitors') || '0');
-let pageViews = parseInt(localStorage.getItem('eco_pageviews') || '0');
+let visitorCount = 0;
+let pageViews = 0;
+let _storageReady = false;
 
-// increment visitor on first load
-if(!sessionStorage.getItem('eco_visited')){
-  visitorCount++;
-  localStorage.setItem('eco_visitors', visitorCount);
-  sessionStorage.setItem('eco_visited','1');
+// ── STORAGE ABSTRACTION (localStorage fallback) ──
+const _store = {
+  get: (key) => {
+    if(window.storage) return window.storage.get(key, true).then(r => r ? {value: r.value} : null).catch(()=>null);
+    const v = localStorage.getItem(key);
+    return Promise.resolve(v ? {value: v} : null);
+  },
+  set: (key, value) => {
+    if(window.storage) return window.storage.set(key, value, true).catch(()=>{});
+    try { localStorage.setItem(key, value); } catch(e){}
+    return Promise.resolve();
+  }
+};
+
+async function loadSharedData(){
+  try {
+    const arts = await _store.get('eco_articles');
+    articles = arts ? JSON.parse(arts.value) : [];
+  } catch(e){ articles = []; }
+  try {
+    const usrs = await _store.get('eco_users');
+    users = usrs ? JSON.parse(usrs.value) : [];
+  } catch(e){ users = []; }
+  try {
+    const vc = await _store.get('eco_visitors');
+    visitorCount = vc ? parseInt(vc.value) : 0;
+  } catch(e){ visitorCount = 0; }
+  try {
+    const pv = await _store.get('eco_pageviews');
+    pageViews = pv ? parseInt(pv.value) : 0;
+  } catch(e){ pageViews = 0; }
+
+  if(!sessionStorage.getItem('eco_visited')){
+    visitorCount++;
+    await _store.set('eco_visitors', String(visitorCount));
+    sessionStorage.setItem('eco_visited','1');
+  }
+  _storageReady = true;
 }
 
-function saveArticles(){ localStorage.setItem('eco_articles', JSON.stringify(articles)); }
-function saveUsers(){ localStorage.setItem('eco_users', JSON.stringify(users)); }
+async function saveArticles(){ await _store.set('eco_articles', JSON.stringify(articles)); }
+async function saveUsers(){ await _store.set('eco_users', JSON.stringify(users)); }
 function saveSession(u){ localStorage.setItem('eco_session', JSON.stringify(u)); }
 
 function today(){
@@ -745,7 +789,7 @@ function renderNav(){
         <div class="nav-user-dot"></div>
         <span style="font-family:var(--sans);font-size:11px">${currentUser.first} ${currentUser.last}</span>
       </div>
-      <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('write')">Écrire un article</button>
+      <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('write')">✏ Écrire un article</button>
       <button class="btn-outline" style="width:100%" onclick="doLogout();closeMobileMenu()">Déconnexion</button>
     `;
   } else {
@@ -763,6 +807,13 @@ function renderNav(){
       <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('propose')">Proposer un article</button>
     `;
   }
+  // Mettre à jour les items de la barre nav-cats selon l'état de connexion
+  const ncWrite = document.getElementById('nav-cats-write');
+  const ncLogin = document.getElementById('nav-cats-login');
+  const ncLogout = document.getElementById('nav-cats-logout');
+  if(ncWrite) ncWrite.style.display = currentUser ? '' : 'none';
+  if(ncLogin) ncLogin.style.display = currentUser ? 'none' : '';
+  if(ncLogout) ncLogout.style.display = currentUser ? '' : 'none';
 }
 
 // ── MOBILE MENU ──
@@ -863,7 +914,7 @@ function doLogin(){
   closeModal(); renderNav();
   showToast(`Bienvenue, ${u.first} !`);
 }
-function doSignup(){
+async function doSignup(){
   const first=document.getElementById('su-first').value.trim();
   const last=document.getElementById('su-last').value.trim();
   const email=document.getElementById('su-email').value.trim().toLowerCase();
@@ -879,7 +930,7 @@ function doSignup(){
   }
   errEl.style.display='none';
   const u={first,last,email,pwd,joined:today()};
-  users.push(u);saveUsers();
+  users.push(u);await saveUsers();
   currentUser=u;saveSession(u);
   okEl.style.display='block';
   setTimeout(()=>{closeModal();renderNav();showToast(`Compte créé ! Bienvenue, ${first} !`);},1400);
@@ -898,13 +949,13 @@ function showPage(name){
   window.scrollTo({top:0,behavior:'smooth'});
   // increment page views
   pageViews++;
-  localStorage.setItem('eco_pageviews',pageViews);
-  if(name==='home') renderHome('all');
+  _store.set('eco_pageviews', String(pageViews));
+  if(name==='home'){ loadSharedData().then(()=>renderHome('all')); }
   if(name==='write') renderWritePage();
-  if(name==='stats') renderStats();
+  if(name==='stats'){ loadSharedData().then(()=>renderStats()); }
 }
 function filterCat(el,cat){
-  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.cat:not(.nav-link-item)').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   showPage('home');
   renderHome(cat);
@@ -1048,7 +1099,7 @@ function openArticle(id){
   if(!a) return;
   // increment read count
   a.reads=(a.reads||0)+1;
-  saveArticles();
+  saveArticles().catch(()=>{});
   let bodyContent=a.bodyHtml||a.body.split(/\n\n+/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
   const authorName=a.author;
   const authorUser=users.find(u=>u.first+' '+u.last===authorName);
@@ -1193,7 +1244,7 @@ function updateCount(fid,cid,max){
 // ── PUBLISH ──
 let blockIdCounter=0, coverBase64=null, pendingInsertAfter=null;
 
-function publishArticle(){
+async function publishArticle(){
   const cat=document.getElementById('f-cat').value.trim();
   const author=document.getElementById('f-author').value.trim();
   const title=document.getElementById('f-title').value.trim();
@@ -1204,7 +1255,7 @@ function publishArticle(){
   }
   const imgUrl=coverBase64||document.getElementById('f-img').value.trim();
   const a={id:Date.now(),cat,author,title,deck,body:bodyText,bodyHtml,img:imgUrl,date:today(),reads:0};
-  articles.push(a);saveArticles();
+  articles.push(a);await saveArticles();
   lastPublishedId=a.id;
   // reset
   ['f-author','f-title','f-deck','f-img'].forEach(id=>document.getElementById(id).value='');
@@ -1364,13 +1415,16 @@ function initPlanet(canvasId,radius,dotCount,lineThreshold,speed){
   draw();
 }
 
-window.addEventListener('load',()=>{
+window.addEventListener('load', async ()=>{
+  // Affichage immédiat de la structure
   renderNav();
   insertBlock('paragraph');
-  renderHome('all');
-  // init planets with correct sizes
   initPlanet('planet-tr',0.92,120,90,1.2);
   initPlanet('planet-bl',0.90,90,80,0.9);
+  // Chargement des données partagées avant d'afficher les articles
+  document.getElementById('home-content').innerHTML='<div style="text-align:center;padding:6rem 2rem;font-family:var(--sans);font-size:.9rem;color:#bbb;letter-spacing:.1em">Chargement…</div>';
+  await loadSharedData();
+  renderHome('all');
 });
 </script>
 </body>
