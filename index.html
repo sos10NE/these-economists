@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Economist</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Serif+Text:ital@0;1&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -25,8 +25,8 @@ body{background:var(--blanc);color:var(--noir);font-family:var(--serif-text);ove
 #planet-tr{top:-10%;right:-8%;width:520px;height:520px;}
 #planet-bl{bottom:-15%;left:-8%;width:400px;height:400px;}
 @media(max-width:768px){
-  #planet-tr{top:-5%;right:-15%;width:260px;height:260px;}
-  #planet-bl{bottom:-8%;left:-15%;width:200px;height:200px;}
+  #planet-tr{top:-5%;right:-20%;width:200px;height:200px;}
+  #planet-bl{bottom:-8%;left:-20%;width:160px;height:160px;}
 }
 
 /* ── TOAST ── */
@@ -46,20 +46,21 @@ body{background:var(--blanc);color:var(--noir);font-family:var(--serif-text);ove
 .modal-overlay{
   display:none;position:fixed;inset:0;z-index:500;
   background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);
-  align-items:center;justify-content:center;
+  align-items:center;justify-content:center;padding:1rem;
 }
 .modal-overlay.open{display:flex;}
 .modal-box{
-  background:white;width:100%;max-width:480px;margin:1rem;
+  background:white;width:100%;max-width:480px;
   border-top:3px solid var(--rouge);
   padding:2.5rem;position:relative;
   animation:modalIn .2s ease;
+  max-height:90vh;overflow-y:auto;
 }
 @keyframes modalIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .modal-close{
   position:absolute;top:1rem;right:1.2rem;
   background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;
-  line-height:1;
+  line-height:1;z-index:1;
 }
 .modal-close:hover{color:var(--rouge)}
 .modal-title{font-family:var(--serif);font-size:1.6rem;font-weight:400;margin-bottom:.3rem}
@@ -75,12 +76,13 @@ body{background:var(--blanc);color:var(--noir);font-family:var(--serif-text);ove
 .modal-panel.active{display:block}
 .m-row{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem}
 .m-row label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)}
-.m-row input{
+.m-row input,.m-row textarea{
   font-family:var(--sans);font-size:.95rem;
   border:.5px solid var(--gris-clair);padding:.7rem 1rem;
   outline:none;transition:border .2s;width:100%;
 }
-.m-row input:focus{border-color:var(--rouge)}
+.m-row textarea{resize:vertical;min-height:80px;line-height:1.6}
+.m-row input:focus,.m-row textarea:focus{border-color:var(--rouge)}
 .m-err{font-family:var(--sans);font-size:.78rem;color:var(--rouge);display:none;margin-top:.3rem}
 .m-ok{font-family:var(--sans);font-size:.82rem;color:#4a9a5a;display:none;margin-top:.3rem;line-height:1.5}
 .btn-modal{
@@ -91,6 +93,13 @@ body{background:var(--blanc);color:var(--noir);font-family:var(--serif-text);ove
 .btn-modal:hover{opacity:.85}
 .m-divider{height:.5px;background:var(--gris-clair);margin:1.2rem 0}
 .m-link{font-family:var(--sans);font-size:.8rem;color:var(--rouge);cursor:pointer;text-decoration:underline}
+
+/* ── AVATAR UPLOAD ── */
+.avatar-upload-wrap{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.2rem}
+.avatar-preview{width:64px;height:64px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.4rem;color:white;flex-shrink:0;overflow:hidden;cursor:pointer;border:2px solid var(--gris-clair);transition:border-color .2s}
+.avatar-preview:hover{border-color:var(--rouge)}
+.avatar-preview img{width:100%;height:100%;object-fit:cover}
+.avatar-upload-hint{font-family:var(--sans);font-size:.8rem;color:#aaa;line-height:1.5}
 
 /* ── NAV ── */
 nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--gris-clair);position:sticky;top:0;z-index:200;}
@@ -108,19 +117,21 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .btn-outline:hover{border-color:var(--rouge);color:var(--rouge)}
 .nav-user{display:flex;align-items:center;gap:.5rem;font-family:var(--sans);font-size:10px;color:#555;cursor:pointer;}
 .nav-user-dot{width:7px;height:7px;border-radius:50%;background:var(--rouge);flex-shrink:0}
+.nav-user-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--rouge);flex-shrink:0}
 
 /* hamburger mobile */
-.nav-hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;flex-direction:column;gap:5px}
+.nav-hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-direction:column;gap:5px;align-items:center;justify-content:center}
 .nav-hamburger span{display:block;width:22px;height:1.5px;background:var(--noir);transition:all .25s}
 .nav-hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
 .nav-hamburger.open span:nth-child(2){opacity:0}
 .nav-hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
 
 .nav-mobile-menu{
-  display:none;position:fixed;top:0;right:0;bottom:0;width:280px;
-  background:white;z-index:300;padding:5rem 2rem 2rem;
+  display:block;position:fixed;top:0;right:0;bottom:0;width:min(300px,85vw);
+  background:white;z-index:300;padding:4.5rem 1.5rem 2rem;
   border-left:1px solid var(--gris-clair);
   transform:translateX(100%);transition:transform .3s ease;
+  overflow-y:auto;
 }
 .nav-mobile-menu.open{transform:translateX(0)}
 .nav-mobile-overlay{display:none;position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.25)}
@@ -131,7 +142,7 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
   cursor:pointer;color:var(--noir);transition:color .2s;
 }
 .nav-mobile-item:hover{color:var(--rouge)}
-.nav-mobile-actions{margin-top:2rem;display:flex;flex-direction:column;gap:.8rem}
+.nav-mobile-actions{margin-top:1.5rem;display:flex;flex-direction:column;gap:.8rem}
 
 .nav-cats{display:flex;align-items:center;padding:0 3.5rem;height:42px;overflow-x:auto;gap:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .nav-cats::-webkit-scrollbar{display:none}
@@ -172,25 +183,13 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .page.active{display:block}
 
 /* ── EMPTY STATE ── */
-/* ── EMPTY ANIM ── */
-.empty-anim{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  margin:0 auto 2.8rem;height:48px;
-}
-.empty-anim span{
-  display:block;width:2px;background:var(--rouge);border-radius:2px;
-  animation:barPulse 1.4s ease-in-out infinite;
-  transform-origin:center;
-}
+.empty-anim{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto 2.8rem;height:48px;}
+.empty-anim span{display:block;width:2px;background:var(--rouge);border-radius:2px;animation:barPulse 1.4s ease-in-out infinite;transform-origin:center;}
 .empty-anim span:nth-child(1){height:16px;animation-delay:0s;}
 .empty-anim span:nth-child(2){height:40px;animation-delay:.2s;}
 .empty-anim span:nth-child(3){height:16px;animation-delay:.4s;}
-@keyframes barPulse{
-  0%,100%{transform:scaleY(1);opacity:.35}
-  50%{transform:scaleY(1.9);opacity:1}
-}
+@keyframes barPulse{0%,100%{transform:scaleY(1);opacity:.35}50%{transform:scaleY(1.9);opacity:1}}
 .empty-state{max-width:680px;margin:7rem auto;padding:0 2rem;text-align:center;}
-
 .empty-state h2{font-family:var(--serif);font-size:2rem;font-weight:400;margin-bottom:1rem;line-height:1.2;}
 .empty-state h2 em{font-style:italic;color:var(--rouge)}
 .empty-state p{font-family:var(--sans);font-size:.95rem;line-height:1.8;color:#666;font-weight:300;margin-bottom:.8rem;}
@@ -312,12 +311,12 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .add-block-btn{font-family:var(--sans);font-size:10px;letter-spacing:.16em;text-transform:uppercase;background:none;border:.5px dashed #ccc;color:#aaa;padding:8px 22px;cursor:pointer;transition:all .2s;}
 .add-block-btn:hover{border-color:var(--rouge);color:var(--rouge)}
 
-/* ── PAGE STATS ── */
+/* ── PAGE STATS PUBLIQUE ── */
 .stats-page{max-width:1100px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
 .stats-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem}
 .stats-page h2 em{font-style:italic;color:var(--rouge)}
 .stats-sub{font-family:var(--sans);font-size:.9rem;color:var(--gris);margin-bottom:3rem;font-weight:300}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:3rem}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin-bottom:3rem}
 .stat-card{border:.5px solid var(--gris-clair);padding:2rem;text-align:center;border-top:3px solid var(--rouge);}
 .stat-num{font-family:var(--serif);font-size:3rem;font-weight:400;color:var(--rouge);line-height:1}
 .stat-label{font-family:var(--sans);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gris);margin-top:.6rem}
@@ -330,14 +329,36 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .stats-table .td-title:hover{text-decoration:underline}
 .stats-cat-badge{font-family:var(--sans);font-size:8.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--rouge);border:.5px solid rgba(139,26,26,0.25);padding:2px 7px;display:inline-block}
 
+/* ── PAGE MON ESPACE (stats privées auteur) ── */
+.my-stats-page{max-width:900px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
+.my-stats-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem}
+.my-stats-page h2 em{font-style:italic;color:var(--rouge)}
+.my-stat-card{border:.5px solid var(--gris-clair);padding:1.8rem;text-align:center;border-top:3px solid var(--rouge);}
+.my-stat-num{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:var(--rouge);line-height:1}
+.my-stat-label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:.5rem}
+
+/* ── ESPACE ADMIN ── */
+.admin-page{max-width:1100px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
+.admin-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem}
+.admin-page h2 em{font-style:italic;color:var(--rouge)}
+.admin-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;background:var(--rouge);color:white;padding:4px 12px;margin-bottom:2rem}
+.btn-danger{font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:none;border:.5px solid rgba(139,26,26,0.4);color:var(--rouge);padding:5px 12px;cursor:pointer;transition:all .2s;}
+.btn-danger:hover{background:var(--rouge);color:white}
+.admin-gate{border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.5rem;margin-bottom:2rem;max-width:440px}
+.admin-gate p{font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.2rem;font-weight:300;line-height:1.6}
+
 /* ── PAGE PROFIL ── */
 .profile-page{max-width:900px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
 .profile-header{display:flex;align-items:center;gap:2rem;margin-bottom:3rem;padding-bottom:2rem;border-bottom:.5px solid var(--gris-clair);flex-wrap:wrap}
-.profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:2rem;color:white;flex-shrink:0}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:2rem;color:white;flex-shrink:0;overflow:hidden;}
+.profile-avatar img{width:100%;height:100%;object-fit:cover}
 .profile-name{font-family:var(--serif);font-size:2rem;font-weight:400}
-.profile-meta{font-family:var(--sans);font-size:10px;letter-spacing:.1em;color:var(--gris);margin-top:.4rem}
+.profile-meta{font-family:var(--sans);font-size:10px;letter-spacing:.1em;color:var(--gris);margin-top:.4rem;line-height:1.8}
+.profile-bio{font-family:var(--serif-text);font-size:.95rem;color:#444;margin-top:.6rem;font-style:italic;line-height:1.6}
 .profile-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;border:.5px solid rgba(139,26,26,0.3);padding:3px 10px;color:var(--rouge);margin-top:.6rem}
 .profile-empty{font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:3rem 0}
+.profile-edit-btn{font-family:var(--sans);font-size:9px;letter-spacing:.15em;text-transform:uppercase;background:none;border:.5px solid var(--gris-clair);color:#777;padding:6px 14px;cursor:pointer;transition:all .2s;margin-top:.8rem;display:inline-block}
+.profile-edit-btn:hover{border-color:var(--rouge);color:var(--rouge)}
 
 /* ── FOOTER ── */
 footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;position:relative;z-index:1;}
@@ -357,26 +378,30 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
-  .nav-top{padding:0 1.2rem;height:60px}
+  .nav-top{padding:0 1rem;height:58px}
   .nav-cats{padding:0 .5rem}
   .nav-date{display:none}
   .nav-search-wrap{display:none}
   .nav-hamburger{display:flex}
   .nav-actions .btn-red,.nav-actions .btn-outline,.nav-actions .nav-user{display:none}
-  .sec-wrap{padding:2rem 1.2rem}
-  .write-page,.article-page,.propose-page,.stats-page,.profile-page{padding:2rem 1.2rem}
+  .sec-wrap{padding:2rem 1rem}
+  .write-page,.article-page,.propose-page,.stats-page,.profile-page,.my-stats-page,.admin-page{padding:2rem 1rem}
   .form-two-col{grid-template-columns:1fr}
   .grid-articles{grid-template-columns:1fr;gap:2rem}
-  .modal-box{padding:1.8rem}
-  footer{padding:2rem 1.2rem}
+  .modal-box{padding:1.5rem}
+  footer{padding:2rem 1rem}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .logo-e{font-size:32px}
 }
 @media(max-width:500px){
-  .logo-e{font-size:32px}
   .logo-text{font-size:8px;letter-spacing:.3em}
   .stats-grid{grid-template-columns:1fr 1fr}
   .stat-num{font-size:2.2rem}
   .profile-header{flex-direction:column;align-items:flex-start}
+  .nav-top{padding:0 .8rem}
+  .gate-row{flex-direction:column;align-items:flex-start}
+  .gate input[type=password]{width:100%}
+  .btn-red,.btn-outline{padding:8px 12px;font-size:9.5px}
 }
 </style>
 </head>
@@ -385,24 +410,24 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 <canvas id="planet-tr" class="planet-canvas"></canvas>
 <canvas id="planet-bl" class="planet-canvas"></canvas>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <!-- MOBILE OVERLAY -->
 <div class="nav-mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
 <div class="nav-mobile-menu" id="mob-menu">
   <button class="modal-close" onclick="closeMobileMenu()" style="top:.8rem;right:1rem;position:absolute">×</button>
-  <!-- search mobile — en premier pour visibilité -->
   <div style="margin-bottom:1.2rem;position:relative">
     <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-bottom:.5rem">Rechercher</div>
-    <input type="text" id="mob-search" placeholder="Articles, auteurs, rubriques…" oninput="doMobSearch(this.value)"
+    <input type="text" id="mob-search" placeholder="Articles, auteurs, abonnés…" oninput="doMobSearch(this.value)"
       style="width:100%;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.65rem 1rem;outline:none;transition:border .2s"
       onfocus="this.style.borderColor='var(--rouge)'" onblur="this.style.borderColor='var(--gris-clair)'">
-    <div id="mob-search-results" style="margin-top:.4rem;border:.5px solid var(--gris-clair);display:none;max-height:240px;overflow-y:auto"></div>
+    <div id="mob-search-results" style="margin-top:.4rem;border:.5px solid var(--gris-clair);display:none;max-height:240px;overflow-y:auto;background:white;z-index:10;position:relative"></div>
   </div>
   <div class="nav-mobile-item" onclick="navGo('home')">La Une</div>
-  <div class="nav-mobile-item" onclick="navGo('stats')">Statistiques</div>
   <div class="nav-mobile-item" onclick="navGo('propose')">Proposer un article</div>
+  <div class="nav-mobile-item" id="mob-write-item" style="display:none" onclick="navGo('write')">✏ Écrire</div>
+  <div class="nav-mobile-item" id="mob-mystats-item" style="display:none" onclick="navGo('mystats')">📊 Mes statistiques</div>
+  <div class="nav-mobile-item" id="mob-admin-item" style="display:none" onclick="navGo('admin')">⚙ Admin</div>
   <div class="nav-mobile-actions" id="mob-actions"></div>
 </div>
 
@@ -444,10 +469,31 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   </div>
 </div>
 
+<!-- MODAL PROFIL EDIT -->
+<div class="modal-overlay" id="profile-edit-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeProfileEdit()">×</button>
+    <div class="modal-title">Mon profil</div>
+    <p class="modal-sub">Personnalisez votre profil visible par tous.</p>
+    <div class="avatar-upload-wrap">
+      <div class="avatar-preview" id="edit-avatar-preview" onclick="document.getElementById('edit-avatar-input').click()"></div>
+      <div>
+        <div class="avatar-upload-hint">Cliquez sur l'avatar pour changer votre photo<br><span style="font-size:.75rem">JPG, PNG — max 2Mo</span></div>
+      </div>
+    </div>
+    <input type="file" id="edit-avatar-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
+    <div class="m-row">
+      <label>Description / Bio</label>
+      <textarea id="edit-bio" placeholder="Quelques mots sur vous…" style="min-height:80px"></textarea>
+    </div>
+    <button class="btn-modal" onclick="saveProfileEdit()">Enregistrer</button>
+  </div>
+</div>
+
 <nav>
   <div class="nav-top">
     <div class="nav-date" id="nav-date"></div>
-    <div class="logo-wrap" onclick="showPage('home')">
+    <div class="logo-wrap" onclick="filterCat(document.querySelector('.cat'),\'all\');showPage(\'home\')">
       <div class="logo-e">E</div>
       <div class="logo-text">Economist</div>
       <div class="logo-underline"></div>
@@ -463,7 +509,7 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
       <span></span><span></span><span></span>
     </button>
   </div>
-  <div class="nav-cats">
+  <div class="nav-cats" id="nav-cats-bar">
     <div class="cat active" onclick="filterCat(this,'all')">La Une</div>
     <div class="cat" onclick="filterCat(this,'Macroéconomie')">Macroéconomie</div>
     <div class="cat" onclick="filterCat(this,'Finance')">Finance</div>
@@ -474,9 +520,10 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
     <div class="cat" onclick="filterCat(this,'Analyses')">Analyses</div>
     <div class="cat" onclick="filterCat(this,'Tribunes')">Tribunes</div>
     <div class="nav-cats-sep"></div>
-    <div class="cat nav-link-item" onclick="showPage('stats')">Statistiques</div>
     <div class="cat nav-link-item" onclick="showPage('propose')">Proposer un article</div>
     <div class="cat nav-link-item" id="nav-cats-write" style="display:none" onclick="showPage('write')">Écrire</div>
+    <div class="cat nav-link-item" id="nav-cats-mystats" style="display:none" onclick="showPage('mystats')">Mes stats</div>
+    <div class="cat nav-link-item" id="nav-cats-admin" style="display:none" onclick="showPage('admin')">Admin</div>
     <div class="cat nav-link-item" id="nav-cats-login" onclick="openModal('login')">S'abonner / Connexion</div>
     <div class="cat nav-link-item" id="nav-cats-logout" style="display:none" onclick="doLogout()">Déconnexion</div>
   </div>
@@ -497,7 +544,6 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   <div class="propose-page">
     <h2>Proposer un <em>article</em></h2>
     <p class="propose-sub">Vous souhaitez écrire pour Economist ? Laissez votre adresse e-mail et décrivez votre idée.<br>Si votre proposition est retenue, vous recevrez un code personnel pour accéder à l'espace de rédaction.</p>
-
     <div class="reg-card">
       <div class="reg-section">Votre contact</div>
       <div class="form-two-col" style="gap:1.2rem">
@@ -511,7 +557,6 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
       </div>
       <div class="reg-row"><label>Profession / Formation</label><input type="text" id="r-job" placeholder="Économiste, étudiant en finance…"></div>
     </div>
-
     <div class="reg-card">
       <div class="reg-section">Votre idée</div>
       <div class="reg-row">
@@ -532,12 +577,10 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
         <textarea id="r-why" style="min-height:80px" placeholder="Pourquoi ce sujet vous tient-il à cœur ?"></textarea>
       </div>
     </div>
-
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
       <button class="reg-submit" onclick="submitRequest()">Envoyer ma proposition →</button>
       <span style="font-family:var(--sans);font-size:.78rem;color:#bbb">* champs obligatoires</span>
     </div>
-
     <div class="reg-success" id="reg-success">
       <h3>Proposition envoyée.</h3>
       <p>Votre demande a bien été transmise à la rédaction.<br>
@@ -634,7 +677,7 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
         </div>
         <div class="success-msg" id="success-msg">
           <h3>Article publié.</h3>
-          <p>Votre article est maintenant visible sur le site.</p>
+          <p>Votre article est maintenant visible par tous sur le site.</p>
           <span class="view-link" onclick="goToNewArticle()">Lire mon article →</span>
         </div>
       </div>
@@ -642,30 +685,20 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   </div>
 </div>
 
-<!-- PAGE STATISTIQUES -->
-<div id="page-stats" class="page">
-  <div class="stats-page">
-    <h2>Statistiques <em>du site</em></h2>
-    <p class="stats-sub">Vue d'ensemble de l'activité de la plateforme.</p>
-    <div class="stats-grid" id="stats-grid"></div>
-    <div style="margin-bottom:3rem">
-      <div class="stats-section-title">Articles publiés</div>
-      <div style="overflow-x:auto">
-        <table class="stats-table" id="stats-articles-table">
-          <thead><tr><th>Titre</th><th>Auteur</th><th>Rubrique</th><th>Date</th><th>Lecture</th></tr></thead>
-          <tbody id="stats-articles-body"></tbody>
-        </table>
-      </div>
-    </div>
-    <div>
-      <div class="stats-section-title">Abonnés & rédacteurs</div>
-      <div style="overflow-x:auto">
-        <table class="stats-table">
-          <thead><tr><th>Nom</th><th>Email</th><th>Inscrit le</th><th>Articles</th><th>Profil</th></tr></thead>
-          <tbody id="stats-users-body"></tbody>
-        </table>
-      </div>
-    </div>
+<!-- PAGE MES STATISTIQUES (privé auteur) -->
+<div id="page-mystats" class="page">
+  <div class="my-stats-page">
+    <h2>Mes <em>statistiques</em></h2>
+    <p style="font-family:var(--sans);font-size:.9rem;color:var(--gris);margin-bottom:2.5rem;font-weight:300">Tableau de bord privé — visible uniquement par vous.</p>
+    <div id="my-stats-content"></div>
+  </div>
+</div>
+
+<!-- PAGE ADMIN (propriétaire) -->
+<div id="page-admin" class="page">
+  <div class="admin-page">
+    <h2>Espace <em>Admin</em></h2>
+    <div id="admin-content"></div>
   </div>
 </div>
 
@@ -682,7 +715,6 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
     </div>
     <div class="foot-links">
       <span class="foot-link">À propos</span>
-      <span class="foot-link" onclick="showPage('stats')">Statistiques</span>
       <span class="foot-link" onclick="showPage('propose')">Proposer un article</span>
       <span class="foot-link" onclick="showPage('write')">Écrire</span>
     </div>
@@ -691,12 +723,11 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 </footer>
 
 <script>
-// ── CODES D'ACCÈS VALIDES ──
-const VALID_CODES = [
-  "economist2026",
-];
+// ── CONFIG ──
+const VALID_CODES = ["economist2026"];
+const OWNER_EMAIL = "theseeconomists@gmail.com"; // L'email du propriétaire → accès admin
 
-// ── STORAGE (partagé entre tous les utilisateurs) ──
+// ── STATE ──
 let articles = [];
 let users = [];
 let currentUser = JSON.parse(localStorage.getItem('eco_session') || 'null');
@@ -705,7 +736,7 @@ let visitorCount = 0;
 let pageViews = 0;
 let _storageReady = false;
 
-// ── STORAGE ABSTRACTION (localStorage fallback) ──
+// ── STORAGE ABSTRACTION ──
 const _store = {
   get: (key) => {
     if(window.storage) return window.storage.get(key, true).then(r => r ? {value: r.value} : null).catch(()=>null);
@@ -720,23 +751,10 @@ const _store = {
 };
 
 async function loadSharedData(){
-  try {
-    const arts = await _store.get('eco_articles');
-    articles = arts ? JSON.parse(arts.value) : [];
-  } catch(e){ articles = []; }
-  try {
-    const usrs = await _store.get('eco_users');
-    users = usrs ? JSON.parse(usrs.value) : [];
-  } catch(e){ users = []; }
-  try {
-    const vc = await _store.get('eco_visitors');
-    visitorCount = vc ? parseInt(vc.value) : 0;
-  } catch(e){ visitorCount = 0; }
-  try {
-    const pv = await _store.get('eco_pageviews');
-    pageViews = pv ? parseInt(pv.value) : 0;
-  } catch(e){ pageViews = 0; }
-
+  try { const r = await _store.get('eco_articles'); articles = r ? JSON.parse(r.value) : []; } catch(e){ articles = []; }
+  try { const r = await _store.get('eco_users'); users = r ? JSON.parse(r.value) : []; } catch(e){ users = []; }
+  try { const r = await _store.get('eco_visitors'); visitorCount = r ? parseInt(r.value) : 0; } catch(e){ visitorCount = 0; }
+  try { const r = await _store.get('eco_pageviews'); pageViews = r ? parseInt(r.value) : 0; } catch(e){ pageViews = 0; }
   if(!sessionStorage.getItem('eco_visited')){
     visitorCount++;
     await _store.set('eco_visitors', String(visitorCount));
@@ -758,6 +776,7 @@ function readTime(body){
   const w=(body||'').trim().split(/\s+/).length;
   return `${Math.max(1,Math.round(w/200))} min`;
 }
+function isOwner(){ return currentUser && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase(); }
 
 // ── TOAST ──
 function showToast(msg, duration=3200){
@@ -770,6 +789,29 @@ function showToast(msg, duration=3200){
 function renderNav(){
   const el = document.getElementById('nav-actions');
   const mob = document.getElementById('mob-actions');
+
+  // Nav cats visibility
+  document.getElementById('nav-cats-write').style.display = currentUser ? '' : 'none';
+  document.getElementById('nav-cats-mystats').style.display = currentUser ? '' : 'none';
+  document.getElementById('nav-cats-admin').style.display = isOwner() ? '' : 'none';
+  document.getElementById('nav-cats-login').style.display = currentUser ? 'none' : '';
+  document.getElementById('nav-cats-logout').style.display = currentUser ? '' : 'none';
+  // Mobile menu items
+  const mobWrite = document.getElementById('mob-write-item');
+  const mobMystats = document.getElementById('mob-mystats-item');
+  const mobAdmin = document.getElementById('mob-admin-item');
+  if(mobWrite) mobWrite.style.display = currentUser ? '' : 'none';
+  if(mobMystats) mobMystats.style.display = currentUser ? '' : 'none';
+  if(mobAdmin) mobAdmin.style.display = isOwner() ? '' : 'none';
+
+  // Get avatar HTML helper
+  function avatarHtml(u, size=28){
+    if(u && u.avatar){
+      return `<img class="nav-user-avatar" src="${u.avatar}" style="width:${size}px;height:${size}px" alt="">`;
+    }
+    return `<div class="nav-user-dot"></div>`;
+  }
+
   if(currentUser){
     el.innerHTML = `
       <div class="nav-search-wrap">
@@ -778,18 +820,21 @@ function renderNav(){
         <div class="search-results-drop" id="srd"></div>
       </div>
       <div class="nav-user" onclick="showPage('profile');openProfile(currentUser.email)">
-        <div class="nav-user-dot"></div>
+        ${avatarHtml(currentUser)}
         <span>${currentUser.first} ${currentUser.last[0]}.</span>
+        ${isOwner()?'<span style="font-family:var(--sans);font-size:8.5px;color:var(--rouge);letter-spacing:.1em">ADMIN</span>':''}
       </div>
       <button class="btn-red" onclick="showPage('write')">Écrire</button>
       <button class="btn-outline" onclick="doLogout()">Déconnexion</button>
     `;
     mob.innerHTML = `
       <div class="nav-user" onclick="closeMobileMenu();showPage('profile');openProfile(currentUser.email)" style="display:flex;align-items:center;gap:.6rem;padding:.5rem 0">
-        <div class="nav-user-dot"></div>
-        <span style="font-family:var(--sans);font-size:11px">${currentUser.first} ${currentUser.last}</span>
+        ${avatarHtml(currentUser, 32)}
+        <span style="font-family:var(--sans);font-size:11px">${currentUser.first} ${currentUser.last}${isOwner()?' · Admin':''}</span>
       </div>
       <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('write')">✏ Écrire un article</button>
+      <button class="btn-outline" style="width:100%" onclick="closeMobileMenu();showPage('mystats')">📊 Mes statistiques</button>
+      ${isOwner()?`<button class="btn-outline" style="width:100%;border-color:var(--rouge);color:var(--rouge)" onclick="closeMobileMenu();showPage('admin')">⚙ Admin</button>`:''}
       <button class="btn-outline" style="width:100%" onclick="doLogout();closeMobileMenu()">Déconnexion</button>
     `;
   } else {
@@ -807,13 +852,6 @@ function renderNav(){
       <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('propose')">Proposer un article</button>
     `;
   }
-  // Mettre à jour les items de la barre nav-cats selon l'état de connexion
-  const ncWrite = document.getElementById('nav-cats-write');
-  const ncLogin = document.getElementById('nav-cats-login');
-  const ncLogout = document.getElementById('nav-cats-logout');
-  if(ncWrite) ncWrite.style.display = currentUser ? '' : 'none';
-  if(ncLogin) ncLogin.style.display = currentUser ? 'none' : '';
-  if(ncLogout) ncLogout.style.display = currentUser ? '' : 'none';
 }
 
 // ── MOBILE MENU ──
@@ -832,26 +870,26 @@ function closeMobileMenu(){
 }
 function navGo(page){ closeMobileMenu(); showPage(page); }
 
-// ── SEARCH ──
+// ── SEARCH (articles + abonnés) ──
 function doSearch(q){
   const srd = document.getElementById('srd');
+  if(!srd) return;
   if(!q || q.length < 2){ srd.classList.remove('open'); return; }
   const ql = q.toLowerCase();
-  // search articles
   const artMatches = articles.filter(a=>
     a.title.toLowerCase().includes(ql)||
-    a.deck.toLowerCase().includes(ql)||
+    (a.deck||'').toLowerCase().includes(ql)||
     a.author.toLowerCase().includes(ql)||
     a.cat.toLowerCase().includes(ql)
   ).slice(0,5);
-  // search users
   const userMatches = users.filter(u=>
     (u.first+' '+u.last).toLowerCase().includes(ql)||
-    u.email.toLowerCase().includes(ql)
-  ).slice(0,3);
+    u.email.toLowerCase().includes(ql)||
+    (u.bio||'').toLowerCase().includes(ql)
+  ).slice(0,4);
 
   if(artMatches.length===0 && userMatches.length===0){
-    srd.innerHTML=`<div style="padding:1.2rem;font-family:var(--sans);font-size:.85rem;color:#aaa;text-align:center">Aucun résultat</div>`;
+    srd.innerHTML=`<div style="padding:1.2rem;font-family:var(--sans);font-size:.85rem;color:#aaa;text-align:center">Aucun résultat pour « ${q} »</div>`;
     srd.classList.add('open'); return;
   }
   let html='';
@@ -866,29 +904,51 @@ function doSearch(q){
   }
   if(userMatches.length){
     html+=`<div class="srd-section">Abonnés</div>`;
-    html+=userMatches.map(u=>`
-      <div class="srd-item" onclick="showPage('profile');openProfile('${u.email}');document.getElementById('srd').classList.remove('open')">
-        <div class="srd-title">${u.first} ${u.last}</div>
-        <div class="srd-author">${u.email} · ${articles.filter(a=>a.author===u.first+' '+u.last).length} article(s)</div>
-      </div>`).join('');
+    html+=userMatches.map(u=>{
+      const uArts = articles.filter(a=>a.author===u.first+' '+u.last).length;
+      const avatarEl = u.avatar
+        ? `<img src="${u.avatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0">`
+        : `<div style="width:32px;height:32px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:.9rem;color:white;flex-shrink:0">${(u.first[0]+(u.last[0]||'')).toUpperCase()}</div>`;
+      return `
+        <div class="srd-item" style="display:flex;align-items:center;gap:.8rem" onclick="showPage('profile');openProfile('${u.email}');document.getElementById('srd').classList.remove('open')">
+          ${avatarEl}
+          <div>
+            <div class="srd-title">${u.first} ${u.last}</div>
+            <div class="srd-author">${uArts} article${uArts!==1?'s':''} · Membre depuis ${u.joined||'—'}</div>
+            ${u.bio?`<div style="font-family:var(--sans);font-size:.78rem;color:#999;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px">${u.bio}</div>`:''}
+          </div>
+        </div>`;
+    }).join('');
   }
   srd.innerHTML=html;
   srd.classList.add('open');
 }
+
 function doMobSearch(q){
   const box=document.getElementById('mob-search-results');
   if(!q||q.length<2){box.style.display='none';return;}
   const ql=q.toLowerCase();
   const arts=articles.filter(a=>a.title.toLowerCase().includes(ql)||a.author.toLowerCase().includes(ql)).slice(0,4);
-  const usrs=users.filter(u=>(u.first+' '+u.last).toLowerCase().includes(ql)).slice(0,2);
+  const usrs=users.filter(u=>(u.first+' '+u.last).toLowerCase().includes(ql)||(u.bio||'').toLowerCase().includes(ql)).slice(0,3);
   if(!arts.length&&!usrs.length){box.innerHTML=`<div style="padding:.8rem;font-family:var(--sans);font-size:.83rem;color:#aaa">Aucun résultat</div>`;box.style.display='block';return;}
   let html='';
-  arts.forEach(a=>{html+=`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--serif-text)" onclick="closeMobileMenu();openArticle(${a.id})">${a.title}</div>`;});
-  usrs.forEach(u=>{html+=`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--sans);font-size:.85rem" onclick="closeMobileMenu();showPage('profile');openProfile('${u.email}')">${u.first} ${u.last}</div>`;});
+  if(arts.length){
+    html+='<div style="padding:.4rem .8rem;font-family:var(--sans);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;background:#f8f8f8;border-bottom:.5px solid var(--gris-clair)">Articles</div>';
+    arts.forEach(a=>{html+=`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--serif-text);font-size:.9rem" onclick="closeMobileMenu();openArticle(${a.id})">${a.title}</div>`;});
+  }
+  if(usrs.length){
+    html+='<div style="padding:.4rem .8rem;font-family:var(--sans);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;background:#f8f8f8;border-bottom:.5px solid var(--gris-clair)">Abonnés</div>';
+    usrs.forEach(u=>{
+      const avatarEl = u.avatar
+        ? `<img src="${u.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;margin-right:.5rem">`
+        : `<div style="width:28px;height:28px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:.75rem;color:white;flex-shrink:0;margin-right:.5rem">${(u.first[0]+(u.last[0]||'')).toUpperCase()}</div>`;
+      html+=`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;display:flex;align-items:center" onclick="closeMobileMenu();showPage('profile');openProfile('${u.email}')">${avatarEl}<span style="font-family:var(--sans);font-size:.85rem">${u.first} ${u.last}</span></div>`;
+    });
+  }
   box.innerHTML=html;box.style.display='block';
 }
 
-// ── MODAL ──
+// ── MODAL AUTH ──
 function openModal(tab){
   document.getElementById('auth-modal').classList.add('open');
   switchTab(tab||'login');
@@ -929,7 +989,7 @@ async function doSignup(){
     errEl.textContent='Cet email est déjà utilisé.';errEl.style.display='block';okEl.style.display='none';return;
   }
   errEl.style.display='none';
-  const u={first,last,email,pwd,joined:today()};
+  const u={first,last,email,pwd,joined:today(),avatar:'',bio:''};
   users.push(u);await saveUsers();
   currentUser=u;saveSession(u);
   okEl.style.display='block';
@@ -939,24 +999,73 @@ function doLogout(){
   currentUser=null;
   localStorage.removeItem('eco_session');
   renderNav();
+  showPage('home');
   showToast('Vous êtes déconnecté.');
+}
+
+// ── PROFILE EDIT MODAL ──
+let editAvatarBase64 = null;
+function openProfileEdit(){
+  if(!currentUser) return;
+  editAvatarBase64 = null;
+  const prev = document.getElementById('edit-avatar-preview');
+  if(currentUser.avatar){
+    prev.innerHTML = `<img src="${currentUser.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  } else {
+    const initials=(currentUser.first[0]+(currentUser.last[0]||'')).toUpperCase();
+    prev.innerHTML = initials;
+    prev.style.background = 'var(--rouge)';
+  }
+  document.getElementById('edit-bio').value = currentUser.bio || '';
+  document.getElementById('profile-edit-modal').classList.add('open');
+}
+function closeProfileEdit(){ document.getElementById('profile-edit-modal').classList.remove('open'); }
+document.getElementById('profile-edit-modal').addEventListener('click',function(e){ if(e.target===this) closeProfileEdit(); });
+function handleAvatarUpload(e){
+  const file=e.target.files[0];if(!file)return;
+  if(file.size>2*1024*1024){ showToast('Image trop lourde (max 2Mo)'); return; }
+  const r=new FileReader();r.onload=ev=>{
+    editAvatarBase64=ev.target.result;
+    const prev=document.getElementById('edit-avatar-preview');
+    prev.innerHTML=`<img src="${editAvatarBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  };r.readAsDataURL(file);e.target.value='';
+}
+async function saveProfileEdit(){
+  if(!currentUser) return;
+  const bio = document.getElementById('edit-bio').value.trim();
+  const idx = users.findIndex(u=>u.email===currentUser.email);
+  if(idx===-1) return;
+  if(editAvatarBase64) users[idx].avatar = editAvatarBase64;
+  users[idx].bio = bio;
+  currentUser = users[idx];
+  saveSession(currentUser);
+  await saveUsers();
+  closeProfileEdit();
+  renderNav();
+  openProfile(currentUser.email);
+  showToast('Profil mis à jour !');
 }
 
 // ── NAVIGATION ──
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
+  const pg = document.getElementById('page-'+name);
+  if(!pg) return;
+  pg.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
-  // increment page views
   pageViews++;
   _store.set('eco_pageviews', String(pageViews));
-  if(name==='home'){ loadSharedData().then(()=>renderHome('all')); }
+  if(name==='home'){ loadSharedData().then(()=>renderHome(currentActiveCat)); }
   if(name==='write') renderWritePage();
-  if(name==='stats'){ loadSharedData().then(()=>renderStats()); }
+  if(name==='mystats'){ loadSharedData().then(()=>renderMyStats()); }
+  if(name==='admin'){ loadSharedData().then(()=>renderAdmin()); }
 }
+
+let currentActiveCat = 'all';
 function filterCat(el,cat){
   document.querySelectorAll('.cat:not(.nav-link-item)').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
+  if(el) el.classList.add('active');
+  currentActiveCat = cat;
   showPage('home');
   renderHome(cat);
 }
@@ -968,8 +1077,6 @@ function renderWritePage(){
   const form=document.getElementById('write-form');
   if(currentUser){
     loginGate.style.display='none';
-    // already have access code unlocked OR just show the gate
-    // if code gate is hidden means they already unlocked
   } else {
     loginGate.style.display='block';
     gate.style.display='none';
@@ -978,40 +1085,35 @@ function renderWritePage(){
   }
 }
 
-// ── ACCUEIL ──
+// ── ACCUEIL — tous les articles publics, filtrés par catégorie ──
 function renderHome(cat){
   const wrap=document.getElementById('home-content');
-  const filtered=cat==='all'?[...articles].reverse():[...articles].reverse().filter(a=>a.cat===cat);
+  // Tous les articles sont publics par défaut
+  const all = [...articles].reverse();
+  const filtered = cat==='all' ? all : all.filter(a=>a.cat===cat);
 
   if(filtered.length===0){
     wrap.innerHTML=`
       <div class="empty-state reveal">
-        <div class="empty-anim" id="empty-anim"><span></span><span></span><span></span></div>
+        <div class="empty-anim"><span></span><span></span><span></span></div>
         <h2>Something <em>powerful</em><br>is coming.</h2>
-        <div class="empty-divider"></div>
         <p>Une plateforme de média économique et de recherche,<br>dédiée à l'<strong style="font-weight:500">Afrique</strong>, avec une <strong style="font-weight:500;color:var(--rouge)">perspective mondiale</strong>.</p>
-        <p style="margin-top:.5rem">Les articles publiés apparaîtront ici.</p>
-        <div class="empty-divider"></div>
-        <span class="empty-cta" onclick="showPage('propose')">Proposer un article</span>
+        <p style="margin-top:.5rem">${cat==='all'?'Les articles publiés apparaîtront ici.':'Aucun article dans la rubrique « '+cat+' » pour l\'instant.'}</p>
+        <span class="empty-cta" onclick="showPage('propose')">Proposer un article →</span>
       </div>`;
-    setTimeout(()=>document.querySelectorAll('.reveal').forEach(el=>{
-      const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('revealed')});},{threshold:.1});
-      obs.observe(el);
-    }),50);
-    return;
+    triggerReveal(); return;
   }
 
   const hero=filtered[0];
   const rest=filtered.slice(1);
-  const catLabel=cat==='all'?'Derniers articles':cat;
-
+  const catLabel=cat==='all'?'Tous les articles':cat;
   const isMobile=window.innerWidth<768;
+
   if(isMobile){
-    // mobile layout: stack vertically
     wrap.innerHTML=`
       <div class="sec-wrap reveal" style="padding-bottom:1rem">
         <div style="cursor:pointer;border-bottom:.5px solid var(--gris-clair);padding-bottom:2rem" onclick="openArticle(${hero.id})">
-          ${hero.img?`<div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1rem"><img src="${hero.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
+          ${hero.img?`<div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1rem;border-radius:0"><img src="${hero.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
           <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.5rem">${hero.cat}</div>
           <h1 style="font-family:var(--serif);font-size:clamp(1.6rem,5vw,2.4rem);font-weight:400;line-height:1.2;margin-bottom:.8rem">${hero.title}</h1>
           <p style="font-family:var(--serif-text);font-size:.95rem;line-height:1.7;color:#444;margin-bottom:1rem;font-style:italic">${hero.deck}</p>
@@ -1022,7 +1124,7 @@ function renderHome(cat){
       </div>
       ${rest.length>0?`
       <div class="sec-wrap reveal" style="padding-top:1.5rem">
-        <div class="sec-head"><span class="sec-name">${catLabel}</span><div class="sec-rule"></div></div>
+        <div class="sec-head"><span class="sec-name">${catLabel}</span></div>
         <div class="grid-articles">
           ${rest.map(a=>`
             <div class="art-card" onclick="openArticle(${a.id})">
@@ -1061,13 +1163,12 @@ function renderHome(cat){
                   <div style="font-family:var(--sans);font-size:9.5px;color:var(--gris)">${a.date}</div>
                 </div>
               </div>`).join('')}
-            ${rest.length===0?`<p style="font-family:var(--sans);font-size:.85rem;color:#bbb;font-style:italic;margin-top:1rem">D'autres articles à venir.</p>`:''}
           </div>
         </div>
       </div>
       ${rest.length>0?`
       <div class="sec-wrap reveal" style="padding-top:2.5rem">
-        <div class="sec-head"><span class="sec-name">${catLabel}</span><div class="sec-rule"></div></div>
+        <div class="sec-head"><span class="sec-name">${catLabel}</span></div>
         <div class="grid-articles">
           ${rest.map(a=>`
             <div class="art-card" onclick="openArticle(${a.id})">
@@ -1083,7 +1184,10 @@ function renderHome(cat){
       </div>`:''}
     `;
   }
+  triggerReveal();
+}
 
+function triggerReveal(){
   setTimeout(()=>{
     document.querySelectorAll('.reveal').forEach(el=>{
       if(el.classList.contains('revealed')) return;
@@ -1093,24 +1197,28 @@ function renderHome(cat){
   },50);
 }
 
-// ── ARTICLE FULL ──
+// ── ARTICLE FULL (public — pas besoin d'être connecté) ──
 function openArticle(id){
   const a=articles.find(x=>x.id===id);
   if(!a) return;
-  // increment read count
   a.reads=(a.reads||0)+1;
   saveArticles().catch(()=>{});
   let bodyContent=a.bodyHtml||a.body.split(/\n\n+/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
-  const authorName=a.author;
-  const authorUser=users.find(u=>u.first+' '+u.last===authorName);
+  const authorUser=users.find(u=>u.first+' '+u.last===a.author);
+  const deleteBtn = isOwner()
+    ? `<button onclick="adminDeleteArticle(${a.id})" style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:none;border:.5px solid rgba(139,26,26,0.4);color:var(--rouge);padding:5px 12px;cursor:pointer;margin-left:auto" onmouseover="this.style.background='var(--rouge)';this.style.color='white'" onmouseout="this.style.background='none';this.style.color='var(--rouge)'">🗑 Supprimer</button>`
+    : '';
   document.getElementById('article-content').innerHTML=`
-    <button class="back-btn" onclick="showPage('home')">← Retour</button>
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;flex-wrap:wrap">
+      <button class="back-btn" style="margin-bottom:0" onclick="showPage('home')">← Retour</button>
+      ${deleteBtn}
+    </div>
     <div class="art-full-k">${a.cat}</div>
     <h1 class="art-full-title">${a.title}</h1>
     <div class="art-full-deck">${a.deck}</div>
     <div class="art-full-meta">
       <span>Par <span class="author-chip" onclick="${authorUser?`showPage('profile');openProfile('${authorUser.email}')`:'void(0)'}">
-        ${authorName}
+        ${a.author}
       </span></span>
       <span class="dot"></span><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)} de lecture</span>
     </div>
@@ -1120,20 +1228,28 @@ function openArticle(id){
   showPage('article');
 }
 
-// ── PROFIL ──
+// ── PROFIL PUBLIC ──
 function openProfile(email){
   const u=users.find(x=>x.email===email);
   if(!u){ document.getElementById('profile-content').innerHTML=`<p style="font-family:var(--sans);color:#aaa">Profil introuvable.</p>`; return; }
   const userArticles=articles.filter(a=>a.author===u.first+' '+u.last).reverse();
-  const initials=(u.first[0]+(u.last[0]||'')).toUpperCase();
+  const isMe = currentUser && currentUser.email === email;
+  const avatarEl = u.avatar
+    ? `<div class="profile-avatar"><img src="${u.avatar}" alt="${u.first}"></div>`
+    : `<div class="profile-avatar" style="font-size:2rem">${(u.first[0]+(u.last[0]||'')).toUpperCase()}</div>`;
   document.getElementById('profile-content').innerHTML=`
-    <button class="back-btn" onclick="history.go(-1) || showPage('home')">← Retour</button>
+    <button class="back-btn" onclick="showPage('home')">← Retour</button>
     <div class="profile-header">
-      <div class="profile-avatar">${initials}</div>
-      <div>
+      ${avatarEl}
+      <div style="flex:1">
         <div class="profile-name">${u.first} ${u.last}</div>
-        <div class="profile-meta">Membre depuis ${u.joined||'—'}</div>
-        ${userArticles.length>0?`<div class="profile-badge">✍ Rédacteur · ${userArticles.length} article${userArticles.length>1?'s':''}</div>`:''}
+        <div class="profile-meta">
+          Membre depuis ${u.joined||'—'}
+          ${userArticles.length>0?` · ${userArticles.length} article${userArticles.length>1?'s':''} publié${userArticles.length>1?'s':''}`:' · Lecteur'}
+        </div>
+        ${u.bio?`<div class="profile-bio">"${u.bio}"</div>`:''}
+        ${userArticles.length>0?`<div class="profile-badge">✍ Rédacteur</div>`:''}
+        ${isMe?`<button class="profile-edit-btn" onclick="openProfileEdit()">✏ Modifier mon profil</button>`:''}
       </div>
     </div>
     ${userArticles.length===0
@@ -1147,7 +1263,7 @@ function openProfile(email){
                 <div class="art-k">${a.cat}</div>
                 <div class="art-title">${a.title}</div>
                 <div class="art-excerpt">${a.deck}</div>
-                <div class="art-foot"><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)}</span></div>
+                <div class="art-foot"><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)}</span><span class="dot"></span><span>${a.reads||0} lecture${(a.reads||0)>1?'s':''}</span></div>
               </div>
             </div>`).join('')}
         </div>`
@@ -1155,37 +1271,121 @@ function openProfile(email){
   `;
 }
 
-// ── STATS ──
-function renderStats(){
-  const totalReads=articles.reduce((s,a)=>s+(a.reads||0),0);
-  document.getElementById('stats-grid').innerHTML=`
-    <div class="stat-card"><div class="stat-num">${articles.length}</div><div class="stat-label">Articles publiés</div></div>
-    <div class="stat-card"><div class="stat-num">${users.length}</div><div class="stat-label">Abonnés</div></div>
-    <div class="stat-card"><div class="stat-num">${visitorCount}</div><div class="stat-label">Visiteurs uniques</div></div>
-    <div class="stat-card"><div class="stat-num">${totalReads}</div><div class="stat-label">Lectures d'articles</div></div>
-    <div class="stat-card"><div class="stat-num">${pageViews}</div><div class="stat-label">Pages vues</div></div>
+// ── MES STATISTIQUES (privé auteur) ──
+function renderMyStats(){
+  if(!currentUser){
+    document.getElementById('my-stats-content').innerHTML=`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa">Connectez-vous pour voir vos statistiques.</div>`;
+    return;
+  }
+  const myArts = articles.filter(a=>a.author===currentUser.first+' '+currentUser.last).reverse();
+  const totalReads = myArts.reduce((s,a)=>s+(a.reads||0),0);
+  const totalWords = myArts.reduce((s,a)=>s+(a.body||'').trim().split(/\s+/).length,0);
+  const el = document.getElementById('my-stats-content');
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1.2rem;margin-bottom:3rem">
+      <div class="my-stat-card"><div class="my-stat-num">${myArts.length}</div><div class="my-stat-label">Articles publiés</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${totalReads}</div><div class="my-stat-label">Lectures totales</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${totalWords.toLocaleString('fr')}</div><div class="my-stat-label">Mots écrits</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${myArts.length>0?Math.round(totalReads/myArts.length):0}</div><div class="my-stat-label">Moy. lectures/article</div></div>
+    </div>
+    ${myArts.length===0
+      ?`<div style="font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:2rem 0">Vous n'avez pas encore publié d'article.</div>`
+      :`<div class="stats-section-title">Mes articles</div>
+        <div style="overflow-x:auto">
+          <table class="stats-table">
+            <thead><tr><th>Titre</th><th>Rubrique</th><th>Date</th><th>Lectures</th><th>Temps lect.</th></tr></thead>
+            <tbody>
+              ${myArts.map(a=>`
+                <tr>
+                  <td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td>
+                  <td><span class="stats-cat-badge">${a.cat}</span></td>
+                  <td>${a.date}</td>
+                  <td><strong style="color:var(--rouge)">${a.reads||0}</strong></td>
+                  <td>${readTime(a.body)}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`
+    }
   `;
-  document.getElementById('stats-articles-body').innerHTML=articles.length===0
-    ?`<tr><td colspan="5" style="font-family:var(--sans);font-size:.85rem;color:#aaa;padding:2rem;text-align:center;font-style:italic">Aucun article</td></tr>`
-    :[...articles].reverse().map(a=>`
-      <tr>
-        <td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td>
-        <td>${a.author}</td>
-        <td><span class="stats-cat-badge">${a.cat}</span></td>
-        <td>${a.date}</td>
-        <td>${readTime(a.body)}</td>
-      </tr>`).join('');
-  document.getElementById('stats-users-body').innerHTML=users.length===0
-    ?`<tr><td colspan="5" style="font-family:var(--sans);font-size:.85rem;color:#aaa;padding:2rem;text-align:center;font-style:italic">Aucun abonné</td></tr>`
-    :users.map(u=>{
-      const count=articles.filter(a=>a.author===u.first+' '+u.last).length;
-      return `<tr>
-        <td>${u.first} ${u.last}</td>
-        <td style="color:var(--gris)">${u.email}</td>
-        <td>${u.joined||'—'}</td>
-        <td>${count}</td>
-        <td><span style="font-family:var(--sans);font-size:9.5px;color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('profile');openProfile('${u.email}')">Voir →</span></td>
-      </tr>`;}).join('');
+}
+
+// ── ESPACE ADMIN (propriétaire uniquement) ──
+function renderAdmin(){
+  const el = document.getElementById('admin-content');
+  if(!isOwner()){
+    el.innerHTML=`
+      <div class="admin-gate">
+        <p>Cet espace est réservé au propriétaire du site.<br>Connectez-vous avec le compte administrateur.</p>
+        <button class="btn-red" onclick="openModal('login')">Se connecter</button>
+      </div>`;
+    return;
+  }
+  const totalReads = articles.reduce((s,a)=>s+(a.reads||0),0);
+  el.innerHTML=`
+    <div class="admin-badge">⚙ Propriétaire · Accès complet</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1.2rem;margin-bottom:3rem">
+      <div class="my-stat-card"><div class="my-stat-num">${articles.length}</div><div class="my-stat-label">Articles</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${users.length}</div><div class="my-stat-label">Abonnés</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${totalReads}</div><div class="my-stat-label">Lectures</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${visitorCount}</div><div class="my-stat-label">Visiteurs</div></div>
+    </div>
+
+    <div class="stats-section-title">Gestion des articles — Supprimer</div>
+    ${articles.length===0
+      ?`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic;margin-bottom:2rem">Aucun article.</div>`
+      :`<div style="overflow-x:auto;margin-bottom:3rem">
+          <table class="stats-table">
+            <thead><tr><th>Titre</th><th>Auteur</th><th>Rubrique</th><th>Date</th><th>Lectures</th><th>Action</th></tr></thead>
+            <tbody>
+              ${[...articles].reverse().map(a=>`
+                <tr>
+                  <td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td>
+                  <td style="font-family:var(--sans);font-size:.85rem">${a.author}</td>
+                  <td><span class="stats-cat-badge">${a.cat}</span></td>
+                  <td style="font-family:var(--sans);font-size:.85rem">${a.date}</td>
+                  <td><strong style="color:var(--rouge)">${a.reads||0}</strong></td>
+                  <td><button class="btn-danger" onclick="adminDeleteArticle(${a.id})">Supprimer</button></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`
+    }
+
+    <div class="stats-section-title">Abonnés inscrits</div>
+    ${users.length===0
+      ?`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic">Aucun abonné.</div>`
+      :`<div style="overflow-x:auto">
+          <table class="stats-table">
+            <thead><tr><th>Nom</th><th>Email</th><th>Inscrit le</th><th>Articles</th><th>Profil</th></tr></thead>
+            <tbody>
+              ${users.map(u=>{
+                const count=articles.filter(a=>a.author===u.first+' '+u.last).length;
+                return `<tr>
+                  <td>${u.first} ${u.last}</td>
+                  <td style="color:var(--gris);font-family:var(--sans);font-size:.85rem">${u.email}</td>
+                  <td style="font-family:var(--sans);font-size:.85rem">${u.joined||'—'}</td>
+                  <td>${count}</td>
+                  <td><span style="font-family:var(--sans);font-size:9.5px;color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('profile');openProfile('${u.email}')">Voir →</span></td>
+                </tr>`;}).join('')}
+            </tbody>
+          </table>
+        </div>`
+    }
+  `;
+}
+
+async function adminDeleteArticle(id){
+  if(!isOwner()) return;
+  if(!confirm('Supprimer définitivement cet article ?')) return;
+  articles = articles.filter(a=>a.id!==id);
+  await saveArticles();
+  showToast('Article supprimé.');
+  // Refresh current page
+  const activePage = document.querySelector('.page.active');
+  if(activePage && activePage.id==='page-admin') renderAdmin();
+  else if(activePage && activePage.id==='page-article') showPage('home');
+  else renderHome(currentActiveCat);
 }
 
 // ── PROPOSITION ──
@@ -1204,8 +1404,7 @@ function submitRequest(){
     `Nouvelle proposition d'article — Economist\n\n`+
     `Nom : ${first} ${last}\nEmail : ${email}\n`+
     (job?`Profession : ${job}\n`:``)+
-    `Rubrique : ${cat}\n\n`+
-    `Sujet :\n${subject}\n\n`+
+    `Rubrique : ${cat}\n\nSujet :\n${subject}\n\n`+
     (why?`Motivation :\n${why}\n\n`:``)+
     `---\nEnvoyé depuis economist.ci`
   );
@@ -1224,7 +1423,6 @@ function checkCode(){
     document.getElementById('code-gate').style.display='none';
     const f=document.getElementById('write-form');
     f.classList.remove('form-hidden');f.style.display='block';
-    // auto-fill author if logged in
     if(currentUser) document.getElementById('f-author').value=currentUser.first+' '+currentUser.last;
   } else {
     document.getElementById('gate-err').style.display='block';
@@ -1241,9 +1439,8 @@ function updateCount(fid,cid,max){
   el.style.color=v.length>max?'var(--rouge)':'var(--gris)';
 }
 
-// ── PUBLISH ──
+// ── PUBLISH ── articles automatiquement publics
 let blockIdCounter=0, coverBase64=null, pendingInsertAfter=null;
-
 async function publishArticle(){
   const cat=document.getElementById('f-cat').value.trim();
   const author=document.getElementById('f-author').value.trim();
@@ -1254,10 +1451,9 @@ async function publishArticle(){
     showToast('Veuillez remplir tous les champs obligatoires.');return;
   }
   const imgUrl=coverBase64||document.getElementById('f-img').value.trim();
-  const a={id:Date.now(),cat,author,title,deck,body:bodyText,bodyHtml,img:imgUrl,date:today(),reads:0};
+  const a={id:Date.now(),cat,author,title,deck,body:bodyText,bodyHtml,img:imgUrl,date:today(),reads:0,public:true};
   articles.push(a);await saveArticles();
   lastPublishedId=a.id;
-  // reset
   ['f-author','f-title','f-deck','f-img'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-cat').value='';
   coverBase64=null;
@@ -1270,7 +1466,7 @@ async function publishArticle(){
   const sm=document.getElementById('success-msg');
   sm.style.display='block';
   sm.scrollIntoView({behavior:'smooth',block:'center'});
-  showToast('Article publié avec succès !');
+  showToast('Article publié et visible par tous !');
 }
 function goToNewArticle(){
   if(lastPublishedId) openArticle(lastPublishedId);
@@ -1378,8 +1574,7 @@ document.getElementById('nav-date').textContent=`${JJ[DD.getDay()]} ${DD.getDate
 function initPlanet(canvasId,radius,dotCount,lineThreshold,speed){
   const canvas=document.getElementById(canvasId);
   if(!canvas) return;
-  const rect=canvas.getBoundingClientRect();
-  const size=rect.width||canvas.offsetWidth||160;
+  const size=canvas.offsetWidth||160;
   canvas.width=size;canvas.height=size;
   const cx=size/2,cy=size/2,r=radius*size/2;
   const ctx=canvas.getContext('2d');
@@ -1416,12 +1611,10 @@ function initPlanet(canvasId,radius,dotCount,lineThreshold,speed){
 }
 
 window.addEventListener('load', async ()=>{
-  // Affichage immédiat de la structure
   renderNav();
   insertBlock('paragraph');
   initPlanet('planet-tr',0.92,120,90,1.2);
   initPlanet('planet-bl',0.90,90,80,0.9);
-  // Chargement des données partagées avant d'afficher les articles
   document.getElementById('home-content').innerHTML='<div style="text-align:center;padding:6rem 2rem;font-family:var(--sans);font-size:.9rem;color:#bbb;letter-spacing:.1em">Chargement…</div>';
   await loadSharedData();
   renderHome('all');
