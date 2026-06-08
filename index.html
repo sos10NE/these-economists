@@ -271,7 +271,7 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .block-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:1rem;line-height:1;padding:2px 4px;flex-shrink:0;margin-top:2px;transition:color .15s;}
 .block-del:hover{color:var(--rouge)}
 .block-content{flex:1}
-.block-para{font-family:var(--serif-text);font-size:1rem;border:.5px solid transparent;background:transparent;padding:.5rem .6rem;outline:none;width:100%;line-height:1.8;resize:vertical;min-height:80px;transition:border-color .2s;}
+.block-para{font-family:var(--serif-text);font-size:1rem;font-weight:400;border:.5px solid transparent;background:transparent;padding:.5rem .6rem;outline:none;width:100%;line-height:1.8;resize:vertical;min-height:80px;transition:border-color .2s;}
 .block-para:focus{border-color:var(--gris-clair);background:#fafafa}
 .block-h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;border:none;border-bottom:.5px solid var(--gris-clair);background:transparent;padding:.4rem 0;outline:none;width:100%;}
 .block-h3{font-family:var(--serif);font-size:1.15rem;font-weight:400;border:none;background:transparent;padding:.3rem 0;outline:none;width:100%;}
@@ -406,7 +406,7 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 .block-insert-line:hover{opacity:1!important}
 
 /* ═══════════ FORMAT TOOLBAR (bold/italic) ═══════════ */
-.fmt-toolbar{display:none;position:absolute;z-index:50;background:var(--noir);color:var(--blanc);border-radius:2px;padding:3px 4px;gap:2px;font-family:var(--sans);font-size:11px;box-shadow:0 4px 12px rgba(0,0,0,.2);flex-wrap:nowrap;align-items:center}
+.fmt-toolbar{display:none;position:fixed;z-index:500;background:var(--noir);color:var(--blanc);border-radius:2px;padding:3px 4px;gap:2px;font-family:var(--sans);font-size:11px;box-shadow:0 4px 12px rgba(0,0,0,.25);flex-wrap:nowrap;align-items:center;pointer-events:auto;}
 .fmt-toolbar.show{display:flex}
 .fmt-btn{background:none;border:none;color:inherit;cursor:pointer;padding:3px 7px;border-radius:2px;font-size:12px;transition:background .1s;line-height:1}
 .fmt-btn:hover{background:rgba(255,255,255,.15)}
@@ -475,19 +475,19 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 <div class="modal-overlay" id="auth-modal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal()">×</button>
-    <div class="modal-title">Bienvenue</div>
-    <p class="modal-sub">Votre compte est synchronisé sur tous vos appareils.</p>
+    <div class="modal-title" data-i18n="auth_welcome">Bienvenue</div>
+    <p class="modal-sub" data-i18n="auth_sync">Votre compte est synchronisé sur tous vos appareils.</p>
     <div class="modal-tabs">
-      <div class="modal-tab active" onclick="switchTab('login')">Connexion</div>
-      <div class="modal-tab" onclick="switchTab('signup')">Créer un compte</div>
+      <div class="modal-tab active" onclick="switchTab('login')" data-i18n="auth_login">Connexion</div>
+      <div class="modal-tab" onclick="switchTab('signup')" data-i18n="auth_signup">Créer un compte</div>
     </div>
     <div class="modal-panel active" id="tab-login">
-      <div class="m-row"><label>Email</label><input type="email" id="login-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <div class="m-row"><label>Mot de passe</label><input type="password" id="login-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-        <div class="m-err" id="login-err">Email ou mot de passe incorrect.</div></div>
-      <button class="btn-modal" id="btn-login" onclick="doLogin()">Se connecter</button>
+      <div class="m-row"><label data-i18n="auth_email">Email</label><input type="email" id="login-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="m-row"><label data-i18n="auth_pwd">Mot de passe</label><input type="password" id="login-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        <div class="m-err" id="login-err" data-i18n="auth_err_login">Email ou mot de passe incorrect.</div></div>
+      <button class="btn-modal" id="btn-login" onclick="doLogin()" data-i18n="auth_btn_login">Se connecter</button>
       <div class="m-divider"></div>
-      <span style="font-family:var(--sans);font-size:.8rem;color:#888">Pas de compte ? <span class="m-link" onclick="switchTab('signup')">Créer un compte</span></span>
+      <span style="font-family:var(--sans);font-size:.8rem;color:#888"><span data-i18n="auth_no_account">Pas de compte ?</span> <span class="m-link" onclick="switchTab('signup')" data-i18n="auth_signup">Créer un compte</span></span>
     </div>
     <div class="modal-panel" id="tab-signup">
       <div class="form-two-col" style="gap:.9rem">
@@ -495,10 +495,21 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
         <div class="m-row"><label>Nom</label><input type="text" id="su-last" placeholder="Dupont"></div>
       </div>
       <div class="m-row"><label>Email</label><input type="email" id="su-email" placeholder="votre@email.com"></div>
-      <div class="m-row"><label>Mot de passe</label><input type="password" id="su-pwd" placeholder="8 caractères minimum"></div>
+      <div class="m-row"><label>Mot de passe</label>
+        <div style="position:relative">
+          <input type="password" id="su-pwd" placeholder="8 caractères minimum" style="padding-right:2.5rem;width:100%">
+          <button type="button" onclick="togglePwd('su-pwd',this)" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;font-size:13px;padding:0;line-height:1" title="Afficher / masquer">👁</button>
+        </div>
+      </div>
+      <div class="m-row"><label>Confirmer le mot de passe</label>
+        <div style="position:relative">
+          <input type="password" id="su-pwd2" placeholder="Répétez votre mot de passe" style="padding-right:2.5rem;width:100%">
+          <button type="button" onclick="togglePwd('su-pwd2',this)" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;font-size:13px;padding:0;line-height:1" title="Afficher / masquer">👁</button>
+        </div>
+      </div>
       <div class="m-err" id="su-err">Veuillez remplir tous les champs.</div>
-      <div class="m-ok" id="su-ok">Compte créé !</div>
-      <button class="btn-modal" id="btn-signup" onclick="doSignup()">Créer mon compte</button>
+      <div class="m-ok" id="su-ok" data-i18n="auth_ok_created">Compte créé !</div>
+      <button class="btn-modal" id="btn-signup" onclick="doSignup()" data-i18n="auth_btn_signup">Créer mon compte</button>
     </div>
   </div>
 </div>
@@ -838,10 +849,10 @@ function doSearch(q){
   const ql=q.toLowerCase();
   const arts=articles.filter(a=>a.title.toLowerCase().includes(ql)||(a.deck||'').toLowerCase().includes(ql)||a.author.toLowerCase().includes(ql)||a.cat.toLowerCase().includes(ql)).slice(0,5);
   const usrs=users.filter(u=>(u.first+' '+u.last).toLowerCase().includes(ql)||(u.bio||'').toLowerCase().includes(ql)).slice(0,4);
-  if(!arts.length&&!usrs.length){srd.innerHTML=`<div style="padding:1rem;font-family:var(--sans);font-size:.85rem;color:#aaa;text-align:center">Aucun résultat</div>`;srd.classList.add('open');return;}
+  if(!arts.length&&!usrs.length){srd.innerHTML=`<div style="padding:1rem;font-family:var(--sans);font-size:.85rem;color:#aaa;text-align:center">${t('search_none')}</div>`;srd.classList.add('open');return;}
   let h='';
-  if(arts.length){ h+=`<div class="srd-section">Articles</div>`+arts.map(a=>`<div class="srd-item" onclick="openArticle(${a.id});document.getElementById('srd-drop').classList.remove('open')"><div class="srd-cat">${a.cat}</div><div class="srd-title">${a.title}</div><div class="srd-author">Par ${a.author} · ${a.date}</div></div>`).join(''); }
-  if(usrs.length){ h+=`<div class="srd-section">Membres</div>`+usrs.map(u=>`<div class="srd-item" style="display:flex;align-items:center;gap:.8rem" onclick="showPage('profile');openProfile('${u.email}');document.getElementById('srd-drop').classList.remove('open')">${avHtml(u,32)}<div><div class="srd-title">${u.first} ${u.last}</div><div class="srd-author">${articles.filter(a=>a.author===u.first+' '+u.last).length} articles · ${u.joined||'—'}</div></div></div>`).join(''); }
+  if(arts.length){ h+=`<div class="srd-section">${t('search_articles')}</div>`+arts.map(a=>`<div class="srd-item" onclick="openArticle(${a.id});document.getElementById('srd-drop').classList.remove('open')"><div class="srd-cat">${tCat(a.cat)}</div><div class="srd-title">${a.title}</div><div class="srd-author">${t('home_par')} ${a.author} · ${tDate(a.date)}</div></div>`).join(''); }
+  if(usrs.length){ h+=`<div class="srd-section">${t('search_members')}</div>`+usrs.map(u=>`<div class="srd-item" style="display:flex;align-items:center;gap:.8rem" onclick="showPage('profile');openProfile('${u.email}');document.getElementById('srd-drop').classList.remove('open')">${avHtml(u,32)}<div><div class="srd-title">${u.first} ${u.last}</div><div class="srd-author">${articles.filter(a=>a.author===u.first+' '+u.last).length} articles · ${u.joined||'—'}</div></div></div>`).join(''); }
   srd.innerHTML=h; srd.classList.add('open');
 }
 
@@ -856,6 +867,14 @@ function doMobSearch(q){
   if(arts.length){h+='<div style="padding:.4rem .8rem;font-family:var(--sans);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;background:#f8f8f8;border-bottom:.5px solid var(--gris-clair)">Articles</div>'+arts.map(a=>`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--serif-text);font-size:.9rem" onclick="closeMobileMenu();openArticle(${a.id})">${a.title}</div>`).join('');}
   if(usrs.length){h+='<div style="padding:.4rem .8rem;font-family:var(--sans);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;background:#f8f8f8;border-bottom:.5px solid var(--gris-clair)">Membres</div>'+usrs.map(u=>`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--sans);font-size:.85rem" onclick="closeMobileMenu();showPage('profile');openProfile('${u.email}')">${u.first} ${u.last}</div>`).join('');}
   box.innerHTML=h;box.style.display='block';
+}
+
+// ═══════════════ PASSWORD TOGGLE ═══════════════
+function togglePwd(inputId,btn){
+  const inp=document.getElementById(inputId);
+  if(!inp)return;
+  if(inp.type==='password'){inp.type='text';btn.style.opacity='1';}
+  else{inp.type='password';btn.style.opacity='.4';}
 }
 
 // ═══════════════ MODAL AUTH ═══════════════
@@ -882,7 +901,7 @@ async function doLogin(){
   document.getElementById('login-err').style.display='none';
   currentUser=u; saveLocalSession(u.email);
   closeModal(); renderNav(); renderHome(currentActiveCat);
-  showToast(`Bienvenue, ${u.first} !`);
+  showToast(`${t('toast_welcome')}, ${u.first} !`);
 }
 
 async function doSignup(){
@@ -891,28 +910,38 @@ async function doSignup(){
   const last =document.getElementById('su-last').value.trim();
   const email=document.getElementById('su-email').value.trim().toLowerCase();
   const pwd  =document.getElementById('su-pwd').value;
+  const pwd2 =document.getElementById('su-pwd2').value;
   const errEl=document.getElementById('su-err'),okEl=document.getElementById('su-ok');
-  if(!first||!last||!email||!pwd||pwd.length<8){
-    errEl.textContent=pwd.length<8?'Mot de passe trop court (8 min).':'Remplissez tous les champs.';
+  if(!first||!last||!email||!pwd||!pwd2){
+    errEl.textContent=t('auth_err_fields');
     errEl.style.display='block';okEl.style.display='none';return;
+  }
+  if(pwd.length<8){
+    errEl.textContent=t('auth_err_short');
+    errEl.style.display='block';okEl.style.display='none';return;
+  }
+  if(pwd!==pwd2){
+    errEl.textContent=t('auth_err_match');
+    errEl.style.display='block';okEl.style.display='none';
+    document.getElementById('su-pwd2').focus();return;
   }
   btn.innerHTML='<span class="spinner"></span>…';btn.disabled=true;
   await loadData();
   if(users.find(u=>u.email===email)){
-    errEl.textContent='Email déjà utilisé.';errEl.style.display='block';okEl.style.display='none';
-    btn.textContent='Créer mon compte';btn.disabled=false;return;
+    errEl.textContent=t('auth_err_email');errEl.style.display='block';okEl.style.display='none';
+    btn.textContent=t('auth_btn_signup');btn.disabled=false;return;
   }
   const u={first,last,email,pwd,joined:today(),avatar:'',bio:''};
   users.push(u); await saveUser(u);
   currentUser=u; saveLocalSession(u.email);
   errEl.style.display='none';okEl.style.display='block';
-  setTimeout(()=>{closeModal();renderNav();showToast(`Compte créé ! Bienvenue, ${first} !`);},1000);
-  btn.textContent='Créer mon compte';btn.disabled=false;
+  setTimeout(()=>{closeModal();renderNav();showToast(`${t('toast_created')}, ${first} !`);},1000);
+  btn.textContent=t('auth_btn_signup');btn.disabled=false;
 }
 
 function doLogout(){
   currentUser=null;clearLocalSession();
-  renderNav();showPage('home');showToast('Vous êtes déconnecté.');
+  renderNav();showPage('home');showToast(t('toast_logout'));
 }
 
 // ═══════════════ PROFILE EDIT ═══════════════
@@ -945,7 +974,7 @@ async function saveProfileEdit(){
   saveLocalSession(currentUser.email);
   await saveUser(currentUser);
   closeProfileEdit();renderNav();openProfile(currentUser.email);
-  showToast('Profil mis à jour !');
+  showToast(t('toast_profile'));
 }
 
 // ═══════════════ NAVIGATION ═══════════════
@@ -979,9 +1008,9 @@ function artCardHtml(a){
   return `<div class="art-card" onclick="openArticle(${a.id})">
     <div class="art-thumb">${a.img?`<img class="art-thumb-img" src="${a.img}" alt="" onerror="this.parentNode.innerHTML='<div class=art-thumb-empty></div>'">`:`<div class="art-thumb-empty"></div>`}</div>
     <div class="art-card-body">
-      <div class="art-k">${a.cat}</div><div class="art-title">${a.title}</div>
+      <div class="art-k">${tCat(a.cat)}</div><div class="art-title">${a.title}</div>
       <div class="art-excerpt">${a.deck}</div>
-      <div class="art-foot"><span>${a.author}</span><span class="dot"></span><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)}</span></div>
+      <div class="art-foot"><span>${a.author}</span><span class="dot"></span><span>${tDate(a.date)}</span><span class="dot"></span><span>${readTime(a.body)}</span></div>
     </div></div>`;
 }
 
@@ -991,22 +1020,23 @@ function renderHome(cat){
   const filtered=cat==='all'?all:all.filter(a=>a.cat===cat);
   if(filtered.length===0){
     wrap.innerHTML=`<div class="empty-state reveal"><div class="empty-anim"><span></span><span></span><span></span></div>
-      <h2>Something <em>powerful</em><br>is coming.</h2>
-      <p>Une plateforme de média économique dédiée à l'<strong style="font-weight:500">Afrique</strong>, avec une <strong style="font-weight:500;color:var(--rouge)">perspective mondiale</strong>.</p>
-      <p>${cat==='all'?'Les articles publiés apparaîtront ici.':'Aucun article dans « '+cat+' » pour l\'instant.'}</p>
-      <span class="empty-cta" onclick="showPage('propose')">Proposer un article →</span></div>`;
+      <h2>${t('home_coming')}</h2>
+      <p>${t('home_desc')}</p>
+      <p>${cat==='all'?t('home_none_all'):t('home_none_cat')+' '+tCat(cat)+' » pour l\'instant.'}</p>
+      <span class="empty-cta" onclick="showPage('propose')">${t('home_cta')}</span></div>`;
     triggerReveal();return;
   }
-  const hero=filtered[0], rest=filtered.slice(1), catLabel=cat==='all'?'Tous les articles':cat;
+  const hero=filtered[0], rest=filtered.slice(1);
+  const catLabel=cat==='all'?t('cat_une'):tCat(cat);
   const isMobile=window.innerWidth<768;
   if(isMobile){
     wrap.innerHTML=`<div class="sec-wrap reveal" style="padding-bottom:1rem">
       <div style="cursor:pointer;border-bottom:.5px solid var(--gris-clair);padding-bottom:2rem" onclick="openArticle(${hero.id})">
         ${hero.img?`<div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1rem"><img src="${hero.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
-        <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.5rem">${hero.cat}</div>
+        <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.5rem">${tCat(hero.cat)}</div>
         <h1 style="font-family:var(--serif);font-size:clamp(1.6rem,5vw,2.4rem);font-weight:400;line-height:1.2;margin-bottom:.8rem">${hero.title}</h1>
         <p style="font-family:var(--serif-text);font-size:.95rem;line-height:1.7;color:#444;margin-bottom:1rem;font-style:italic">${hero.deck}</p>
-        <div style="display:flex;flex-wrap:wrap;gap:.6rem;font-family:var(--sans);font-size:10px;color:var(--gris);text-transform:uppercase"><span>${hero.author}</span><span class="dot"></span><span>${hero.date}</span><span class="dot"></span><span>${readTime(hero.body)}</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:.6rem;font-family:var(--sans);font-size:10px;color:var(--gris);text-transform:uppercase"><span>${hero.author}</span><span class="dot"></span><span>${tDate(hero.date)}</span><span class="dot"></span><span>${readTime(hero.body)}</span></div>
       </div></div>
       ${rest.length?`<div class="sec-wrap reveal" style="padding-top:1.5rem"><div class="sec-head"><span class="sec-name">${catLabel}</span></div><div class="grid-articles">${rest.map(a=>artCardHtml(a)).join('')}</div></div>`:''}`;
   } else {
@@ -1014,18 +1044,18 @@ function renderHome(cat){
       <div style="display:grid;grid-template-columns:1fr 320px;border-bottom:.5px solid var(--gris-clair)">
         <div style="padding-right:3rem;border-right:.5px solid var(--gris-clair);padding-bottom:3rem;cursor:pointer" onclick="openArticle(${hero.id})">
           ${hero.img?`<div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1.5rem"><img src="${hero.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
-          <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.8rem">${hero.cat}</div>
+          <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.8rem">${tCat(hero.cat)}</div>
           <h1 style="font-family:var(--serif);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:400;line-height:1.15;margin-bottom:1rem">${hero.title}</h1>
           <p style="font-family:var(--serif-text);font-size:1rem;line-height:1.75;color:#444;margin-bottom:1.4rem;font-style:italic">${hero.deck}</p>
-          <div style="display:flex;align-items:center;gap:1rem;font-family:var(--sans);font-size:10px;color:var(--gris);text-transform:uppercase"><span>${hero.author}</span><span class="dot"></span><span>${hero.date}</span><span class="dot"></span><span>${readTime(hero.body)}</span></div>
+          <div style="display:flex;align-items:center;gap:1rem;font-family:var(--sans);font-size:10px;color:var(--gris);text-transform:uppercase"><span>${hero.author}</span><span class="dot"></span><span>${tDate(hero.date)}</span><span class="dot"></span><span>${readTime(hero.body)}</span></div>
         </div>
         <div style="padding-left:2.5rem;padding-top:.5rem">
-          <div style="font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);margin-bottom:1.5rem;padding-bottom:.7rem;border-bottom:.5px solid var(--gris-clair)">À lire aussi</div>
+          <div style="font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);margin-bottom:1.5rem;padding-bottom:.7rem;border-bottom:.5px solid var(--gris-clair)">${t('home_alire')}</div>
           ${rest.slice(0,4).map(a=>`<div style="padding:1.1rem 0;border-bottom:.5px solid var(--gris-clair);cursor:pointer;display:flex;gap:.9rem;align-items:flex-start" onclick="openArticle(${a.id})">
             ${a.img?`<div style="width:72px;height:52px;flex-shrink:0;overflow:hidden"><img src="${a.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
-            <div style="flex:1"><div style="font-family:var(--sans);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--rouge);margin-bottom:.35rem">${a.cat}</div>
+            <div style="flex:1"><div style="font-family:var(--sans);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--rouge);margin-bottom:.35rem">${tCat(a.cat)}</div>
             <div style="font-family:var(--serif);font-size:.95rem;line-height:1.3;margin-bottom:.3rem" onmouseover="this.style.color='var(--rouge)'" onmouseout="this.style.color=''">${a.title}</div>
-            <div style="font-family:var(--sans);font-size:9.5px;color:var(--gris)">${a.date}</div></div>
+            <div style="font-family:var(--sans);font-size:9.5px;color:var(--gris)">${tDate(a.date)}</div></div>
           </div>`).join('')}
         </div>
       </div></div>
@@ -1042,107 +1072,107 @@ async function openArticle(id){
   const bodyContent=a.bodyHtml||a.body.split(/\n\n+/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
   const authorUser=users.find(u=>u.first+' '+u.last===a.author);
   const canDelete=isOwner()||(currentUser&&currentUser.first+' '+currentUser.last===a.author);
-  const delBtn=canDelete?`<button onclick="confirmDeleteArticle(${a.id})" style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:none;border:.5px solid rgba(139,26,26,0.4);color:var(--rouge);padding:5px 12px;cursor:pointer;transition:all .2s;margin-left:auto" onmouseover="this.style.background='var(--rouge)';this.style.color='white'" onmouseout="this.style.background='none';this.style.color='var(--rouge)'">🗑 Supprimer</button>`:'';
+  const delBtn=canDelete?`<button onclick="confirmDeleteArticle(${a.id})" style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:none;border:.5px solid rgba(139,26,26,0.4);color:var(--rouge);padding:5px 12px;cursor:pointer;transition:all .2s;margin-left:auto" onmouseover="this.style.background='var(--rouge)';this.style.color='white'" onmouseout="this.style.background='none';this.style.color='var(--rouge)'">🗑 ${t('admin_delete')}</button>`:'';
   document.getElementById('article-content').innerHTML=`
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;flex-wrap:wrap">
-      <button class="back-btn" style="margin-bottom:0" onclick="showPage('home')">← Retour</button>${delBtn}
+      <button class="back-btn" style="margin-bottom:0" onclick="showPage('home')">${t('home_back')}</button>${delBtn}
     </div>
-    <div class="art-full-k">${a.cat}</div>
+    <div class="art-full-k">${tCat(a.cat)}</div>
     <h1 class="art-full-title">${a.title}</h1>
     <div class="art-full-deck">${a.deck}</div>
     <div class="art-full-meta">
-      <span>Par <span class="author-chip" onclick="${authorUser?`showPage('profile');openProfile('${authorUser.email}')`:'void(0)'}">${a.author}</span></span>
-      <span class="dot"></span><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)} de lecture</span>
+      <span>${t('home_par')} <span class="author-chip" onclick="${authorUser?`showPage('profile');openProfile('${authorUser.email}')`:'void(0)'}">${a.author}</span></span>
+      <span class="dot"></span><span>${tDate(a.date)}</span><span class="dot"></span><span>${readTime(a.body)} ${t('home_read')}</span>
     </div>
-    ${a.img?`<div class="art-full-cover"><img src="${a.img}" alt="" onerror="this.parentNode.style.display='none'"></div><div class="art-full-caption">${a.cat} — ${a.date}</div>`:''}
+    ${a.img?`<div class="art-full-cover"><img src="${a.img}" alt="" onerror="this.parentNode.style.display='none'"></div><div class="art-full-caption">${tCat(a.cat)} — ${tDate(a.date)}</div>`:''}
     <div class="art-full-body">${bodyContent}</div>`;
   showPage('article');
 }
 
 async function confirmDeleteArticle(id){
-  if(!confirm('Supprimer définitivement cet article ?'))return;
+  if(!confirm(t('del_confirm')))return;
   articles=articles.filter(a=>a.id!==id);
   await deleteArticleDB(id);
-  showToast('Article supprimé.');
+  showToast(t('del_done'));
   showPage('home');
 }
 
 // ═══════════════ PROFIL PUBLIC ═══════════════
 function openProfile(email){
   const u=users.find(x=>x.email===email);
-  if(!u){document.getElementById('profile-content').innerHTML=`<p style="font-family:var(--sans);color:#aaa">Profil introuvable.</p>`;return;}
+  if(!u){document.getElementById('profile-content').innerHTML=`<p style="font-family:var(--sans);color:#aaa">${t('profile_not_found')}</p>`;return;}
   const userArticles=articles.filter(a=>a.author===u.first+' '+u.last).reverse();
   const isMe=currentUser&&currentUser.email===email;
   const avatarEl=u.avatar?`<div class="profile-avatar"><img src="${u.avatar}" alt="${u.first}"></div>`:`<div class="profile-avatar" style="font-size:2rem">${(u.first[0]+(u.last[0]||'')).toUpperCase()}</div>`;
   document.getElementById('profile-content').innerHTML=`
-    <button class="back-btn" onclick="showPage('home')">← Retour</button>
+    <button class="back-btn" onclick="showPage('home')">${t('home_back')}</button>
     <div class="profile-header">${avatarEl}
       <div style="flex:1">
         <div class="profile-name">${u.first} ${u.last}</div>
-        <div class="profile-meta">Membre depuis ${u.joined||'—'}${userArticles.length?` · ${userArticles.length} article${userArticles.length>1?'s':''} publié${userArticles.length>1?'s':''}`:' · Lecteur'}</div>
+        <div class="profile-meta">${t('profile_member')} ${u.joined||'—'}${userArticles.length?` · ${userArticles.length} article${userArticles.length>1?'s':''} publié${userArticles.length>1?'s':''}`:' · '+t('profile_reader')}</div>
         ${u.bio?`<div class="profile-bio">"${u.bio}"</div>`:''}
-        ${userArticles.length?`<div class="profile-badge">✍ Rédacteur</div>`:''}
-        ${isMe?`<button class="profile-edit-btn" onclick="openProfileEdit()">✏ Modifier mon profil</button>`:''}
+        ${userArticles.length?`<div class="profile-badge">${t('profile_writer')}</div>`:''}
+        ${isMe?`<button class="profile-edit-btn" onclick="openProfileEdit()">${t('profile_edit')}</button>`:''}
       </div>
     </div>
-    ${userArticles.length?`<div class="stats-section-title">Articles publiés</div><div class="grid-articles">${userArticles.map(a=>artCardHtml(a)).join('')}</div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:3rem 0">Aucun article publié.</div>`}`;
+    ${userArticles.length?`<div class="stats-section-title">${t('profile_arts')}</div><div class="grid-articles">${userArticles.map(a=>artCardHtml(a)).join('')}</div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:3rem 0">${t('profile_none')}</div>`}`;
 }
 
 // ═══════════════ MES STATS ═══════════════
 function renderMyStats(){
-  if(!currentUser){document.getElementById('my-stats-content').innerHTML=`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa">Connectez-vous.</div>`;return;}
+  if(!currentUser){document.getElementById('my-stats-content').innerHTML=`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa">${t('write_connect')}</div>`;return;}
   const myArts=articles.filter(a=>a.author===currentUser.first+' '+currentUser.last).reverse();
   const totalReads=myArts.reduce((s,a)=>s+(a.reads||0),0);
   const totalWords=myArts.reduce((s,a)=>s+(a.body||'').trim().split(/\s+/).length,0);
   document.getElementById('my-stats-content').innerHTML=`
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1.2rem;margin-bottom:3rem">
-      <div class="my-stat-card"><div class="my-stat-num">${myArts.length}</div><div class="my-stat-label">Articles publiés</div></div>
-      <div class="my-stat-card"><div class="my-stat-num">${totalReads}</div><div class="my-stat-label">Lectures totales</div></div>
-      <div class="my-stat-card"><div class="my-stat-num">${totalWords.toLocaleString('fr')}</div><div class="my-stat-label">Mots écrits</div></div>
-      <div class="my-stat-card"><div class="my-stat-num">${myArts.length?Math.round(totalReads/myArts.length):0}</div><div class="my-stat-label">Moy. lectures/article</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${myArts.length}</div><div class="my-stat-label">${t('stats_articles')}</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${totalReads}</div><div class="my-stat-label">${t('stats_reads')}</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${totalWords.toLocaleString(_lang==='fr'?'fr':'en')}</div><div class="my-stat-label">${t('stats_words')}</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${myArts.length?Math.round(totalReads/myArts.length):0}</div><div class="my-stat-label">${t('stats_avg')}</div></div>
     </div>
-    ${myArts.length?`<div class="stats-section-title">Mes articles</div><div style="overflow-x:auto">
-      <table class="stats-table"><thead><tr><th>Titre</th><th>Rubrique</th><th>Date</th><th>Lectures</th><th>Action</th></tr></thead><tbody>
-      ${myArts.map(a=>`<tr><td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td><td><span class="stats-cat-badge">${a.cat}</span></td><td>${a.date}</td><td><strong style="color:var(--rouge)">${a.reads||0}</strong></td><td><button class="btn-danger" onclick="confirmDeleteArticle(${a.id})">Supprimer</button></td></tr>`).join('')}
-      </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:2rem 0">Aucun article publié.</div>`}`;
+    ${myArts.length?`<div class="stats-section-title">${t('stats_my')}</div><div style="overflow-x:auto">
+      <table class="stats-table"><thead><tr><th>${t('stats_table_titre')}</th><th>${t('stats_table_cat')}</th><th>${t('stats_table_date')}</th><th>${t('stats_table_reads')}</th><th>${t('stats_table_action')}</th></tr></thead><tbody>
+      ${myArts.map(a=>`<tr><td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td><td><span class="stats-cat-badge">${tCat(a.cat)}</span></td><td>${tDate(a.date)}</td><td><strong style="color:var(--rouge)">${a.reads||0}</strong></td><td><button class="btn-danger" onclick="confirmDeleteArticle(${a.id})">${t('admin_delete')}</button></td></tr>`).join('')}
+      </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:2rem 0">${t('stats_none')}</div>`}`;
 }
 
 function renderAdmin(){
   const el=document.getElementById('admin-content');
-  if(!isOwner()){el.innerHTML=`<div style="border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.5rem;max-width:440px"><p style="font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.2rem;font-weight:300">Espace réservé au propriétaire.</p><button class="btn-red" onclick="openModal('login')">Se connecter</button></div>`;return;}
+  if(!isOwner()){el.innerHTML=`<div style="border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.5rem;max-width:440px"><p style="font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.2rem;font-weight:300">${t('admin_access')}</p><button class="btn-red" onclick="openModal('login')">${t('admin_btn_login')}</button></div>`;return;}
   const totalReads=articles.reduce((s,a)=>s+(a.reads||0),0);
-  el.innerHTML=`<div class="admin-badge">⚙ Propriétaire · Accès complet</div>
+  el.innerHTML=`<div class="admin-badge">${t('admin_badge')}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1.2rem;margin-bottom:3rem">
-      <div class="my-stat-card"><div class="my-stat-num">${articles.length}</div><div class="my-stat-label">Articles</div></div>
-      <div class="my-stat-card"><div class="my-stat-num">${users.length}</div><div class="my-stat-label">Membres</div></div>
-      <div class="my-stat-card"><div class="my-stat-num">${totalReads}</div><div class="my-stat-label">Lectures</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${articles.length}</div><div class="my-stat-label">${t('stats_articles')}</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${users.length}</div><div class="my-stat-label">${t('admin_members')}</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${totalReads}</div><div class="my-stat-label">${t('stats_reads')}</div></div>
     </div>
 
-    <div class="stats-section-title">Codes d'accès rédacteur</div>
+    <div class="stats-section-title">${t('admin_codes')}</div>
     <div style="border:.5px solid var(--gris-clair);padding:1.5rem;margin-bottom:3rem;max-width:520px">
       <p style="font-family:var(--sans);font-size:.85rem;color:#666;margin-bottom:1.2rem;line-height:1.65;font-weight:300">Créez des codes à usage limité (max 2 utilisations par défaut). Le code <strong>economist2026</strong> reste permanent et illimité.</p>
       <div style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1rem">
         <div style="display:flex;flex-direction:column;gap:.3rem;flex:1">
-          <label style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)">Nouveau code</label>
-          <input type="text" id="new-code-val" placeholder="ex: writer2026abc" style="font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.55rem .9rem;outline:none;width:100%">
+          <label style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)">${t('admin_new_code')}</label>
+          <input type="text" id="new-code-val" placeholder="${t('admin_new_code_ph')}" style="font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.55rem .9rem;outline:none;width:100%">
         </div>
         <div style="display:flex;flex-direction:column;gap:.3rem">
-          <label style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)">Max utilisations</label>
+          <label style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)">${t('admin_max')}</label>
           <input type="number" id="new-code-max" value="2" min="1" max="99" style="font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.55rem .9rem;outline:none;width:80px">
         </div>
-        <button class="btn-red" onclick="adminAddCode()" style="padding:10px 18px;white-space:nowrap">Créer →</button>
+        <button class="btn-red" onclick="adminAddCode()" style="padding:10px 18px;white-space:nowrap">${t('admin_create')}</button>
       </div>
-      <div id="admin-codes-list" style="font-family:var(--sans);font-size:.85rem;color:#888;font-style:italic">Chargement…</div>
+      <div id="admin-codes-list" style="font-family:var(--sans);font-size:.85rem;color:#888;font-style:italic">${t('admin_loading')}</div>
     </div>
 
-    <div class="stats-section-title">Gestion des articles</div>
-    ${articles.length?`<div style="overflow-x:auto;margin-bottom:3rem"><table class="stats-table"><thead><tr><th>Titre</th><th>Auteur</th><th>Rubrique</th><th>Date</th><th>Lectures</th><th>Action</th></tr></thead><tbody>
-      ${[...articles].reverse().map(a=>`<tr><td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td><td>${a.author}</td><td><span class="stats-cat-badge">${a.cat}</span></td><td>${a.date}</td><td><strong style="color:var(--rouge)">${a.reads||0}</strong></td><td><button class="btn-danger" onclick="confirmDeleteArticle(${a.id})">Supprimer</button></td></tr>`).join('')}
-      </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic;margin-bottom:2rem">Aucun article.</div>`}
-    <div class="stats-section-title">Membres inscrits</div>
-    ${users.length?`<div style="overflow-x:auto"><table class="stats-table"><thead><tr><th>Nom</th><th>Email</th><th>Inscrit le</th><th>Articles</th><th>Profil</th></tr></thead><tbody>
-      ${users.map(u=>{const c=articles.filter(a=>a.author===u.first+' '+u.last).length;return `<tr><td>${u.first} ${u.last}</td><td style="color:var(--gris);font-family:var(--sans);font-size:.85rem">${u.email}</td><td style="font-family:var(--sans);font-size:.85rem">${u.joined||'—'}</td><td>${c}</td><td><span style="font-family:var(--sans);font-size:9.5px;color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('profile');openProfile('${u.email}')">Voir →</span></td></tr>`;}).join('')}
-      </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic">Aucun membre.</div>`}`;
+    <div class="stats-section-title">${t('admin_arts')}</div>
+    ${articles.length?`<div style="overflow-x:auto;margin-bottom:3rem"><table class="stats-table"><thead><tr><th>${t('admin_table_titre')}</th><th>${t('admin_table_auteur')}</th><th>${t('admin_table_cat')}</th><th>${t('admin_table_date')}</th><th>${t('admin_table_reads')}</th><th>${t('admin_table_action')}</th></tr></thead><tbody>
+      ${[...articles].reverse().map(a=>`<tr><td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td><td>${a.author}</td><td><span class="stats-cat-badge">${tCat(a.cat)}</span></td><td>${tDate(a.date)}</td><td><strong style="color:var(--rouge)">${a.reads||0}</strong></td><td><button class="btn-danger" onclick="confirmDeleteArticle(${a.id})">${t('admin_delete')}</button></td></tr>`).join('')}
+      </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic;margin-bottom:2rem">${t('admin_none_art')}</div>`}
+    <div class="stats-section-title">${t('admin_members')}</div>
+    ${users.length?`<div style="overflow-x:auto"><table class="stats-table"><thead><tr><th>${t('admin_member_name')}</th><th>${t('admin_member_email')}</th><th>${t('admin_member_joined')}</th><th>${t('admin_member_arts')}</th><th>${t('admin_member_profile')}</th></tr></thead><tbody>
+      ${users.map(u=>{const c=articles.filter(a=>a.author===u.first+' '+u.last).length;return `<tr><td>${u.first} ${u.last}</td><td style="color:var(--gris);font-family:var(--sans);font-size:.85rem">${u.email}</td><td style="font-family:var(--sans);font-size:.85rem">${u.joined||'—'}</td><td>${c}</td><td><span style="font-family:var(--sans);font-size:9.5px;color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('profile');openProfile('${u.email}')">${t('admin_view')}</span></td></tr>`;}).join('')}
+      </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic">${t('admin_none_members')}</div>`}`;
   loadAdminCodes();
 }
 
@@ -1180,7 +1210,7 @@ async function adminAddCode(){
 async function adminDeleteCode(key){
   if(!confirm('Supprimer ce code ?'))return;
   await _remove(_ref(_db,`${ONE_TIME_CODES_PATH}/${key}`));
-  showToast('Code supprimé.');
+  showToast(t('toast_del_code'));
   loadAdminCodes();
 }
 
@@ -1281,7 +1311,7 @@ async function publishArticle(){
   document.getElementById('bc').textContent='0 mot';
   const sm=document.getElementById('success-msg');sm.style.display='block';
   sm.scrollIntoView({behavior:'smooth',block:'center'});
-  showToast('Article publié ! Visible par tous sur tous les appareils.');
+  showToast(t('toast_pub'));
 }
 function goToNewArticle(){ if(lastPublishedId)openArticle(lastPublishedId);document.getElementById('success-msg').style.display='none'; }
 
@@ -1304,11 +1334,12 @@ function showFmtToolbar(ta){
   const ft=document.getElementById('fmt-toolbar');if(!ft)return;
   const s=ta.selectionStart,e=ta.selectionEnd;
   if(s===e){hideFmtToolbar();return;}
-  // Position near textarea
+  // Position above the textarea using fixed coords
   const rect=ta.getBoundingClientRect();
-  const edRect=document.getElementById('article-blocks').getBoundingClientRect();
-  ft.style.top=(ta.offsetTop-30)+'px';
-  ft.style.left=(ta.offsetLeft)+'px';
+  ft.style.top=(rect.top - 36 + window.scrollY)+'px';
+  ft.style.left=(rect.left)+'px';
+  ft.style.position='fixed';
+  ft.style.top=(rect.top - 36)+'px';
   ft.classList.add('show');
 }
 function hideFmtToolbar(){
@@ -1494,6 +1525,86 @@ const _i18n={
     nav_propose:'Proposer un article',nav_write:'Écrire',nav_stats:'Mes stats',
     nav_admin:'Admin',nav_login:"S'abonner / Connexion",nav_logout:'Déconnexion',
     lbl_rubrique:'Rubrique *',lbl_corps:"Corps de l'article *",
+    // Auth modal
+    auth_welcome:'Bienvenue',auth_sync:'Votre compte est synchronisé sur tous vos appareils.',
+    auth_login:'Connexion',auth_signup:'Créer un compte',
+    auth_email:'Email',auth_pwd:'Mot de passe',auth_pwd_hint:'8 caractères minimum',
+    auth_pwd2:'Confirmer le mot de passe',auth_pwd2_hint:'Répétez votre mot de passe',
+    auth_btn_login:'Se connecter',auth_btn_signup:'Créer mon compte',
+    auth_no_account:'Pas de compte ?',auth_err_login:'Email ou mot de passe incorrect.',
+    auth_err_fields:'Remplissez tous les champs.',auth_err_short:'Mot de passe trop court (8 caractères minimum).',
+    auth_err_match:'Les mots de passe ne correspondent pas.',auth_err_email:'Email déjà utilisé.',auth_ok_created:'Compte créé !',
+    // Home / articles
+    home_alire:'À lire aussi',home_read:'de lecture',home_par:'Par',home_back:'← Retour',
+    home_by:'Par',home_none_cat:'Aucun article dans «',home_none_all:'Les articles publiés apparaîtront ici.',
+    home_cta:'Proposer un article →',home_coming:'Something <em>powerful</em><br>is coming.',
+    home_desc:'Une plateforme de média économique dédiée à l\'<strong style="font-weight:500">Afrique</strong>, avec une <strong style="font-weight:500;color:var(--rouge)">perspective mondiale</strong>.',
+    // Write page
+    write_title:'Écrire un article',write_sub:'Connectez-vous et entrez votre code d\'accès pour rédiger.',
+    write_connect:'Vous devez être connecté pour rédiger.',write_btn_connect:'Se connecter',write_or:'ou',
+    write_btn_signup:'Créer un compte',write_code_label:'Code d\'accès rédacteur',
+    write_code_p:'Entrez votre code reçu par e-mail.',write_code_propose:'Proposer un article →',
+    write_btn_unlock:'Déverrouiller',write_code_err:'Code incorrect.',
+    write_rubrique:'Rubrique *',write_auteur:'Auteur *',write_auteur_ph:'Prénom Nom',
+    write_titre:'Titre *',write_titre_hint:'80 caractères',write_titre_ph:'Un titre précis…',
+    write_chapeau:'Chapeau *',write_chapeau_hint:'En italique sous le titre',write_chapeau_ph:'Résumé 2-3 lignes…',
+    write_cover:'Image de couverture (optionnel)',write_cover_click:'Cliquer pour charger une image',
+    write_cover_hint:'JPG, PNG, WebP · ou URL ci-dessous',write_body:'Corps de l\'article *',
+    write_publish:'Publier →',write_required:'* obligatoires',write_words:'mot',write_words_pl:'mots',
+    write_pub_ok:'Article publié.',write_pub_ok_desc:'Visible par tous les visiteurs du site, sur tous les appareils.',
+    write_pub_read:'Lire mon article →',
+    // Propose page
+    propose_title:'Proposer un article',propose_sub:'Vous souhaitez écrire pour Economist ? Décrivez votre idée. Si retenue, vous recevrez un code d\'accès par e-mail.',
+    propose_contact:'Votre contact',propose_first:'Prénom *',propose_last:'Nom *',
+    propose_email:'Email *',propose_email_note:'Vous recevrez votre code si votre idée est retenue.',
+    propose_job:'Profession',propose_job_ph:'Économiste, étudiant…',
+    propose_idea:'Votre idée',propose_cat:'Rubrique *',propose_cat_sel:'— Sélectionner —',
+    propose_subj:'Sujet *',propose_subj_ph:'Décrivez brièvement votre idée…',
+    propose_why:'Motivation (optionnel)',propose_why_ph:'Pourquoi ce sujet ?',
+    propose_send:'Envoyer ma proposition →',propose_ok:'Proposition envoyée.',
+    propose_ok_desc:'Votre demande a été transmise à la rédaction. Si retenue, vous recevrez un code à',
+    // Stats / Admin
+    stats_title:'Mes statistiques',stats_sub:'Tableau de bord privé.',
+    stats_articles:'Articles publiés',stats_reads:'Lectures totales',stats_words:'Mots écrits',stats_avg:'Moy. lectures/article',
+    stats_table_titre:'Titre',stats_table_cat:'Rubrique',stats_table_date:'Date',stats_table_reads:'Lectures',stats_table_action:'Action',
+    stats_none:'Aucun article publié.',stats_my:'Mes articles',
+    admin_title:'Espace Admin',admin_badge:'⚙ Propriétaire · Accès complet',
+    admin_access:'Espace réservé au propriétaire.',admin_btn_login:'Se connecter',
+    admin_codes:'Codes d\'accès rédacteur',admin_new_code:'Nouveau code',admin_new_code_ph:'ex: writer2026abc',
+    admin_max:'Max utilisations',admin_create:'Créer →',admin_loading:'Chargement…',
+    admin_arts:'Gestion des articles',admin_members:'Membres inscrits',
+    admin_table_titre:'Titre',admin_table_auteur:'Auteur',admin_table_cat:'Rubrique',
+    admin_table_date:'Date',admin_table_reads:'Lectures',admin_table_action:'Action',
+    admin_member_name:'Nom',admin_member_email:'Email',admin_member_joined:'Inscrit le',
+    admin_member_arts:'Articles',admin_member_profile:'Profil',admin_none_art:'Aucun article.',admin_none_members:'Aucun membre.',
+    admin_view:'Voir →',admin_delete:'Supprimer',
+    // Profile
+    profile_member:'Membre depuis',profile_reader:'Lecteur',profile_writer:'✍ Rédacteur',
+    profile_none:'Aucun article publié.',profile_edit:'✏ Modifier mon profil',
+    profile_arts:'Articles publiés',profile_not_found:'Profil introuvable.',
+    // Footer
+    foot_about:'À propos',foot_propose:'Proposer un article',foot_write:'Écrire',
+    foot_copy:'© 2026 <span>Economist</span>. Tous droits réservés. Abidjan · Paris · Londres',
+    // Months
+    months:'janvier,février,mars,avril,mai,juin,juillet,août,septembre,octobre,novembre,décembre',
+    days:'Dimanche,Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi',
+    // Delete confirm
+    del_confirm:'Supprimer définitivement cet article ?',del_done:'Article supprimé.',
+    // Editor block labels
+    blk_para:'¶ Paragraphe',blk_h2:'H2',blk_h3:'H3',blk_img:'🖼 Image',
+    blk_quote:'« Citation',blk_sep:'— —',blk_info:'ℹ Info',blk_src:'🔗 Sources',blk_cred:'✍ Crédits',
+    blk_para_ph:'Rédigez votre paragraphe…',blk_h2_ph:'Titre de restection…',blk_h3_ph:'Sous-titre…',
+    blk_quote_ph:'"Citation…"',blk_info_label:'ℹ Encadré',blk_info_ph:'Information importante, chiffre clé, point à retenir…',
+    blk_src_label:'🔗 Sources',blk_src_ph:'1. Auteur, Titre, Éditeur, Année\n2. URL — consulté le…',
+    blk_cred_label:'✍ Crédits / Auteurs du travail',blk_cred_ph:'Recherches : …\nAnalyse : …\nRelecture : …',
+    blk_add:'+ Ajouter un bloc',blk_infobox_title:'À retenir',blk_credits_title:'Ce travail',
+    // Toast / misc
+    toast_welcome:'Bienvenue',toast_logout:'Vous êtes déconnecté.',
+    toast_created:'Compte créé ! Bienvenue',toast_profile:'Profil mis à jour !',
+    toast_pub:'Article publié ! Visible par tous sur tous les appareils.',
+    toast_del_code:'Code supprimé.',toast_code_ph:'Entrez un code.',toast_code_exists:'Ce code existe déjà.',
+    search_none:'Aucun résultat',search_articles:'Articles',search_members:'Membres',
+    read_min:'min',
   },
   en:{
     cat_une:'Top Stories',cat_eco:'Economics',cat_fin:'Finance',cat_pol:'Politics',
@@ -1502,19 +1613,155 @@ const _i18n={
     nav_propose:'Submit an article',nav_write:'Write',nav_stats:'My stats',
     nav_admin:'Admin',nav_login:'Subscribe / Log in',nav_logout:'Log out',
     lbl_rubrique:'Section *',lbl_corps:'Article body *',
+    // Auth modal
+    auth_welcome:'Welcome',auth_sync:'Your account is synced across all your devices.',
+    auth_login:'Log in',auth_signup:'Create an account',
+    auth_email:'Email',auth_pwd:'Password',auth_pwd_hint:'8 characters minimum',
+    auth_pwd2:'Confirm password',auth_pwd2_hint:'Repeat your password',
+    auth_btn_login:'Log in',auth_btn_signup:'Create my account',
+    auth_no_account:'No account?',auth_err_login:'Incorrect email or password.',
+    auth_err_fields:'Please fill in all fields.',auth_err_short:'Password too short (8 characters minimum).',
+    auth_err_match:'Passwords do not match.',auth_err_email:'Email already in use.',auth_ok_created:'Account created!',
+    // Home / articles
+    home_alire:'Also read',home_read:'read',home_par:'By',home_back:'← Back',
+    home_by:'By',home_none_cat:'No articles in «',home_none_all:'Published articles will appear here.',
+    home_cta:'Submit an article →',home_coming:'Something <em>powerful</em><br>is coming.',
+    home_desc:'An economic media platform dedicated to <strong style="font-weight:500">Africa</strong>, with a <strong style="font-weight:500;color:var(--rouge)">global perspective</strong>.',
+    // Write page
+    write_title:'Write an article',write_sub:'Log in and enter your access code to write.',
+    write_connect:'You must be logged in to write.',write_btn_connect:'Log in',write_or:'or',
+    write_btn_signup:'Create an account',write_code_label:'Writer access code',
+    write_code_p:'Enter the code sent to your email.',write_code_propose:'Submit an article →',
+    write_btn_unlock:'Unlock',write_code_err:'Incorrect code.',
+    write_rubrique:'Section *',write_auteur:'Author *',write_auteur_ph:'First Last',
+    write_titre:'Title *',write_titre_hint:'80 characters',write_titre_ph:'A precise title…',
+    write_chapeau:'Deck *',write_chapeau_hint:'Italic under the title',write_chapeau_ph:'2-3 line summary…',
+    write_cover:'Cover image (optional)',write_cover_click:'Click to upload an image',
+    write_cover_hint:'JPG, PNG, WebP · or URL below',write_body:'Article body *',
+    write_publish:'Publish →',write_required:'* required',write_words:'word',write_words_pl:'words',
+    write_pub_ok:'Article published.',write_pub_ok_desc:'Visible to all visitors, on all devices.',
+    write_pub_read:'Read my article →',
+    // Propose page
+    propose_title:'Submit an article',propose_sub:'Want to write for Economist? Describe your idea. If selected, you\'ll receive an access code by email.',
+    propose_contact:'Your contact',propose_first:'First name *',propose_last:'Last name *',
+    propose_email:'Email *',propose_email_note:'You\'ll receive your code if your idea is selected.',
+    propose_job:'Profession',propose_job_ph:'Economist, student…',
+    propose_idea:'Your idea',propose_cat:'Section *',propose_cat_sel:'— Select —',
+    propose_subj:'Subject *',propose_subj_ph:'Briefly describe your idea…',
+    propose_why:'Motivation (optional)',propose_why_ph:'Why this topic?',
+    propose_send:'Send my proposal →',propose_ok:'Proposal sent.',
+    propose_ok_desc:'Your request has been forwarded to the editorial team. If selected, you\'ll receive a code at',
+    // Stats / Admin
+    stats_title:'My statistics',stats_sub:'Private dashboard.',
+    stats_articles:'Articles published',stats_reads:'Total reads',stats_words:'Words written',stats_avg:'Avg. reads/article',
+    stats_table_titre:'Title',stats_table_cat:'Section',stats_table_date:'Date',stats_table_reads:'Reads',stats_table_action:'Action',
+    stats_none:'No articles published.',stats_my:'My articles',
+    admin_title:'Admin',admin_badge:'⚙ Owner · Full access',
+    admin_access:'Reserved for the owner.',admin_btn_login:'Log in',
+    admin_codes:'Writer access codes',admin_new_code:'New code',admin_new_code_ph:'e.g. writer2026abc',
+    admin_max:'Max uses',admin_create:'Create →',admin_loading:'Loading…',
+    admin_arts:'Article management',admin_members:'Registered members',
+    admin_table_titre:'Title',admin_table_auteur:'Author',admin_table_cat:'Section',
+    admin_table_date:'Date',admin_table_reads:'Reads',admin_table_action:'Action',
+    admin_member_name:'Name',admin_member_email:'Email',admin_member_joined:'Member since',
+    admin_member_arts:'Articles',admin_member_profile:'Profile',admin_none_art:'No articles.',admin_none_members:'No members.',
+    admin_view:'View →',admin_delete:'Delete',
+    // Profile
+    profile_member:'Member since',profile_reader:'Reader',profile_writer:'✍ Writer',
+    profile_none:'No articles published.',profile_edit:'✏ Edit my profile',
+    profile_arts:'Published articles',profile_not_found:'Profile not found.',
+    // Footer
+    foot_about:'About',foot_propose:'Submit an article',foot_write:'Write',
+    foot_copy:'© 2026 <span>Economist</span>. All rights reserved. Abidjan · Paris · London',
+    // Months
+    months:'January,February,March,April,May,June,July,August,September,October,November,December',
+    days:'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+    // Delete confirm
+    del_confirm:'Permanently delete this article?',del_done:'Article deleted.',
+    // Editor block labels
+    blk_para:'¶ Paragraph',blk_h2:'H2',blk_h3:'H3',blk_img:'🖼 Image',
+    blk_quote:'« Quote',blk_sep:'— —',blk_info:'ℹ Info',blk_src:'🔗 Sources',blk_cred:'✍ Credits',
+    blk_para_ph:'Write your paragraph…',blk_h2_ph:'Section title…',blk_h3_ph:'Subtitle…',
+    blk_quote_ph:'"Quote…"',blk_info_label:'ℹ Info box',blk_info_ph:'Key figure, insight, takeaway…',
+    blk_src_label:'🔗 Sources',blk_src_ph:'1. Author, Title, Publisher, Year\n2. URL — accessed on…',
+    blk_cred_label:'✍ Credits / Authors',blk_cred_ph:'Research: …\nAnalysis: …\nEditing: …',
+    blk_add:'+ Add a block',blk_infobox_title:'Key takeaway',blk_credits_title:'This work',
+    // Toast / misc
+    toast_welcome:'Welcome',toast_logout:'You have been logged out.',
+    toast_created:'Account created! Welcome',toast_profile:'Profile updated!',
+    toast_pub:'Article published! Visible to all on all devices.',
+    toast_del_code:'Code deleted.',toast_code_ph:'Enter a code.',toast_code_exists:'This code already exists.',
+    search_none:'No results',search_articles:'Articles',search_members:'Members',
+    read_min:'min',
   }
 };
+
+// Category translation maps (FR ↔ EN)
+const CAT_FR_TO_EN={'Économie':'Economics','Finance':'Finance','Politiques':'Politics','Sociologie':'Sociology','Droit':'Law','Technologies':'Technology','Afrique':'Africa','Monde':'World','Écologie':'Ecology','IA':'AI','Data Science':'Data Science'};
+const CAT_EN_TO_FR={'Economics':'Économie','Finance':'Finance','Politics':'Politiques','Sociology':'Sociologie','Law':'Droit','Technology':'Technologies','Africa':'Afrique','World':'Monde','Ecology':'Écologie','AI':'IA','Data Science':'Data Science'};
+
+function t(key){const d=_i18n[_lang]||_i18n.fr;return d[key]!==undefined?d[key]:(_i18n.fr[key]||key);}
+
+// Translate a category label for display
+function tCat(cat){
+  if(_lang==='en'&&CAT_FR_TO_EN[cat])return CAT_FR_TO_EN[cat];
+  if(_lang==='fr'&&CAT_EN_TO_FR[cat])return CAT_EN_TO_FR[cat];
+  return cat;
+}
+
+// Translate French month names in a date string to current lang
+function tDate(dateStr){
+  if(!dateStr)return dateStr;
+  if(_lang==='fr')return dateStr;
+  const frMonths=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const enMonths=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  let s=dateStr;
+  frMonths.forEach((m,i)=>{s=s.replace(new RegExp(m,'gi'),enMonths[i]);});
+  return s;
+}
+
 function toggleLang(){
   _lang=_lang==='fr'?'en':'fr';
   document.getElementById('lang-toggle').textContent=_lang==='fr'?'FR':'EN';
   applyTranslations();
   try{localStorage.setItem('eco_lang',_lang);}catch(e){}
+  // Re-render current page content
+  const activePage=document.querySelector('.page.active');
+  if(activePage){
+    const id=activePage.id;
+    if(id==='page-home')renderHome(currentActiveCat);
+    else if(id==='page-article'){/* article will re-render cat/read labels on next open */}
+    else if(id==='page-mystats')renderMyStats();
+    else if(id==='page-admin')renderAdmin();
+    else if(id==='page-profile'){/* profile re-renders on next open */}
+  }
+  // Re-render nav
+  renderNav();
+  // Update nav-date
+  updateNavDate();
 }
+
+function updateNavDate(){
+  const D=new Date();
+  const days=t('days').split(',');
+  const months=t('months').split(',');
+  document.getElementById('nav-date').textContent=`${days[D.getDay()]} ${D.getDate()} ${months[D.getMonth()]} ${D.getFullYear()}`;
+}
+
 function applyTranslations(){
-  const t=_i18n[_lang]||_i18n.fr;
+  const d=_i18n[_lang]||_i18n.fr;
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const key=el.getAttribute('data-i18n');
-    if(t[key])el.textContent=t[key];
+    if(d[key]!==undefined)el.textContent=d[key];
+  });
+  // Also update category filter onclick values to match translated filter
+  document.querySelectorAll('.cat[data-i18n]').forEach(el=>{
+    const key=el.getAttribute('data-i18n');
+    const catKeys={cat_eco:['Économie','Economics'],cat_fin:['Finance','Finance'],cat_pol:['Politiques','Politics'],cat_soc:['Sociologie','Sociology'],cat_dro:['Droit','Law'],cat_tec:['Technologies','Technology'],cat_afr:['Afrique','Africa'],cat_mon:['Monde','World'],cat_ecol:['Écologie','Ecology'],cat_ia:['IA','AI'],cat_data:['Data Science','Data Science']};
+    if(catKeys[key]){
+      const frVal=catKeys[key][0];
+      el.onclick=()=>filterCat(el,frVal);
+    }
   });
 }
 
@@ -1539,7 +1786,7 @@ function initPlanet(id,radius,dotCount,lineThreshold,speed){
 
 // ═══════════════ INIT ═══════════════
 async function init(){
-  document.getElementById('loading-text').textContent='Economist · Chargement des articles…';
+  document.getElementById('loading-text').textContent=_lang==='en'?'Economist · Loading articles…':'Economist · Chargement des articles…';
   initPlanet('planet-tr',0.92,120,90,1.2);
   initPlanet('planet-bl',0.90,90,80,0.9);
   await loadData();
@@ -1548,6 +1795,7 @@ async function init(){
   try{const t=localStorage.getItem('eco_theme');if(t){document.documentElement.setAttribute('data-theme',t);const btn=document.getElementById('theme-toggle');if(btn&&t==='dark')btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;}}catch(e){}
   // Restore language
   try{const l=localStorage.getItem('eco_lang');if(l){_lang=l;document.getElementById('lang-toggle').textContent=l==='fr'?'FR':'EN';applyTranslations();}}catch(e){}
+  updateNavDate();
 
   // Reconnexion automatique
   const savedEmail=getLocalEmail();
