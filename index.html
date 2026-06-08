@@ -5,6 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Economist</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Serif+Text:ital@0;1&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+<!-- ════════════════════════════════════════════════════════
+     FIREBASE CONFIG — REMPLACEZ CES VALEURS PAR LES VÔTRES
+     Instructions : https://console.firebase.google.com
+     1. Créez un projet → Ajoutez une app Web
+     2. Activez "Realtime Database" → mode test (30 jours)
+     3. Copiez la config ci-dessous
+     ════════════════════════════════════════════════════════ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, get, push, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  // ⚠️  REMPLACEZ PAR VOTRE CONFIG FIREBASE  ⚠️
+  const firebaseConfig = {
+    apiKey: "AIzaSyCsVK2mdKGqD4WH9z1GH_IZxW0ZpS-CNec",
+    authDomain: "economist-cd34a.firebaseapp.com",
+    databaseURL: "https://economist-cd34a-default-rtdb.firebaseio.com",
+    projectId: "economist-cd34a",
+    storageBucket: "economist-cd34a.firebasestorage.app",
+    messagingSenderId: "207510503826",
+    appId: "1:207510503826:web:8957c28b3e22429b8ec14b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  // Exposer globalement pour le reste du script
+  window._fb = { db, ref, set, get, push, remove, onValue };
+  window._fbReady = true;
+  document.dispatchEvent(new Event('fb-ready'));
+</script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -20,7 +52,7 @@
 html{font-size:16px;scroll-behavior:smooth}
 body{background:var(--blanc);color:var(--noir);font-family:var(--serif-text);overflow-x:hidden}
 
-/* ── PLANET CANVASES ── */
+/* PLANET */
 .planet-canvas{position:fixed;pointer-events:none;z-index:0;border-radius:50%;overflow:hidden;}
 #planet-tr{top:-10%;right:-8%;width:520px;height:520px;}
 #planet-bl{bottom:-15%;left:-8%;width:400px;height:400px;}
@@ -29,7 +61,7 @@ body{background:var(--blanc);color:var(--noir);font-family:var(--serif-text);ove
   #planet-bl{bottom:-8%;left:-20%;width:160px;height:160px;}
 }
 
-/* ── LOADING SCREEN ── */
+/* LOADING */
 #loading-screen{
   position:fixed;inset:0;z-index:9000;background:var(--blanc);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;
@@ -39,164 +71,99 @@ body{background:var(--blanc);color:var(--noir);font-family:var(--serif-text);ove
 .loading-logo-e{font-family:var(--serif);font-size:56px;font-weight:400;line-height:1;position:relative;display:inline-block;color:var(--noir);}
 .loading-logo-e::after{content:'';position:absolute;bottom:4px;right:-1px;width:12px;height:12px;background:var(--rouge);clip-path:polygon(100% 0,100% 100%,0 100%);}
 .loading-bar-wrap{width:120px;height:1px;background:var(--gris-clair);overflow:hidden}
-.loading-bar{height:100%;background:var(--rouge);width:0%;transition:width .4s ease;animation:loadBar 1.8s ease forwards}
-@keyframes loadBar{0%{width:0}60%{width:70%}100%{width:100%}}
+.loading-bar{height:100%;background:var(--rouge);animation:loadBar 2s ease forwards}
+@keyframes loadBar{0%{width:0}60%{width:65%}100%{width:100%}}
 .loading-text{font-family:var(--sans);font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gris)}
 
-/* ── TOAST ── */
-.toast{
-  position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;
-  background:var(--noir);color:white;
-  font-family:var(--sans);font-size:.82rem;letter-spacing:.05em;
-  padding:.85rem 1.4rem;max-width:320px;
-  border-left:3px solid var(--rouge);
-  transform:translateY(100px);opacity:0;
-  transition:all .35s cubic-bezier(.4,0,.2,1);
-  pointer-events:none;
-}
+
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:var(--noir);color:white;font-family:var(--sans);font-size:.82rem;letter-spacing:.05em;padding:.85rem 1.4rem;max-width:320px;border-left:3px solid var(--rouge);transform:translateY(100px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1}
 
-/* ── MODAL ── */
-.modal-overlay{
-  display:none;position:fixed;inset:0;z-index:500;
-  background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);
-  align-items:center;justify-content:center;padding:1rem;
-}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem;}
 .modal-overlay.open{display:flex;}
-.modal-box{
-  background:white;width:100%;max-width:480px;
-  border-top:3px solid var(--rouge);
-  padding:2.5rem;position:relative;
-  animation:modalIn .22s ease;
-  max-height:92vh;overflow-y:auto;
-}
+.modal-box{background:white;width:100%;max-width:480px;border-top:3px solid var(--rouge);padding:2.5rem;position:relative;animation:modalIn .22s ease;max-height:92vh;overflow-y:auto;}
 @keyframes modalIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.modal-close{
-  position:absolute;top:1rem;right:1.2rem;
-  background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;
-  line-height:1;z-index:1;
-}
+.modal-close{position:absolute;top:1rem;right:1.2rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;line-height:1;}
 .modal-close:hover{color:var(--rouge)}
 .modal-title{font-family:var(--serif);font-size:1.6rem;font-weight:400;margin-bottom:.3rem}
 .modal-sub{font-family:var(--sans);font-size:.82rem;color:var(--gris);font-weight:300;margin-bottom:1.8rem;line-height:1.6}
-.modal-tabs{display:flex;gap:0;margin-bottom:2rem;border-bottom:1px solid var(--gris-clair);}
-.modal-tab{
-  font-family:var(--sans);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  padding:.65rem 1.4rem;cursor:pointer;border-bottom:2px solid transparent;
-  color:#888;transition:all .2s;margin-bottom:-1px;
-}
+.modal-tabs{display:flex;margin-bottom:2rem;border-bottom:1px solid var(--gris-clair);}
+.modal-tab{font-family:var(--sans);font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:.65rem 1.4rem;cursor:pointer;border-bottom:2px solid transparent;color:#888;transition:all .2s;margin-bottom:-1px;}
 .modal-tab.active{color:var(--rouge);border-bottom-color:var(--rouge);}
-.modal-panel{display:none}
-.modal-panel.active{display:block}
+.modal-panel{display:none}.modal-panel.active{display:block}
 .m-row{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem}
 .m-row label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)}
-.m-row input,.m-row textarea{
-  font-family:var(--sans);font-size:.95rem;
-  border:.5px solid var(--gris-clair);padding:.7rem 1rem;
-  outline:none;transition:border .2s;width:100%;
-}
+.m-row input,.m-row textarea{font-family:var(--sans);font-size:.95rem;border:.5px solid var(--gris-clair);padding:.7rem 1rem;outline:none;transition:border .2s;width:100%;}
 .m-row textarea{resize:vertical;min-height:80px;line-height:1.6}
 .m-row input:focus,.m-row textarea:focus{border-color:var(--rouge)}
 .m-err{font-family:var(--sans);font-size:.78rem;color:var(--rouge);display:none;margin-top:.3rem}
 .m-ok{font-family:var(--sans);font-size:.82rem;color:#4a9a5a;display:none;margin-top:.3rem;line-height:1.5}
-.btn-modal{
-  font-family:var(--sans);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
-  background:var(--rouge);color:white;border:none;padding:11px 28px;cursor:pointer;
-  transition:opacity .2s;width:100%;margin-top:.4rem;
-}
+.btn-modal{font-family:var(--sans);font-size:10px;letter-spacing:.16em;text-transform:uppercase;background:var(--rouge);color:white;border:none;padding:11px 28px;cursor:pointer;transition:opacity .2s;width:100%;margin-top:.4rem;}
 .btn-modal:hover{opacity:.85}
+.btn-modal:disabled{opacity:.5;cursor:not-allowed}
 .m-divider{height:.5px;background:var(--gris-clair);margin:1.2rem 0}
 .m-link{font-family:var(--sans);font-size:.8rem;color:var(--rouge);cursor:pointer;text-decoration:underline}
-
-/* ── AVATAR UPLOAD ── */
 .avatar-upload-wrap{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.2rem}
 .avatar-preview{width:64px;height:64px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.4rem;color:white;flex-shrink:0;overflow:hidden;cursor:pointer;border:2px solid var(--gris-clair);transition:border-color .2s}
 .avatar-preview:hover{border-color:var(--rouge)}
 .avatar-preview img{width:100%;height:100%;object-fit:cover}
 .avatar-upload-hint{font-family:var(--sans);font-size:.8rem;color:#aaa;line-height:1.5}
 
-/* ── NAV ── */
+/* NAV */
 nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--gris-clair);position:sticky;top:0;z-index:200;}
 .nav-top{display:flex;align-items:center;justify-content:space-between;padding:0 3.5rem;height:68px;border-bottom:.5px solid var(--gris-clair);}
-.nav-date{font-family:var(--sans);font-size:10.5px;letter-spacing:.18em;color:var(--gris);text-transform:uppercase;font-weight:400}
+.nav-date{font-family:var(--sans);font-size:10.5px;letter-spacing:.18em;color:var(--gris);text-transform:uppercase}
 .logo-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;user-select:none}
 .logo-e{font-family:var(--serif);font-size:40px;font-weight:400;line-height:1;position:relative;display:inline-block;color:var(--noir);}
 .logo-e::after{content:'';position:absolute;bottom:3px;right:-1px;width:9px;height:9px;background:var(--rouge);clip-path:polygon(100% 0,100% 100%,0 100%);}
-.logo-text{font-family:var(--sans);font-size:9px;letter-spacing:.42em;font-weight:400;text-transform:uppercase;margin-top:-2px;color:var(--noir)}
+.logo-text{font-family:var(--sans);font-size:9px;letter-spacing:.42em;text-transform:uppercase;color:var(--noir)}
 .logo-underline{width:28px;height:1px;background:var(--rouge);margin-top:2px}
 .nav-actions{display:flex;align-items:center;gap:.8rem}
-.btn-red{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;background:var(--rouge);color:white;border:none;padding:9px 16px;cursor:pointer;font-weight:400;transition:opacity .2s;white-space:nowrap;}
+.btn-red{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;background:var(--rouge);color:white;border:none;padding:9px 16px;cursor:pointer;transition:opacity .2s;white-space:nowrap;}
 .btn-red:hover{opacity:.85}
 .btn-outline{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:none;color:var(--noir);border:.5px solid var(--gris-clair);padding:8px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .btn-outline:hover{border-color:var(--rouge);color:var(--rouge)}
 .nav-user{display:flex;align-items:center;gap:.5rem;font-family:var(--sans);font-size:10px;color:#555;cursor:pointer;}
-.nav-user-dot{width:7px;height:7px;border-radius:50%;background:var(--rouge);flex-shrink:0}
-.nav-user-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--rouge);flex-shrink:0}
-
-/* hamburger mobile */
+.nav-user-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--rouge);}
+.nav-user-dot{width:7px;height:7px;border-radius:50%;background:var(--rouge);}
 .nav-hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-direction:column;gap:5px;align-items:center;justify-content:center}
 .nav-hamburger span{display:block;width:22px;height:1.5px;background:var(--noir);transition:all .25s}
 .nav-hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
 .nav-hamburger.open span:nth-child(2){opacity:0}
 .nav-hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
-
-.nav-mobile-menu{
-  display:block;position:fixed;top:0;right:0;bottom:0;width:min(300px,85vw);
-  background:white;z-index:300;padding:4.5rem 1.5rem 2rem;
-  border-left:1px solid var(--gris-clair);
-  transform:translateX(100%);transition:transform .3s ease;
-  overflow-y:auto;
-}
+.nav-mobile-menu{display:block;position:fixed;top:0;right:0;bottom:0;width:min(300px,85vw);background:white;z-index:300;padding:4.5rem 1.5rem 2rem;border-left:1px solid var(--gris-clair);transform:translateX(100%);transition:transform .3s ease;overflow-y:auto;}
 .nav-mobile-menu.open{transform:translateX(0)}
 .nav-mobile-overlay{display:none;position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.25)}
 .nav-mobile-overlay.open{display:block}
-.nav-mobile-item{
-  font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
-  display:block;padding:.9rem 0;border-bottom:.5px solid var(--gris-clair);
-  cursor:pointer;color:var(--noir);transition:color .2s;
-}
+.nav-mobile-item{font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;display:block;padding:.9rem 0;border-bottom:.5px solid var(--gris-clair);cursor:pointer;color:var(--noir);transition:color .2s;}
 .nav-mobile-item:hover{color:var(--rouge)}
 .nav-mobile-actions{margin-top:1.5rem;display:flex;flex-direction:column;gap:.8rem}
-
-.nav-cats{display:flex;align-items:center;padding:0 3.5rem;height:42px;overflow-x:auto;gap:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.nav-cats{display:flex;align-items:center;padding:0 3.5rem;height:42px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .nav-cats::-webkit-scrollbar{display:none}
-.cat{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#444;padding:0 1.3rem;height:100%;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-weight:400;flex-shrink:0}
+.cat{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#444;padding:0 1.3rem;height:100%;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;flex-shrink:0}
 .cat:hover,.cat.active{color:var(--rouge);border-bottom-color:var(--rouge)}
 .nav-cats-sep{width:.5px;height:18px;background:var(--gris-clair);flex-shrink:0;align-self:center;margin:0 .4rem}
 .nav-link-item{color:#888;font-size:10px}
-.nav-link-item:hover{color:var(--rouge);border-bottom-color:var(--rouge)}
-
-/* search bar in nav */
 .nav-search-wrap{position:relative;display:flex;align-items:center}
-.nav-search-input{
-  font-family:var(--sans);font-size:.82rem;
-  border:.5px solid var(--gris-clair);
-  padding:.45rem .9rem .45rem 2rem;
-  outline:none;transition:all .2s;width:180px;
-  background:#fafafa;
-}
+.nav-search-input{font-family:var(--sans);font-size:.82rem;border:.5px solid var(--gris-clair);padding:.45rem .9rem .45rem 2rem;outline:none;transition:all .2s;width:180px;background:#fafafa;}
 .nav-search-input:focus{border-color:var(--rouge);width:220px;background:white}
 .nav-search-icon{position:absolute;left:.65rem;pointer-events:none;color:#bbb}
-.search-results-drop{
-  position:absolute;top:calc(100% + 6px);right:0;width:320px;
-  background:white;border:.5px solid var(--gris-clair);
-  border-top:2px solid var(--rouge);
-  box-shadow:0 8px 24px rgba(0,0,0,.08);
-  z-index:300;max-height:400px;overflow-y:auto;display:none;
-}
-.search-results-drop.open{display:block}
+.srd{position:absolute;top:calc(100% + 6px);right:0;width:320px;background:white;border:.5px solid var(--gris-clair);border-top:2px solid var(--rouge);box-shadow:0 8px 24px rgba(0,0,0,.08);z-index:300;max-height:400px;overflow-y:auto;display:none;}
+.srd.open{display:block}
 .srd-item{padding:1rem 1.2rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;transition:background .15s}
 .srd-item:hover{background:#fff8f8}
 .srd-cat{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.25rem}
-.srd-title{font-family:var(--serif);font-size:.95rem;font-weight:400;line-height:1.3}
+.srd-title{font-family:var(--serif);font-size:.95rem;line-height:1.3}
 .srd-author{font-family:var(--sans);font-size:9.5px;color:var(--gris);margin-top:.25rem}
 .srd-section{padding:.6rem 1.2rem;background:#f8f8f8;font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#888;border-bottom:.5px solid var(--gris-clair)}
 
-/* ── PAGES ── */
-.page{display:none;position:relative;z-index:1}
-.page.active{display:block}
+/* PAGES */
+.page{display:none;position:relative;z-index:1}.page.active{display:block}
 
-/* ── EMPTY STATE ── */
+/* EMPTY STATE */
 .empty-anim{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto 2.8rem;height:48px;}
 .empty-anim span{display:block;width:2px;background:var(--rouge);border-radius:2px;animation:barPulse 1.4s ease-in-out infinite;transform-origin:center;}
 .empty-anim span:nth-child(1){height:16px;animation-delay:0s;}
@@ -209,33 +176,32 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .empty-state p{font-family:var(--sans);font-size:.95rem;line-height:1.8;color:#666;font-weight:300;margin-bottom:.8rem;}
 .empty-cta{font-family:var(--sans);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--rouge);cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
 
-/* ── ARTICLES GRID ── */
+/* GRID */
 .sec-wrap{max-width:1200px;margin:0 auto;padding:3.5rem;position:relative;z-index:1}
 .sec-head{display:flex;align-items:center;gap:1.2rem;margin-bottom:2.5rem;padding-bottom:1rem;border-bottom:1px solid var(--noir);}
 .sec-name{font-family:var(--sans);font-size:10px;letter-spacing:.28em;text-transform:uppercase;font-weight:500}
 .grid-articles{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:3rem 2.5rem}
-
 .art-card{cursor:pointer;display:flex;flex-direction:column;border-bottom:.5px solid var(--gris-clair);padding-bottom:1.5rem;overflow:hidden;}
 .art-card:hover .art-title{color:var(--rouge)}
 .art-card:hover .art-thumb-img{transform:scale(1.03)}
-.art-thumb{width:100%;aspect-ratio:3/2;overflow:hidden;margin-bottom:0;position:relative;background:#f0f0f0;}
+.art-thumb{width:100%;aspect-ratio:3/2;overflow:hidden;position:relative;background:#f0f0f0;}
 .art-thumb-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease;}
-.art-thumb-empty{width:100%;height:100%;background:linear-gradient(135deg,#f5f5f5 0%,#eee 100%);display:flex;align-items:center;justify-content:center;}
+.art-thumb-empty{width:100%;height:100%;background:linear-gradient(135deg,#f5f5f5,#eee);display:flex;align-items:center;justify-content:center;}
 .art-card-body{padding:1.1rem 0 0;}
-.art-k{font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.5rem;font-weight:400;}
+.art-k{font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.5rem;}
 .art-title{font-family:var(--serif);font-size:1.15rem;font-weight:400;line-height:1.35;margin-bottom:.55rem;transition:color .2s;}
 .art-excerpt{font-family:var(--sans);font-size:.85rem;line-height:1.7;color:#666;font-weight:300;margin-bottom:.8rem;}
-.art-foot{display:flex;align-items:center;gap:.8rem;font-family:var(--sans);font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.06em;flex-wrap:wrap}
+.art-foot{display:flex;align-items:center;gap:.8rem;font-family:var(--sans);font-size:10px;color:var(--gris);text-transform:uppercase;flex-wrap:wrap}
 .dot{width:3px;height:3px;border-radius:50%;background:var(--rouge);display:inline-block;flex-shrink:0}
 
-/* ── ARTICLE FULL ── */
+/* ARTICLE FULL */
 .article-page{max-width:720px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
 .back-btn{font-family:var(--sans);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--rouge);cursor:pointer;display:inline-flex;align-items:center;gap:7px;border-bottom:1px solid var(--rouge);padding-bottom:2px;margin-bottom:3rem;background:none;border-top:none;border-left:none;border-right:none;}
-.art-full-k{font-family:var(--sans);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--rouge);margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;}
+.art-full-k{font-family:var(--sans);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--rouge);margin-bottom:1.2rem;}
 .art-full-title{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);font-weight:400;line-height:1.15;margin-bottom:1.3rem;}
 .art-full-deck{font-family:var(--serif-text);font-size:1.15rem;font-style:italic;line-height:1.75;color:#444;margin-bottom:1.8rem;border-left:3px solid var(--rouge);padding-left:1.3rem;}
 .art-full-meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;font-family:var(--sans);font-size:10.5px;letter-spacing:.08em;color:var(--gris);text-transform:uppercase;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:.5px solid var(--gris-clair);}
-.art-full-cover{width:100%;aspect-ratio:16/9;background:#eee;overflow:hidden;margin-bottom:.6rem;display:flex;align-items:center;justify-content:center;}
+.art-full-cover{width:100%;aspect-ratio:16/9;background:#eee;overflow:hidden;margin-bottom:.6rem;}
 .art-full-cover img{width:100%;height:100%;object-fit:cover}
 .art-full-caption{font-family:var(--sans);font-size:10.5px;color:var(--gris);font-style:italic;margin-bottom:3rem}
 .art-full-body{font-family:var(--serif-text);font-size:1.05rem;line-height:1.9;color:#222;}
@@ -245,118 +211,95 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .art-full-body blockquote{border-left:3px solid var(--rouge);padding:.8rem 1.3rem;margin:1.8rem 0;font-style:italic;color:#555;background:#fff8f8}
 .art-full-body .art-sep{text-align:center;font-size:1.1rem;letter-spacing:.6em;color:var(--rouge);margin:2rem 0}
 .art-full-body .art-inline-img{margin:2rem 0}
-.art-full-body .art-inline-img img{width:100%;max-height:480px;object-fit:cover;display:block}
+.art-full-body .art-inline-img img{width:100%;max-height:480px;object-fit:cover}
 .art-full-body .art-inline-caption{font-family:var(--sans);font-size:10.5px;color:var(--gris);font-style:italic;margin-top:.5rem;text-align:center}
-.author-chip{display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;border-bottom:1px dashed var(--gris-clair);transition:border-color .2s}
+.author-chip{cursor:pointer;border-bottom:1px dashed var(--gris-clair);transition:border-color .2s}
 .author-chip:hover{border-bottom-color:var(--rouge);color:var(--rouge)}
 
-/* ── PROPOSE PAGE ── */
+/* PROPOSE */
 .propose-page{max-width:600px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1}
-.propose-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem}
-.propose-page h2 em{font-style:italic;color:var(--rouge)}
-.propose-sub{font-family:var(--sans);font-size:.9rem;color:var(--gris);margin-bottom:3rem;font-weight:300;line-height:1.65}
+.propose-page h2,.write-page h2,.my-stats-page h2,.admin-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem}
+.propose-page h2 em,.write-page h2 em,.my-stats-page h2 em,.admin-page h2 em{font-style:italic;color:var(--rouge)}
+.propose-sub,.write-sub{font-family:var(--sans);font-size:.9rem;color:var(--gris);margin-bottom:3rem;font-weight:300;line-height:1.65}
 .reg-card{border:.5px solid var(--gris-clair);padding:2.5rem;margin-bottom:1.5rem}
 .reg-section{font-family:var(--sans);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--rouge);margin-bottom:1.5rem;padding-bottom:.6rem;border-bottom:.5px solid var(--gris-clair);}
 .reg-row{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem}
 .reg-row label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)}
-.reg-row input,.reg-row select,.reg-row textarea{font-family:var(--sans);font-size:.95rem;border:.5px solid var(--gris-clair);padding:.7rem 1rem;outline:none;transition:border .2s;width:100%;background:white;color:var(--noir);}
+.reg-row input,.reg-row select,.reg-row textarea{font-family:var(--sans);font-size:.95rem;border:.5px solid var(--gris-clair);padding:.7rem 1rem;outline:none;transition:border .2s;width:100%;background:white;}
 .reg-row input:focus,.reg-row select:focus,.reg-row textarea:focus{border-color:var(--rouge)}
 .reg-row textarea{resize:vertical;min-height:100px;line-height:1.65}
-.reg-note{font-family:var(--sans);font-size:.78rem;color:#aaa;font-style:italic;margin-top:.3rem;line-height:1.5}
+.reg-note{font-family:var(--sans);font-size:.78rem;color:#aaa;font-style:italic;margin-top:.3rem}
 .reg-submit{font-family:var(--sans);font-size:10px;letter-spacing:.18em;text-transform:uppercase;background:var(--rouge);color:white;border:none;padding:13px 32px;cursor:pointer;transition:opacity .2s;}
 .reg-submit:hover{opacity:.85}
 .reg-success{display:none;background:#f8fff8;border:.5px solid #d0ecd0;border-left:3px solid #4a9a5a;padding:2rem;margin-top:1.5rem}
 .reg-success h3{font-family:var(--serif);font-size:1.4rem;font-weight:400;margin-bottom:.6rem}
 .reg-success p{font-family:var(--sans);font-size:.88rem;color:#555;line-height:1.65;font-weight:300}
 
-/* ── WRITE PAGE ── */
+/* WRITE */
 .write-page{max-width:760px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
-.write-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem;line-height:1.2}
-.write-page h2 em{font-style:italic;color:var(--rouge)}
-.write-sub{font-family:var(--sans);font-size:.92rem;color:var(--gris);margin-bottom:3rem;font-weight:300;line-height:1.6}
-.gate{background:var(--blanc);border:1px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.2rem 2.5rem;margin-bottom:2.5rem;}
-.gate-label{font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:1rem;font-weight:400}
+.gate{background:white;border:1px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.2rem 2.5rem;margin-bottom:2.5rem;}
+.gate-label{font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:1rem;}
 .gate p{font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.5rem;font-weight:300;line-height:1.65}
 .gate-row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
-.gate input[type=password]{font-family:var(--sans);font-size:1rem;letter-spacing:.3em;border:.5px solid var(--gris-clair);background:var(--blanc);padding:.65rem 1rem;width:200px;outline:none;transition:border .2s;}
+.gate input[type=password]{font-family:var(--sans);font-size:1rem;letter-spacing:.3em;border:.5px solid var(--gris-clair);padding:.65rem 1rem;width:200px;outline:none;transition:border .2s;}
 .gate input:focus{border-color:var(--rouge)}
 .gate-err{font-family:var(--sans);font-size:.82rem;color:var(--rouge);margin-top:.7rem;display:none}
-.form-hidden{display:none}
 .form-wrap{display:flex;flex-direction:column;gap:1.6rem}
 .form-row{display:flex;flex-direction:column;gap:.5rem}
-.form-row label{font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);font-weight:400;}
-.form-row input,.form-row select,.form-row textarea{font-family:var(--serif-text);font-size:1rem;border:.5px solid var(--gris-clair);background:var(--blanc);padding:.75rem 1rem;outline:none;transition:border .2s;color:var(--noir);width:100%;}
+.form-row label{font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);}
+.form-row input,.form-row select,.form-row textarea{font-family:var(--serif-text);font-size:1rem;border:.5px solid var(--gris-clair);padding:.75rem 1rem;outline:none;transition:border .2s;width:100%;}
 .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--rouge)}
-.form-row textarea{resize:vertical;min-height:360px;line-height:1.8}
 .form-row select{font-family:var(--sans);font-size:.9rem;cursor:pointer}
 .hint{font-family:var(--sans);font-size:.78rem;color:#aaa;font-style:italic}
 .char-count{font-family:var(--sans);font-size:.78rem;color:var(--gris);text-align:right}
 .form-two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem}
-.btn-publish{font-family:var(--sans);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;background:var(--rouge);color:white;border:none;padding:14px 36px;cursor:pointer;transition:opacity .2s;font-weight:400;align-self:flex-start;}
+.btn-publish{font-family:var(--sans);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;background:var(--rouge);color:white;border:none;padding:14px 36px;cursor:pointer;transition:opacity .2s;align-self:flex-start;}
 .btn-publish:hover{opacity:.85}
-.btn-publish:disabled{opacity:.45;cursor:not-allowed}
-.success-msg{display:none;background:var(--blanc);border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2rem 2.5rem;margin-top:1.5rem;}
+.btn-publish:disabled{opacity:.5;cursor:not-allowed}
+.success-msg{display:none;background:white;border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2rem 2.5rem;margin-top:1.5rem;}
 .success-msg h3{font-family:var(--serif);font-size:1.5rem;font-weight:400;margin-bottom:.8rem}
 .success-msg p{font-family:var(--sans);font-size:.9rem;color:#555;font-weight:300;line-height:1.65}
 .view-link{font-family:var(--sans);display:inline-block;margin-top:1rem;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--rouge);cursor:pointer;border-bottom:1px solid var(--rouge);padding-bottom:1px;}
-.img-upload-zone{width:100%;height:160px;border:.5px dashed var(--gris-clair);background:#fafafa;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s;overflow:hidden;position:relative;}
+.img-upload-zone{width:100%;height:160px;border:.5px dashed var(--gris-clair);background:#fafafa;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;overflow:hidden;position:relative;}
 .img-upload-zone:hover{border-color:var(--rouge);background:#fff8f8}
 #cover-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;color:#bbb;font-family:var(--sans);font-size:.82rem}
 .editor-toolbar{display:flex;gap:.4rem;flex-wrap:wrap}
 .tb-btn{font-family:var(--sans);font-size:10px;letter-spacing:.1em;border:.5px solid var(--gris-clair);background:white;padding:5px 10px;cursor:pointer;color:#555;transition:all .15s;text-transform:uppercase;}
 .tb-btn:hover{border-color:var(--rouge);color:var(--rouge)}
-.tb-img{background:#fff8f8;border-color:rgba(139,26,26,0.2)}
 .article-blocks-editor{border:.5px solid var(--gris-clair);min-height:280px;padding:.5rem;background:white;display:flex;flex-direction:column;gap:.5rem;}
 .block-wrap{position:relative;display:flex;align-items:flex-start;gap:.4rem}
 .block-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:1rem;line-height:1;padding:2px 4px;flex-shrink:0;margin-top:2px;transition:color .15s;}
 .block-del:hover{color:var(--rouge)}
 .block-content{flex:1}
-.block-para{font-family:var(--serif-text);font-size:1rem;border:.5px solid transparent;background:transparent;padding:.5rem .6rem;outline:none;width:100%;line-height:1.8;resize:vertical;min-height:80px;transition:border-color .2s;color:var(--noir);}
+.block-para{font-family:var(--serif-text);font-size:1rem;border:.5px solid transparent;background:transparent;padding:.5rem .6rem;outline:none;width:100%;line-height:1.8;resize:vertical;min-height:80px;transition:border-color .2s;}
 .block-para:focus{border-color:var(--gris-clair);background:#fafafa}
-.block-h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;border:none;border-bottom:.5px solid var(--gris-clair);background:transparent;padding:.4rem 0;outline:none;width:100%;color:var(--noir);}
-.block-h3{font-family:var(--serif);font-size:1.15rem;font-weight:400;border:none;background:transparent;padding:.3rem 0;outline:none;width:100%;color:var(--noir);}
+.block-h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;border:none;border-bottom:.5px solid var(--gris-clair);background:transparent;padding:.4rem 0;outline:none;width:100%;}
+.block-h3{font-family:var(--serif);font-size:1.15rem;font-weight:400;border:none;background:transparent;padding:.3rem 0;outline:none;width:100%;}
 .block-quote{font-family:var(--serif-text);font-size:1rem;font-style:italic;border:none;border-left:3px solid var(--rouge);padding:.5rem 1rem;outline:none;width:100%;background:#fff8f8;color:#444;line-height:1.75;resize:vertical;min-height:60px;}
 .block-sep{text-align:center;padding:.8rem 0;font-family:var(--sans);font-size:1.1rem;letter-spacing:.6em;color:var(--rouge);user-select:none;width:100%;}
 .block-img-wrap{width:100%;background:#f5f5f5;display:flex;flex-direction:column;align-items:center;}
-.block-img-wrap img{width:100%;max-height:400px;object-fit:cover;display:block}
+.block-img-wrap img{width:100%;max-height:400px;object-fit:cover}
 .block-img-caption{font-family:var(--sans);font-size:.82rem;border:none;background:transparent;outline:none;width:100%;padding:.4rem .6rem;color:#888;font-style:italic;text-align:center;}
 .add-block-row{margin-top:.6rem;text-align:center}
 .add-block-btn{font-family:var(--sans);font-size:10px;letter-spacing:.16em;text-transform:uppercase;background:none;border:.5px dashed #ccc;color:#aaa;padding:8px 22px;cursor:pointer;transition:all .2s;}
 .add-block-btn:hover{border-color:var(--rouge);color:var(--rouge)}
 
-/* ── STATS & PROFILE ── */
-.stats-page{max-width:1100px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
-.stats-page h2,.my-stats-page h2,.admin-page h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:.5rem}
-.stats-page h2 em,.my-stats-page h2 em,.admin-page h2 em{font-style:italic;color:var(--rouge)}
-.stats-sub{font-family:var(--sans);font-size:.9rem;color:var(--gris);margin-bottom:3rem;font-weight:300}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin-bottom:3rem}
-.stat-card{border:.5px solid var(--gris-clair);padding:2rem;text-align:center;border-top:3px solid var(--rouge);}
-.stat-num{font-family:var(--serif);font-size:3rem;font-weight:400;color:var(--rouge);line-height:1}
-.stat-label{font-family:var(--sans);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gris);margin-top:.6rem}
-.stats-section-title{font-family:var(--sans);font-size:9px;letter-spacing:.28em;text-transform:uppercase;margin-bottom:1.5rem;padding-bottom:.7rem;border-bottom:1px solid var(--noir);color:var(--noir)}
+/* STATS / ADMIN / PROFILE */
+.my-stats-page,.admin-page{max-width:1100px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
+.my-stat-card{border:.5px solid var(--gris-clair);padding:1.8rem;text-align:center;border-top:3px solid var(--rouge);}
+.my-stat-num{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:var(--rouge);line-height:1}
+.my-stat-label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:.5rem}
+.admin-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;background:var(--rouge);color:white;padding:4px 12px;margin-bottom:2rem}
+.btn-danger{font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:none;border:.5px solid rgba(139,26,26,0.4);color:var(--rouge);padding:5px 12px;cursor:pointer;transition:all .2s;}
+.btn-danger:hover{background:var(--rouge);color:white}
+.stats-section-title{font-family:var(--sans);font-size:9px;letter-spacing:.28em;text-transform:uppercase;margin-bottom:1.5rem;padding-bottom:.7rem;border-bottom:1px solid var(--noir);}
 .stats-table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.88rem}
 .stats-table th{text-align:left;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);padding:.6rem 1rem;border-bottom:.5px solid var(--gris-clair);font-weight:400}
 .stats-table td{padding:.8rem 1rem;border-bottom:.5px solid var(--gris-clair);vertical-align:middle}
 .stats-table tr:hover td{background:#fafafa}
-.stats-table .td-title{font-family:var(--serif-text);font-size:.95rem;cursor:pointer;color:var(--rouge)}
-.stats-table .td-title:hover{text-decoration:underline}
+.td-title{font-family:var(--serif-text);font-size:.95rem;cursor:pointer;color:var(--rouge)}
+.td-title:hover{text-decoration:underline}
 .stats-cat-badge{font-family:var(--sans);font-size:8.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--rouge);border:.5px solid rgba(139,26,26,0.25);padding:2px 7px;display:inline-block}
-
-/* ── MY STATS ── */
-.my-stats-page{max-width:900px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
-.my-stat-card{border:.5px solid var(--gris-clair);padding:1.8rem;text-align:center;border-top:3px solid var(--rouge);}
-.my-stat-num{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:var(--rouge);line-height:1}
-.my-stat-label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:.5rem}
-
-/* ── ADMIN ── */
-.admin-page{max-width:1100px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
-.admin-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;background:var(--rouge);color:white;padding:4px 12px;margin-bottom:2rem}
-.btn-danger{font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:none;border:.5px solid rgba(139,26,26,0.4);color:var(--rouge);padding:5px 12px;cursor:pointer;transition:all .2s;}
-.btn-danger:hover{background:var(--rouge);color:white}
-.admin-gate{border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.5rem;margin-bottom:2rem;max-width:440px}
-.admin-gate p{font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.2rem;font-weight:300;line-height:1.6}
-
-/* ── PROFILE ── */
 .profile-page{max-width:900px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1}
 .profile-header{display:flex;align-items:center;gap:2rem;margin-bottom:3rem;padding-bottom:2rem;border-bottom:.5px solid var(--gris-clair);flex-wrap:wrap}
 .profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:2rem;color:white;flex-shrink:0;overflow:hidden;}
@@ -365,11 +308,10 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .profile-meta{font-family:var(--sans);font-size:10px;letter-spacing:.1em;color:var(--gris);margin-top:.4rem;line-height:1.8}
 .profile-bio{font-family:var(--serif-text);font-size:.95rem;color:#444;margin-top:.6rem;font-style:italic;line-height:1.6}
 .profile-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;border:.5px solid rgba(139,26,26,0.3);padding:3px 10px;color:var(--rouge);margin-top:.6rem}
-.profile-empty{font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:3rem 0}
 .profile-edit-btn{font-family:var(--sans);font-size:9px;letter-spacing:.15em;text-transform:uppercase;background:none;border:.5px solid var(--gris-clair);color:#777;padding:6px 14px;cursor:pointer;transition:all .2s;margin-top:.8rem;display:inline-block}
 .profile-edit-btn:hover{border-color:var(--rouge);color:var(--rouge)}
 
-/* ── FOOTER ── */
+/* FOOTER */
 footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;position:relative;z-index:1;}
 .foot-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:2rem;border-bottom:.5px solid #222;margin-bottom:2rem;flex-wrap:wrap;gap:1.5rem;}
 .foot-logo-e{font-family:var(--serif);font-size:30px;font-weight:400;display:inline-block;position:relative;color:white}
@@ -378,18 +320,13 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 .foot-links{display:flex;gap:2rem;flex-wrap:wrap}
 .foot-link{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#555;cursor:pointer;transition:color .2s}
 .foot-link:hover{color:var(--rouge)}
-.foot-copy{font-family:var(--sans);font-size:10.5px;color:#3a3a3a;letter-spacing:.03em}
+.foot-copy{font-family:var(--sans);font-size:10.5px;color:#3a3a3a}
 .foot-copy span{color:var(--rouge)}
-
-/* ── REVEAL ── */
 .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
 .revealed{opacity:1;transform:translateY(0)}
-
-/* ── SPINNER ── */
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:5px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── RESPONSIVE ── */
 @media(max-width:900px){
   .nav-top{padding:0 1rem;height:58px}
   .nav-cats{padding:0 .5rem}
@@ -398,50 +335,46 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   .nav-hamburger{display:flex}
   .nav-actions .btn-red,.nav-actions .btn-outline,.nav-actions .nav-user{display:none}
   .sec-wrap{padding:2rem 1rem}
-  .write-page,.article-page,.propose-page,.stats-page,.profile-page,.my-stats-page,.admin-page{padding:2rem 1rem}
+  .write-page,.article-page,.propose-page,.profile-page,.my-stats-page,.admin-page{padding:2rem 1rem}
   .form-two-col{grid-template-columns:1fr}
   .grid-articles{grid-template-columns:1fr;gap:2rem}
   .modal-box{padding:1.5rem}
   footer{padding:2rem 1rem}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
   .logo-e{font-size:32px}
 }
 @media(max-width:500px){
-  .logo-text{font-size:8px;letter-spacing:.3em}
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .stat-num{font-size:2.2rem}
-  .profile-header{flex-direction:column;align-items:flex-start}
   .nav-top{padding:0 .8rem}
+  .profile-header{flex-direction:column;align-items:flex-start}
   .gate-row{flex-direction:column;align-items:flex-start}
   .gate input[type=password]{width:100%}
-  .btn-red,.btn-outline{padding:8px 12px;font-size:9.5px}
 }
 </style>
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
 <div id="loading-screen">
   <div class="loading-logo-e">E</div>
   <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
-  <div class="loading-text">Economist · Chargement…</div>
+  <div class="loading-text" id="loading-text">Economist · Connexion à la base…</div>
+</div>
+
+  </div>
 </div>
 
 <canvas id="planet-tr" class="planet-canvas"></canvas>
 <canvas id="planet-bl" class="planet-canvas"></canvas>
-
 <div class="toast" id="toast"></div>
 
 <!-- MOBILE OVERLAY -->
 <div class="nav-mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
 <div class="nav-mobile-menu" id="mob-menu">
   <button class="modal-close" onclick="closeMobileMenu()" style="top:.8rem;right:1rem;position:absolute">×</button>
-  <div style="margin-bottom:1.2rem;position:relative">
+  <div style="margin-bottom:1.2rem">
     <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-bottom:.5rem">Rechercher</div>
     <input type="text" id="mob-search" placeholder="Articles, auteurs…" oninput="doMobSearch(this.value)"
-      style="width:100%;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.65rem 1rem;outline:none;transition:border .2s"
+      style="width:100%;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.65rem 1rem;outline:none;"
       onfocus="this.style.borderColor='var(--rouge)'" onblur="this.style.borderColor='var(--gris-clair)'">
-    <div id="mob-search-results" style="margin-top:.4rem;border:.5px solid var(--gris-clair);display:none;max-height:240px;overflow-y:auto;background:white;z-index:10;position:relative"></div>
+    <div id="mob-search-results" style="margin-top:.4rem;border:.5px solid var(--gris-clair);display:none;max-height:240px;overflow-y:auto;background:white"></div>
   </div>
   <div class="nav-mobile-item" onclick="navGo('home')">La Une</div>
   <div class="nav-mobile-item" onclick="navGo('propose')">Proposer un article</div>
@@ -456,35 +389,28 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal()">×</button>
     <div class="modal-title">Bienvenue</div>
-    <p class="modal-sub">Connectez-vous ou créez votre compte Economist.<br>
-    <span style="font-size:.78rem;color:#bbb">Votre session sera restaurée sur tous vos appareils.</span></p>
+    <p class="modal-sub">Votre compte est synchronisé sur tous vos appareils.</p>
     <div class="modal-tabs">
       <div class="modal-tab active" onclick="switchTab('login')">Connexion</div>
       <div class="modal-tab" onclick="switchTab('signup')">Créer un compte</div>
     </div>
     <div class="modal-panel active" id="tab-login">
-      <div class="m-row">
-        <label>Adresse e-mail</label>
-        <input type="email" id="login-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')doLogin()">
-      </div>
-      <div class="m-row">
-        <label>Mot de passe</label>
-        <input type="password" id="login-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-        <div class="m-err" id="login-err">Email ou mot de passe incorrect.</div>
-      </div>
+      <div class="m-row"><label>Email</label><input type="email" id="login-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="m-row"><label>Mot de passe</label><input type="password" id="login-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        <div class="m-err" id="login-err">Email ou mot de passe incorrect.</div></div>
       <button class="btn-modal" id="btn-login" onclick="doLogin()">Se connecter</button>
       <div class="m-divider"></div>
-      <span style="font-family:var(--sans);font-size:.8rem;color:#888">Pas encore de compte ? <span class="m-link" onclick="switchTab('signup')">Créer un compte</span></span>
+      <span style="font-family:var(--sans);font-size:.8rem;color:#888">Pas de compte ? <span class="m-link" onclick="switchTab('signup')">Créer un compte</span></span>
     </div>
     <div class="modal-panel" id="tab-signup">
       <div class="form-two-col" style="gap:.9rem">
         <div class="m-row"><label>Prénom</label><input type="text" id="su-first" placeholder="Jean"></div>
         <div class="m-row"><label>Nom</label><input type="text" id="su-last" placeholder="Dupont"></div>
       </div>
-      <div class="m-row"><label>Adresse e-mail</label><input type="email" id="su-email" placeholder="votre@email.com"></div>
+      <div class="m-row"><label>Email</label><input type="email" id="su-email" placeholder="votre@email.com"></div>
       <div class="m-row"><label>Mot de passe</label><input type="password" id="su-pwd" placeholder="8 caractères minimum"></div>
       <div class="m-err" id="su-err">Veuillez remplir tous les champs.</div>
-      <div class="m-ok" id="su-ok">Compte créé ! Vous êtes maintenant connecté.</div>
+      <div class="m-ok" id="su-ok">Compte créé !</div>
       <button class="btn-modal" id="btn-signup" onclick="doSignup()">Créer mon compte</button>
     </div>
   </div>
@@ -495,18 +421,13 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   <div class="modal-box">
     <button class="modal-close" onclick="closeProfileEdit()">×</button>
     <div class="modal-title">Mon profil</div>
-    <p class="modal-sub">Personnalisez votre profil visible par tous.</p>
+    <p class="modal-sub">Visible par tous les visiteurs.</p>
     <div class="avatar-upload-wrap">
       <div class="avatar-preview" id="edit-avatar-preview" onclick="document.getElementById('edit-avatar-input').click()"></div>
-      <div>
-        <div class="avatar-upload-hint">Cliquez sur l'avatar pour changer votre photo<br><span style="font-size:.75rem">JPG, PNG — max 2Mo</span></div>
-      </div>
+      <div><div class="avatar-upload-hint">Cliquez pour changer votre photo<br><span style="font-size:.75rem">JPG, PNG — max 1Mo</span></div></div>
     </div>
     <input type="file" id="edit-avatar-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
-    <div class="m-row">
-      <label>Description / Bio</label>
-      <textarea id="edit-bio" placeholder="Quelques mots sur vous…" style="min-height:80px"></textarea>
-    </div>
+    <div class="m-row"><label>Bio</label><textarea id="edit-bio" placeholder="Quelques mots sur vous…" style="min-height:80px"></textarea></div>
     <button class="btn-modal" onclick="saveProfileEdit()">Enregistrer</button>
   </div>
 </div>
@@ -519,18 +440,12 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
       <div class="logo-text">Economist</div>
       <div class="logo-underline"></div>
     </div>
-    <div class="nav-actions" id="nav-actions">
-      <div class="nav-search-wrap">
-        <svg class="nav-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="nav-search-input" type="text" id="nav-search" placeholder="Rechercher…" oninput="doSearch(this.value)" onfocus="doSearch(this.value)" onblur="setTimeout(()=>document.getElementById('srd').classList.remove('open'),200)">
-        <div class="search-results-drop" id="srd"></div>
-      </div>
-    </div>
+    <div class="nav-actions" id="nav-actions"></div>
     <button class="nav-hamburger" id="hamburger" onclick="toggleMobileMenu()">
       <span></span><span></span><span></span>
     </button>
   </div>
-  <div class="nav-cats" id="nav-cats-bar">
+  <div class="nav-cats">
     <div class="cat active" onclick="filterCat(this,'all')">La Une</div>
     <div class="cat" onclick="filterCat(this,'Macroéconomie')">Macroéconomie</div>
     <div class="cat" onclick="filterCat(this,'Finance')">Finance</div>
@@ -550,17 +465,9 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   </div>
 </nav>
 
-<!-- PAGE ACCUEIL -->
-<div id="page-home" class="page active">
-  <div id="home-content"></div>
-</div>
+<div id="page-home" class="page active"><div id="home-content"></div></div>
+<div id="page-article" class="page"><div class="article-page" id="article-content"></div></div>
 
-<!-- PAGE ARTICLE -->
-<div id="page-article" class="page">
-  <div class="article-page" id="article-content"></div>
-</div>
-
-<!-- PAGE PROPOSER -->
 <div id="page-propose" class="page">
   <div class="propose-page">
     <h2>Proposer un <em>article</em></h2>
@@ -571,117 +478,78 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
         <div class="reg-row"><label>Prénom *</label><input type="text" id="r-first" placeholder="Jean"></div>
         <div class="reg-row"><label>Nom *</label><input type="text" id="r-last" placeholder="Dupont"></div>
       </div>
-      <div class="reg-row">
-        <label>Adresse e-mail *</label>
-        <input type="email" id="r-email" placeholder="votre@email.com">
-        <span class="reg-note">Vous recevrez votre code d'accès à cette adresse si votre idée est retenue.</span>
-      </div>
-      <div class="reg-row"><label>Profession / Formation</label><input type="text" id="r-job" placeholder="Économiste, étudiant en finance…"></div>
+      <div class="reg-row"><label>Email *</label><input type="email" id="r-email" placeholder="votre@email.com"><span class="reg-note">Vous recevrez votre code si votre idée est retenue.</span></div>
+      <div class="reg-row"><label>Profession</label><input type="text" id="r-job" placeholder="Économiste, étudiant…"></div>
     </div>
     <div class="reg-card">
       <div class="reg-section">Votre idée</div>
-      <div class="reg-row">
-        <label>Rubrique souhaitée *</label>
-        <select id="r-cat">
-          <option value="">— Sélectionner —</option>
-          <option>Macroéconomie</option><option>Finance</option><option>Marchés</option>
-          <option>Politiques publiques</option><option>Afrique</option><option>Monde</option>
-          <option>Analyses</option><option>Tribunes</option>
-        </select>
+      <div class="reg-row"><label>Rubrique *</label>
+        <select id="r-cat"><option value="">— Sélectionner —</option><option>Macroéconomie</option><option>Finance</option><option>Marchés</option><option>Politiques publiques</option><option>Afrique</option><option>Monde</option><option>Analyses</option><option>Tribunes</option></select>
       </div>
-      <div class="reg-row">
-        <label>Sujet ou idée d'article *</label>
-        <textarea id="r-subject" placeholder="Décrivez brièvement le sujet que vous souhaitez traiter…"></textarea>
-      </div>
-      <div class="reg-row">
-        <label>Motivation (optionnel)</label>
-        <textarea id="r-why" style="min-height:80px" placeholder="Pourquoi ce sujet vous tient-il à cœur ?"></textarea>
-      </div>
+      <div class="reg-row"><label>Sujet *</label><textarea id="r-subject" placeholder="Décrivez brièvement votre idée…"></textarea></div>
+      <div class="reg-row"><label>Motivation (optionnel)</label><textarea id="r-why" style="min-height:80px" placeholder="Pourquoi ce sujet ?"></textarea></div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
       <button class="reg-submit" onclick="submitRequest()">Envoyer ma proposition →</button>
-      <span style="font-family:var(--sans);font-size:.78rem;color:#bbb">* champs obligatoires</span>
+      <span style="font-family:var(--sans);font-size:.78rem;color:#bbb">* obligatoires</span>
     </div>
     <div class="reg-success" id="reg-success">
       <h3>Proposition envoyée.</h3>
-      <p>Votre demande a bien été transmise à la rédaction.<br>
-      Si votre idée est retenue, vous recevrez un code d'accès personnel à <strong id="reg-email-shown"></strong>.</p>
+      <p>Votre demande a été transmise à la rédaction. Si retenue, vous recevrez un code à <strong id="reg-email-shown"></strong>.</p>
     </div>
   </div>
 </div>
 
-<!-- PAGE ÉCRITURE -->
 <div id="page-write" class="page">
   <div class="write-page">
     <h2>Écrire un <em>article</em></h2>
     <p class="write-sub" id="write-gate-sub">Connectez-vous et entrez votre code d'accès pour rédiger.</p>
-
     <div id="write-login-gate" style="display:none;border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2rem 2.5rem;margin-bottom:2rem">
-      <p style="font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.2rem;font-weight:300">Vous devez être connecté pour rédiger un article.</p>
+      <p style="font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.2rem;font-weight:300">Vous devez être connecté pour rédiger.</p>
       <button class="btn-red" onclick="openModal('login')">Se connecter</button>
       <span style="margin:0 .8rem;color:#bbb;font-family:var(--sans);font-size:.85rem">ou</span>
       <button class="btn-outline" onclick="openModal('signup')">Créer un compte</button>
     </div>
-
     <div class="gate" id="code-gate" style="display:none">
       <div class="gate-label">Code d'accès rédacteur</div>
-      <p>Entrez votre code d'accès reçu par e-mail.<br>
-      Pas encore de code ? <span style="color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('propose')">Proposer un article →</span></p>
+      <p>Entrez votre code reçu par e-mail.<br>Pas de code ? <span style="color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('propose')">Proposer un article →</span></p>
       <div class="gate-row">
         <input type="password" id="access-code" placeholder="••••••" maxlength="30" onkeydown="if(event.key==='Enter')checkCode()">
         <button class="btn-red" onclick="checkCode()">Déverrouiller</button>
       </div>
-      <div class="gate-err" id="gate-err">Code incorrect. Veuillez réessayer.</div>
+      <div class="gate-err" id="gate-err">Code incorrect.</div>
     </div>
-
-    <div class="form-hidden" id="write-form">
+    <div style="display:none" id="write-form">
       <div class="form-wrap">
         <div class="form-two-col">
-          <div class="form-row">
-            <label>Rubrique *</label>
-            <select id="f-cat">
-              <option value="">— Sélectionner —</option>
-              <option>Macroéconomie</option><option>Finance</option><option>Marchés</option>
-              <option>Politiques publiques</option><option>Afrique</option><option>Monde</option>
-              <option>Analyses</option><option>Tribunes</option>
-            </select>
+          <div class="form-row"><label>Rubrique *</label>
+            <select id="f-cat"><option value="">— Sélectionner —</option><option>Macroéconomie</option><option>Finance</option><option>Marchés</option><option>Politiques publiques</option><option>Afrique</option><option>Monde</option><option>Analyses</option><option>Tribunes</option></select>
           </div>
-          <div class="form-row">
-            <label>Auteur *</label>
-            <input type="text" id="f-author" placeholder="Prénom Nom">
-          </div>
+          <div class="form-row"><label>Auteur *</label><input type="text" id="f-author" placeholder="Prénom Nom"></div>
         </div>
-        <div class="form-row">
-          <label>Titre *</label>
-          <input type="text" id="f-title" placeholder="Un titre précis et accrocheur…" oninput="updateCount('f-title','tc',80)">
-          <div style="display:flex;justify-content:space-between"><span class="hint">80 caractères recommandés</span><span class="char-count" id="tc">0 / 80</span></div>
-        </div>
-        <div class="form-row">
-          <label>Chapeau *</label>
-          <textarea id="f-deck" rows="3" placeholder="Un résumé de 2-3 lignes…" oninput="updateCount('f-deck','dc',250)"></textarea>
-          <div style="display:flex;justify-content:space-between"><span class="hint">Affiché en italique sous le titre</span><span class="char-count" id="dc">0 / 250</span></div>
-        </div>
-        <div class="form-row">
-          <label>Image de couverture (optionnel)</label>
-          <div class="img-upload-zone" id="cover-zone" onclick="document.getElementById('f-img-file').click()">
+        <div class="form-row"><label>Titre *</label><input type="text" id="f-title" placeholder="Un titre précis…" oninput="updateCount('f-title','tc',80)">
+          <div style="display:flex;justify-content:space-between"><span class="hint">80 caractères</span><span class="char-count" id="tc">0 / 80</span></div></div>
+        <div class="form-row"><label>Chapeau *</label><textarea id="f-deck" rows="3" placeholder="Résumé 2-3 lignes…" oninput="updateCount('f-deck','dc',250)"></textarea>
+          <div style="display:flex;justify-content:space-between"><span class="hint">En italique sous le titre</span><span class="char-count" id="dc">0 / 250</span></div></div>
+        <div class="form-row"><label>Image de couverture (optionnel)</label>
+          <div class="img-upload-zone" onclick="document.getElementById('f-img-file').click()">
             <div id="cover-placeholder">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
               <span>Cliquer pour charger une image</span>
-              <span class="hint" style="margin-top:4px">JPG, PNG, WebP · ou entrez une URL ci-dessous</span>
+              <span class="hint" style="margin-top:4px">JPG, PNG, WebP · ou URL ci-dessous</span>
             </div>
             <img id="cover-preview" style="display:none;width:100%;height:100%;object-fit:cover">
           </div>
           <input type="file" id="f-img-file" accept="image/*" style="display:none" onchange="handleCoverUpload(event)">
           <input type="url" id="f-img" placeholder="https://… (URL alternative)" style="margin-top:.5rem;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.6rem 1rem;outline:none;width:100%" oninput="handleCoverUrl(this.value)">
         </div>
-        <div class="form-row">
-          <label>Corps de l'article *</label>
+        <div class="form-row"><label>Corps de l'article *</label>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem">
             <div class="editor-toolbar">
               <button type="button" class="tb-btn" onclick="insertBlock('paragraph')">¶ Paragraphe</button>
               <button type="button" class="tb-btn" onclick="insertBlock('h2')">H2</button>
               <button type="button" class="tb-btn" onclick="insertBlock('h3')">H3</button>
-              <button type="button" class="tb-img tb-btn" onclick="triggerInlineImg()">🖼 Image</button>
+              <button type="button" class="tb-btn" style="background:#fff8f8;border-color:rgba(139,26,26,0.2)" onclick="triggerInlineImg()">🖼 Image</button>
               <button type="button" class="tb-btn" onclick="insertBlock('quote')">« Citation</button>
               <button type="button" class="tb-btn" onclick="insertBlock('separator')">— —</button>
             </div>
@@ -693,11 +561,11 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
           <button class="btn-publish" id="btn-publish" onclick="publishArticle()">Publier →</button>
-          <span style="font-family:var(--sans);font-size:.78rem;color:#bbb">* champs obligatoires</span>
+          <span style="font-family:var(--sans);font-size:.78rem;color:#bbb">* obligatoires</span>
         </div>
         <div class="success-msg" id="success-msg">
           <h3>Article publié.</h3>
-          <p>Votre article est maintenant visible par tous les visiteurs et utilisateurs du site.</p>
+          <p>Visible par tous les visiteurs du site, sur tous les appareils.</p>
           <span class="view-link" onclick="goToNewArticle()">Lire mon article →</span>
         </div>
       </div>
@@ -705,16 +573,14 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   </div>
 </div>
 
-<!-- PAGE MES STATISTIQUES -->
 <div id="page-mystats" class="page">
   <div class="my-stats-page">
     <h2>Mes <em>statistiques</em></h2>
-    <p style="font-family:var(--sans);font-size:.9rem;color:var(--gris);margin-bottom:2.5rem;font-weight:300">Tableau de bord privé — visible uniquement par vous.</p>
+    <p style="font-family:var(--sans);font-size:.9rem;color:var(--gris);margin-bottom:2.5rem;font-weight:300">Tableau de bord privé.</p>
     <div id="my-stats-content"></div>
   </div>
 </div>
 
-<!-- PAGE ADMIN -->
 <div id="page-admin" class="page">
   <div class="admin-page">
     <h2>Espace <em>Admin</em></h2>
@@ -722,17 +588,13 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   </div>
 </div>
 
-<!-- PAGE PROFIL -->
 <div id="page-profile" class="page">
   <div class="profile-page" id="profile-content"></div>
 </div>
 
 <footer>
   <div class="foot-top">
-    <div>
-      <div class="foot-logo-e">E</div>
-      <div class="foot-sub">Economist</div>
-    </div>
+    <div><div class="foot-logo-e">E</div><div class="foot-sub">Economist</div></div>
     <div class="foot-links">
       <span class="foot-link">À propos</span>
       <span class="foot-link" onclick="showPage('propose')">Proposer un article</span>
@@ -743,215 +605,139 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 </footer>
 
 <script>
-// ═══════════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════════
-const VALID_CODES = ["economist2026"];
-const OWNER_EMAIL = "theseeconomists@gmail.com";
+// ═══════════════ CONFIG ═══════════════
+const VALID_CODES  = ["economist2026"];
+const OWNER_EMAIL  = "theseeconomists@gmail.com";
+const MM = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
-// ═══════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════
-let articles = [];
-let users = [];
-let currentUser = null;
-let lastPublishedId = null;
-let visitorCount = 0;
-let pageViews = 0;
+// ═══════════════ STATE ═══════════════
+let articles = [], users = [], currentUser = null, lastPublishedId = null;
 let currentActiveCat = 'all';
+let _db, _ref, _set, _get, _push, _remove, _onValue;
+let fbReady = false;
 
-// ═══════════════════════════════════════════════
-// SHARED STORAGE — clé partagée entre TOUS les utilisateurs
-// ═══════════════════════════════════════════════
-const DB = {
-  async get(key) {
-    try {
-      if (window.storage) {
-        const r = await window.storage.get(key, true);
-        return r ? r.value : null;
-      }
-      return localStorage.getItem(key);
-    } catch(e) { return null; }
-  },
-  async set(key, value) {
-    try {
-      if (window.storage) {
-        await window.storage.set(key, value, true);
-      } else {
-        localStorage.setItem(key, value);
-      }
-    } catch(e) {}
-  },
-  async del(key) {
-    try {
-      if (window.storage) await window.storage.delete(key, true);
-      else localStorage.removeItem(key);
-    } catch(e) {}
-  }
-};
+// ═══════════════ FIREBASE INIT ═══════════════
+document.addEventListener('fb-ready', () => {
+  const fb = window._fb;
+  _db = fb.db; _ref = fb.ref; _set = fb.set; _get = fb.get;
+  _push = fb.push; _remove = fb.remove; _onValue = fb.onValue;
+  fbReady = true;
+  init();
+});
 
-// Session locale (email seulement — reconnexion via la base partagée)
-function saveLocalSession(email) {
-  try { localStorage.setItem('eco_session_email', email); } catch(e){}
+
+
+// ═══════════════ DB HELPERS ═══════════════
+async function dbGet(path) {
+  const snap = await _get(_ref(_db, path));
+  return snap.exists() ? snap.val() : null;
 }
-function getLocalSessionEmail() {
-  try { return localStorage.getItem('eco_session_email'); } catch(e){ return null; }
-}
-function clearLocalSession() {
-  try { localStorage.removeItem('eco_session_email'); } catch(e){}
+async function dbSet(path, val) {
+  await _set(_ref(_db, path), val);
 }
 
-// ═══════════════════════════════════════════════
-// LOAD / SAVE
-// ═══════════════════════════════════════════════
-async function loadSharedData() {
-  try { const v = await DB.get('eco_articles'); articles = v ? JSON.parse(v) : []; } catch(e){ articles=[]; }
-  try { const v = await DB.get('eco_users');    users = v ? JSON.parse(v) : [];    } catch(e){ users=[];    }
-  try { const v = await DB.get('eco_visitors'); visitorCount = v ? parseInt(v) : 0; } catch(e){ visitorCount=0; }
-  try { const v = await DB.get('eco_pageviews'); pageViews = v ? parseInt(v) : 0; } catch(e){ pageViews=0; }
-
-  // Reconnexion automatique multi-appareils
-  if (!currentUser) {
-    const email = getLocalSessionEmail();
-    if (email) {
-      const found = users.find(u => u.email === email);
-      if (found) currentUser = found;
-    }
-  }
-
-  // Compteur visiteurs
-  if (!sessionStorage.getItem('eco_visited')) {
-    visitorCount++;
-    await DB.set('eco_visitors', String(visitorCount));
-    sessionStorage.setItem('eco_visited','1');
-  }
+// ═══════════════ LOAD DATA ═══════════════
+async function loadData() {
+  const [arts, usrs] = await Promise.all([
+    dbGet('articles'),
+    dbGet('users')
+  ]);
+  articles = arts ? Object.values(arts) : [];
+  // Normaliser : trier par id
+  articles.sort((a,b) => (a.id||0) - (b.id||0));
+  users    = usrs ? Object.values(usrs) : [];
 }
 
-async function saveArticles() { await DB.set('eco_articles', JSON.stringify(articles)); }
-async function saveUsers()    { await DB.set('eco_users',    JSON.stringify(users));    }
+async function saveArticle(a) {
+  await dbSet(`articles/${a.id}`, a);
+}
+async function deleteArticleDB(id) {
+  await _remove(_ref(_db, `articles/${id}`));
+}
+async function saveUser(u) {
+  // Clé = email encodé
+  const key = u.email.replace(/\./g,'_').replace(/@/g,'__at__');
+  await dbSet(`users/${key}`, u);
+}
 
-// ═══════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════
-const MM=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+// ═══════════════ SESSION ═══════════════
+function saveLocalSession(email) { try{localStorage.setItem('eco_email',email);}catch(e){} }
+function getLocalEmail()         { try{return localStorage.getItem('eco_email');}catch(e){return null;} }
+function clearLocalSession()     { try{localStorage.removeItem('eco_email');}catch(e){} }
+
+// ═══════════════ HELPERS ═══════════════
 function today(){ const d=new Date(); return `${d.getDate()} ${MM[d.getMonth()]} ${d.getFullYear()}`; }
 function readTime(body){ const w=(body||'').trim().split(/\s+/).length; return `${Math.max(1,Math.round(w/200))} min`; }
 function isOwner(){ return currentUser && currentUser.email.toLowerCase()===OWNER_EMAIL.toLowerCase(); }
-
-function showToast(msg, dur=3200){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), dur);
+function showToast(msg,dur=3200){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+function avHtml(u,size=28){
+  if(u&&u.avatar) return `<img src="${u.avatar}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:1.5px solid var(--rouge)">`;
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:${size*0.4}px;color:white;flex-shrink:0">${((u&&u.first?u.first[0]:'')+((u&&u.last?u.last[0]:'')||'')).toUpperCase()||'?'}</div>`;
 }
 
-function avatarHtml(u, size=28){
-  if(u && u.avatar) return `<img class="nav-user-avatar" src="${u.avatar}" style="width:${size}px;height:${size}px" alt="">`;
-  return `<div class="nav-user-dot"></div>`;
-}
-
-// ═══════════════════════════════════════════════
-// NAV
-// ═══════════════════════════════════════════════
+// ═══════════════ NAV ═══════════════
 function renderNav(){
-  const el  = document.getElementById('nav-actions');
-  const mob = document.getElementById('mob-actions');
-
-  document.getElementById('nav-cats-write').style.display   = currentUser ? '' : 'none';
-  document.getElementById('nav-cats-mystats').style.display = currentUser ? '' : 'none';
-  document.getElementById('nav-cats-admin').style.display   = isOwner()  ? '' : 'none';
-  document.getElementById('nav-cats-login').style.display   = currentUser ? 'none' : '';
-  document.getElementById('nav-cats-logout').style.display  = currentUser ? '' : 'none';
-
-  const mobWrite   = document.getElementById('mob-write-item');
-  const mobMystats = document.getElementById('mob-mystats-item');
-  const mobAdmin   = document.getElementById('mob-admin-item');
-  if(mobWrite)   mobWrite.style.display   = currentUser ? '' : 'none';
-  if(mobMystats) mobMystats.style.display = currentUser ? '' : 'none';
-  if(mobAdmin)   mobAdmin.style.display   = isOwner()   ? '' : 'none';
+  const el=document.getElementById('nav-actions');
+  const mob=document.getElementById('mob-actions');
+  document.getElementById('nav-cats-write').style.display   = currentUser?'':'none';
+  document.getElementById('nav-cats-mystats').style.display = currentUser?'':'none';
+  document.getElementById('nav-cats-admin').style.display   = isOwner()?'':'none';
+  document.getElementById('nav-cats-login').style.display   = currentUser?'none':'';
+  document.getElementById('nav-cats-logout').style.display  = currentUser?'':'none';
+  ['mob-write-item','mob-mystats-item'].forEach(id=>{ const e=document.getElementById(id); if(e)e.style.display=currentUser?'':'none'; });
+  const mi=document.getElementById('mob-admin-item'); if(mi)mi.style.display=isOwner()?'':'none';
 
   if(currentUser){
     el.innerHTML=`
       <div class="nav-search-wrap">
         <svg class="nav-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="nav-search-input" type="text" id="nav-search" placeholder="Rechercher…" oninput="doSearch(this.value)" onfocus="doSearch(this.value)" onblur="setTimeout(()=>document.getElementById('srd').classList.remove('open'),200)">
-        <div class="search-results-drop" id="srd"></div>
+        <input class="nav-search-input" type="text" placeholder="Rechercher…" oninput="doSearch(this.value)" onfocus="doSearch(this.value)" onblur="setTimeout(()=>document.getElementById('srd-drop').classList.remove('open'),200)">
+        <div class="srd" id="srd-drop"></div>
       </div>
-      <div class="nav-user" onclick="showPage('profile');openProfile(currentUser.email)">
-        ${avatarHtml(currentUser)}
-        <span>${currentUser.first} ${currentUser.last[0]}.</span>
-        ${isOwner()?'<span style="font-family:var(--sans);font-size:8.5px;color:var(--rouge);letter-spacing:.1em">ADMIN</span>':''}
-      </div>
+      <div class="nav-user" onclick="showPage('profile');openProfile(currentUser.email)">${avHtml(currentUser)}<span>${currentUser.first} ${currentUser.last[0]}.</span>${isOwner()?'<span style="font-family:var(--sans);font-size:8.5px;color:var(--rouge);letter-spacing:.1em">ADMIN</span>':''}</div>
       <button class="btn-red" onclick="showPage('write')">Écrire</button>
-      <button class="btn-outline" onclick="doLogout()">Déconnexion</button>
-    `;
+      <button class="btn-outline" onclick="doLogout()">Déconnexion</button>`;
     mob.innerHTML=`
-      <div class="nav-user" onclick="closeMobileMenu();showPage('profile');openProfile(currentUser.email)" style="display:flex;align-items:center;gap:.6rem;padding:.5rem 0">
-        ${avatarHtml(currentUser,32)}
-        <span style="font-family:var(--sans);font-size:11px">${currentUser.first} ${currentUser.last}${isOwner()?' · Admin':''}</span>
-      </div>
+      <div class="nav-user" onclick="closeMobileMenu();showPage('profile');openProfile(currentUser.email)" style="display:flex;align-items:center;gap:.6rem;padding:.5rem 0">${avHtml(currentUser,32)}<span style="font-family:var(--sans);font-size:11px">${currentUser.first} ${currentUser.last}${isOwner()?' · Admin':''}</span></div>
       <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('write')">✏ Écrire un article</button>
       <button class="btn-outline" style="width:100%" onclick="closeMobileMenu();showPage('mystats')">📊 Mes statistiques</button>
       ${isOwner()?`<button class="btn-outline" style="width:100%;border-color:var(--rouge);color:var(--rouge)" onclick="closeMobileMenu();showPage('admin')">⚙ Admin</button>`:''}
-      <button class="btn-outline" style="width:100%" onclick="doLogout();closeMobileMenu()">Déconnexion</button>
-    `;
+      <button class="btn-outline" style="width:100%" onclick="doLogout();closeMobileMenu()">Déconnexion</button>`;
   } else {
     el.innerHTML=`
       <div class="nav-search-wrap">
         <svg class="nav-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="nav-search-input" type="text" id="nav-search" placeholder="Rechercher…" oninput="doSearch(this.value)" onfocus="doSearch(this.value)" onblur="setTimeout(()=>document.getElementById('srd').classList.remove('open'),200)">
-        <div class="search-results-drop" id="srd"></div>
+        <input class="nav-search-input" type="text" placeholder="Rechercher…" oninput="doSearch(this.value)" onfocus="doSearch(this.value)" onblur="setTimeout(()=>document.getElementById('srd-drop').classList.remove('open'),200)">
+        <div class="srd" id="srd-drop"></div>
       </div>
       <button class="btn-outline" onclick="openModal('login')">Connexion</button>
-      <button class="btn-red" onclick="showPage('propose')">Proposer un article</button>
-    `;
+      <button class="btn-red" onclick="showPage('propose')">Proposer un article</button>`;
     mob.innerHTML=`
       <button class="btn-outline" style="width:100%" onclick="closeMobileMenu();openModal('login')">Connexion</button>
-      <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('propose')">Proposer un article</button>
-    `;
+      <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('propose')">Proposer un article</button>`;
   }
 }
 
-// ═══════════════════════════════════════════════
-// MOBILE MENU
-// ═══════════════════════════════════════════════
-function toggleMobileMenu(){
-  ['mob-menu','mob-overlay','hamburger'].forEach(id=>document.getElementById(id).classList.toggle('open'));
-}
-function closeMobileMenu(){
-  ['mob-menu','mob-overlay','hamburger'].forEach(id=>document.getElementById(id).classList.remove('open'));
-}
-function navGo(page){ closeMobileMenu(); showPage(page); }
+// ═══════════════ MOBILE ═══════════════
+function toggleMobileMenu(){ ['mob-menu','mob-overlay','hamburger'].forEach(id=>document.getElementById(id).classList.toggle('open')); }
+function closeMobileMenu(){ ['mob-menu','mob-overlay','hamburger'].forEach(id=>document.getElementById(id).classList.remove('open')); }
+function navGo(p){ closeMobileMenu(); showPage(p); }
 
-// ═══════════════════════════════════════════════
-// SEARCH
-// ═══════════════════════════════════════════════
+// ═══════════════ SEARCH ═══════════════
 function doSearch(q){
-  const srd=document.getElementById('srd');if(!srd)return;
+  const srd=document.getElementById('srd-drop'); if(!srd)return;
   if(!q||q.length<2){srd.classList.remove('open');return;}
   const ql=q.toLowerCase();
   const arts=articles.filter(a=>a.title.toLowerCase().includes(ql)||(a.deck||'').toLowerCase().includes(ql)||a.author.toLowerCase().includes(ql)||a.cat.toLowerCase().includes(ql)).slice(0,5);
   const usrs=users.filter(u=>(u.first+' '+u.last).toLowerCase().includes(ql)||(u.bio||'').toLowerCase().includes(ql)).slice(0,4);
-  if(!arts.length&&!usrs.length){
-    srd.innerHTML=`<div style="padding:1.2rem;font-family:var(--sans);font-size:.85rem;color:#aaa;text-align:center">Aucun résultat pour « ${q} »</div>`;
-    srd.classList.add('open');return;
-  }
-  let html='';
-  if(arts.length){
-    html+=`<div class="srd-section">Articles</div>`;
-    html+=arts.map(a=>`<div class="srd-item" onclick="openArticle(${a.id});document.getElementById('srd').classList.remove('open')">
-      <div class="srd-cat">${a.cat}</div><div class="srd-title">${a.title}</div>
-      <div class="srd-author">Par ${a.author} · ${a.date}</div></div>`).join('');
-  }
-  if(usrs.length){
-    html+=`<div class="srd-section">Rédacteurs</div>`;
-    html+=usrs.map(u=>{
-      const av=u.avatar?`<img src="${u.avatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:32px;height:32px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:.9rem;color:white;flex-shrink:0">${(u.first[0]+(u.last[0]||'')).toUpperCase()}</div>`;
-      const n=articles.filter(a=>a.author===u.first+' '+u.last).length;
-      return `<div class="srd-item" style="display:flex;align-items:center;gap:.8rem" onclick="showPage('profile');openProfile('${u.email}');document.getElementById('srd').classList.remove('open')">
-        ${av}<div><div class="srd-title">${u.first} ${u.last}</div><div class="srd-author">${n} article${n!==1?'s':''} · Membre depuis ${u.joined||'—'}</div></div></div>`;
-    }).join('');
-  }
-  srd.innerHTML=html;srd.classList.add('open');
+  if(!arts.length&&!usrs.length){srd.innerHTML=`<div style="padding:1rem;font-family:var(--sans);font-size:.85rem;color:#aaa;text-align:center">Aucun résultat</div>`;srd.classList.add('open');return;}
+  let h='';
+  if(arts.length){ h+=`<div class="srd-section">Articles</div>`+arts.map(a=>`<div class="srd-item" onclick="openArticle(${a.id});document.getElementById('srd-drop').classList.remove('open')"><div class="srd-cat">${a.cat}</div><div class="srd-title">${a.title}</div><div class="srd-author">Par ${a.author} · ${a.date}</div></div>`).join(''); }
+  if(usrs.length){ h+=`<div class="srd-section">Membres</div>`+usrs.map(u=>`<div class="srd-item" style="display:flex;align-items:center;gap:.8rem" onclick="showPage('profile');openProfile('${u.email}');document.getElementById('srd-drop').classList.remove('open')">${avHtml(u,32)}<div><div class="srd-title">${u.first} ${u.last}</div><div class="srd-author">${articles.filter(a=>a.author===u.first+' '+u.last).length} articles · ${u.joined||'—'}</div></div></div>`).join(''); }
+  srd.innerHTML=h; srd.classList.add('open');
 }
 
 function doMobSearch(q){
@@ -961,48 +747,36 @@ function doMobSearch(q){
   const arts=articles.filter(a=>a.title.toLowerCase().includes(ql)||a.author.toLowerCase().includes(ql)).slice(0,4);
   const usrs=users.filter(u=>(u.first+' '+u.last).toLowerCase().includes(ql)).slice(0,3);
   if(!arts.length&&!usrs.length){box.innerHTML=`<div style="padding:.8rem;font-family:var(--sans);font-size:.83rem;color:#aaa">Aucun résultat</div>`;box.style.display='block';return;}
-  let html='';
-  if(arts.length){
-    html+=`<div style="padding:.4rem .8rem;font-family:var(--sans);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;background:#f8f8f8;border-bottom:.5px solid var(--gris-clair)">Articles</div>`;
-    arts.forEach(a=>{html+=`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--serif-text);font-size:.9rem" onclick="closeMobileMenu();openArticle(${a.id})">${a.title}</div>`;});
-  }
-  if(usrs.length){
-    html+=`<div style="padding:.4rem .8rem;font-family:var(--sans);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;background:#f8f8f8;border-bottom:.5px solid var(--gris-clair)">Rédacteurs</div>`;
-    usrs.forEach(u=>{html+=`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--sans);font-size:.85rem" onclick="closeMobileMenu();showPage('profile');openProfile('${u.email}')">${u.first} ${u.last}</div>`;});
-  }
-  box.innerHTML=html;box.style.display='block';
+  let h='';
+  if(arts.length){h+='<div style="padding:.4rem .8rem;font-family:var(--sans);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;background:#f8f8f8;border-bottom:.5px solid var(--gris-clair)">Articles</div>'+arts.map(a=>`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--serif-text);font-size:.9rem" onclick="closeMobileMenu();openArticle(${a.id})">${a.title}</div>`).join('');}
+  if(usrs.length){h+='<div style="padding:.4rem .8rem;font-family:var(--sans);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;background:#f8f8f8;border-bottom:.5px solid var(--gris-clair)">Membres</div>'+usrs.map(u=>`<div style="padding:.7rem 1rem;border-bottom:.5px solid var(--gris-clair);cursor:pointer;font-family:var(--sans);font-size:.85rem" onclick="closeMobileMenu();showPage('profile');openProfile('${u.email}')">${u.first} ${u.last}</div>`).join('');}
+  box.innerHTML=h;box.style.display='block';
 }
 
-// ═══════════════════════════════════════════════
-// MODAL AUTH
-// ═══════════════════════════════════════════════
+// ═══════════════ MODAL AUTH ═══════════════
 function openModal(tab){ document.getElementById('auth-modal').classList.add('open'); switchTab(tab||'login'); }
 function closeModal(){ document.getElementById('auth-modal').classList.remove('open'); }
-document.getElementById('auth-modal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+document.getElementById('auth-modal').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeModal(); });
 function switchTab(tab){
-  document.querySelectorAll('.modal-tab').forEach((t,i)=>{
-    t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='signup'));
-  });
+  document.querySelectorAll('.modal-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='signup')));
   document.getElementById('tab-login').classList.toggle('active',tab==='login');
   document.getElementById('tab-signup').classList.toggle('active',tab==='signup');
 }
 
-// ═══════════════════════════════════════════════
-// AUTH — connexion multi-appareils
-// ═══════════════════════════════════════════════
+// ═══════════════ AUTH ═══════════════
 async function doLogin(){
   const btn=document.getElementById('btn-login');
   const email=document.getElementById('login-email').value.trim().toLowerCase();
   const pwd  =document.getElementById('login-pwd').value;
-  btn.innerHTML='<span class="spinner"></span> Connexion…';btn.disabled=true;
-  await loadSharedData(); // recharge pour avoir les derniers comptes
+  if(!email||!pwd)return;
+  btn.innerHTML='<span class="spinner"></span>…';btn.disabled=true;
+  await loadData(); // recharger depuis Firebase
   const u=users.find(u=>u.email===email&&u.pwd===pwd);
   btn.textContent='Se connecter';btn.disabled=false;
-  if(!u){ document.getElementById('login-err').style.display='block'; return; }
+  if(!u){document.getElementById('login-err').style.display='block';return;}
   document.getElementById('login-err').style.display='none';
-  currentUser=u;
-  saveLocalSession(u.email);
-  closeModal(); renderNav();
+  currentUser=u; saveLocalSession(u.email);
+  closeModal(); renderNav(); renderHome(currentActiveCat);
   showToast(`Bienvenue, ${u.first} !`);
 }
 
@@ -1012,99 +786,79 @@ async function doSignup(){
   const last =document.getElementById('su-last').value.trim();
   const email=document.getElementById('su-email').value.trim().toLowerCase();
   const pwd  =document.getElementById('su-pwd').value;
-  const errEl=document.getElementById('su-err');
-  const okEl =document.getElementById('su-ok');
+  const errEl=document.getElementById('su-err'),okEl=document.getElementById('su-ok');
   if(!first||!last||!email||!pwd||pwd.length<8){
-    errEl.textContent=(!pwd||pwd.length<8)?'Le mot de passe doit faire au moins 8 caractères.':'Veuillez remplir tous les champs.';
+    errEl.textContent=pwd.length<8?'Mot de passe trop court (8 min).':'Remplissez tous les champs.';
     errEl.style.display='block';okEl.style.display='none';return;
   }
-  btn.innerHTML='<span class="spinner"></span> Création…';btn.disabled=true;
-  await loadSharedData(); // vérif en temps réel
+  btn.innerHTML='<span class="spinner"></span>…';btn.disabled=true;
+  await loadData();
   if(users.find(u=>u.email===email)){
-    errEl.textContent='Cet email est déjà utilisé.';errEl.style.display='block';okEl.style.display='none';
+    errEl.textContent='Email déjà utilisé.';errEl.style.display='block';okEl.style.display='none';
     btn.textContent='Créer mon compte';btn.disabled=false;return;
   }
-  errEl.style.display='none';
   const u={first,last,email,pwd,joined:today(),avatar:'',bio:''};
-  users.push(u); await saveUsers();
+  users.push(u); await saveUser(u);
   currentUser=u; saveLocalSession(u.email);
-  okEl.style.display='block';
-  setTimeout(()=>{ closeModal(); renderNav(); showToast(`Compte créé ! Bienvenue, ${first} !`); },1200);
+  errEl.style.display='none';okEl.style.display='block';
+  setTimeout(()=>{closeModal();renderNav();showToast(`Compte créé ! Bienvenue, ${first} !`);},1000);
   btn.textContent='Créer mon compte';btn.disabled=false;
 }
 
 function doLogout(){
-  currentUser=null; clearLocalSession();
-  renderNav(); showPage('home');
-  showToast('Vous êtes déconnecté.');
+  currentUser=null;clearLocalSession();
+  renderNav();showPage('home');showToast('Vous êtes déconnecté.');
 }
 
-// ═══════════════════════════════════════════════
-// PROFILE EDIT
-// ═══════════════════════════════════════════════
+// ═══════════════ PROFILE EDIT ═══════════════
 let editAvatarBase64=null;
 function openProfileEdit(){
-  if(!currentUser)return;
-  editAvatarBase64=null;
+  if(!currentUser)return; editAvatarBase64=null;
   const prev=document.getElementById('edit-avatar-preview');
-  if(currentUser.avatar){ prev.innerHTML=`<img src="${currentUser.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`; }
-  else { prev.innerHTML=(currentUser.first[0]+(currentUser.last[0]||'')).toUpperCase(); prev.style.background='var(--rouge)'; }
+  if(currentUser.avatar){prev.innerHTML=`<img src="${currentUser.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;}
+  else{prev.textContent=(currentUser.first[0]+(currentUser.last[0]||'')).toUpperCase();prev.style.background='var(--rouge)';}
   document.getElementById('edit-bio').value=currentUser.bio||'';
   document.getElementById('profile-edit-modal').classList.add('open');
 }
 function closeProfileEdit(){ document.getElementById('profile-edit-modal').classList.remove('open'); }
-document.getElementById('profile-edit-modal').addEventListener('click',function(e){ if(e.target===this) closeProfileEdit(); });
+document.getElementById('profile-edit-modal').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeProfileEdit(); });
 function handleAvatarUpload(e){
-  const file=e.target.files[0];if(!file)return;
-  if(file.size>2*1024*1024){showToast('Image trop lourde (max 2Mo)');return;}
+  const file=e.target.files[0]; if(!file)return;
+  if(file.size>1.5*1024*1024){showToast('Image trop lourde (max 1.5Mo)');return;}
   const r=new FileReader();r.onload=ev=>{
     editAvatarBase64=ev.target.result;
-    const prev=document.getElementById('edit-avatar-preview');
-    prev.innerHTML=`<img src="${editAvatarBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    document.getElementById('edit-avatar-preview').innerHTML=`<img src="${editAvatarBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
   };r.readAsDataURL(file);e.target.value='';
 }
 async function saveProfileEdit(){
   if(!currentUser)return;
   const bio=document.getElementById('edit-bio').value.trim();
-  const idx=users.findIndex(u=>u.email===currentUser.email);
-  if(idx===-1)return;
+  const idx=users.findIndex(u=>u.email===currentUser.email); if(idx===-1)return;
   if(editAvatarBase64) users[idx].avatar=editAvatarBase64;
   users[idx].bio=bio;
   currentUser=users[idx];
   saveLocalSession(currentUser.email);
-  await saveUsers();
-  closeProfileEdit(); renderNav(); openProfile(currentUser.email);
+  await saveUser(currentUser);
+  closeProfileEdit();renderNav();openProfile(currentUser.email);
   showToast('Profil mis à jour !');
 }
 
-// ═══════════════════════════════════════════════
-// NAVIGATION / PAGES
-// ═══════════════════════════════════════════════
+// ═══════════════ NAVIGATION ═══════════════
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const pg=document.getElementById('page-'+name);
-  if(!pg)return;
+  const pg=document.getElementById('page-'+name); if(!pg)return;
   pg.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
-  pageViews++;
-  DB.set('eco_pageviews',String(pageViews));
-  if(name==='home')    { loadSharedData().then(()=>renderHome(currentActiveCat)); }
+  if(name==='home')    { loadData().then(()=>renderHome(currentActiveCat)); }
   if(name==='write')   renderWritePage();
-  if(name==='mystats') { loadSharedData().then(()=>renderMyStats()); }
-  if(name==='admin')   { loadSharedData().then(()=>renderAdmin()); }
+  if(name==='mystats') { loadData().then(()=>renderMyStats()); }
+  if(name==='admin')   { loadData().then(()=>renderAdmin()); }
 }
-
 function filterCat(el,cat){
   document.querySelectorAll('.cat:not(.nav-link-item)').forEach(c=>c.classList.remove('active'));
-  if(el) el.classList.add('active');
-  currentActiveCat=cat;
-  showPage('home');
-  renderHome(cat);
+  if(el)el.classList.add('active');
+  currentActiveCat=cat; showPage('home'); renderHome(cat);
 }
-
-// ═══════════════════════════════════════════════
-// REVEAL ANIMATION
-// ═══════════════════════════════════════════════
 function triggerReveal(){
   setTimeout(()=>{
     document.querySelectorAll('.reveal').forEach(el=>{
@@ -1115,144 +869,100 @@ function triggerReveal(){
   },50);
 }
 
-// ═══════════════════════════════════════════════
-// HOME — tous les articles publics
-// ═══════════════════════════════════════════════
-function renderHome(cat){
-  const wrap=document.getElementById('home-content');
-  const all=[...articles].reverse();
-  const filtered=cat==='all'?all:all.filter(a=>a.cat===cat);
-
-  if(filtered.length===0){
-    wrap.innerHTML=`<div class="empty-state reveal">
-      <div class="empty-anim"><span></span><span></span><span></span></div>
-      <h2>Something <em>powerful</em><br>is coming.</h2>
-      <p>Une plateforme de média économique et de recherche,<br>dédiée à l'<strong style="font-weight:500">Afrique</strong>, avec une <strong style="font-weight:500;color:var(--rouge)">perspective mondiale</strong>.</p>
-      <p style="margin-top:.5rem">${cat==='all'?'Les articles publiés apparaîtront ici.':'Aucun article dans la rubrique « '+cat+' » pour l\'instant.'}</p>
-      <span class="empty-cta" onclick="showPage('propose')">Proposer un article →</span>
-    </div>`;
-    triggerReveal();return;
-  }
-
-  const hero=filtered[0];
-  const rest=filtered.slice(1);
-  const catLabel=cat==='all'?'Tous les articles':cat;
-  const isMobile=window.innerWidth<768;
-
-  // Identique desktop & mobile — layout adaptatif
-  if(isMobile){
-    wrap.innerHTML=`
-      <div class="sec-wrap reveal" style="padding-bottom:1rem">
-        <div style="cursor:pointer;border-bottom:.5px solid var(--gris-clair);padding-bottom:2rem" onclick="openArticle(${hero.id})">
-          ${hero.img?`<div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1rem"><img src="${hero.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
-          <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.5rem">${hero.cat}</div>
-          <h1 style="font-family:var(--serif);font-size:clamp(1.6rem,5vw,2.4rem);font-weight:400;line-height:1.2;margin-bottom:.8rem">${hero.title}</h1>
-          <p style="font-family:var(--serif-text);font-size:.95rem;line-height:1.7;color:#444;margin-bottom:1rem;font-style:italic">${hero.deck}</p>
-          <div style="display:flex;flex-wrap:wrap;gap:.6rem;font-family:var(--sans);font-size:10px;letter-spacing:.08em;color:var(--gris);text-transform:uppercase">
-            <span>${hero.author}</span><span class="dot"></span><span>${hero.date}</span><span class="dot"></span><span>${readTime(hero.body)}</span>
-          </div>
-        </div>
-      </div>
-      ${rest.length>0?`<div class="sec-wrap reveal" style="padding-top:1.5rem">
-        <div class="sec-head"><span class="sec-name">${catLabel}</span></div>
-        <div class="grid-articles">${rest.map(a=>artCardHtml(a)).join('')}</div>
-      </div>`:''}
-    `;
-  } else {
-    wrap.innerHTML=`
-      <div class="sec-wrap reveal" style="padding-bottom:1rem">
-        <div style="display:grid;grid-template-columns:1fr 320px;gap:0;border-bottom:.5px solid var(--gris-clair)">
-          <div style="padding-right:3rem;border-right:.5px solid var(--gris-clair);padding-bottom:3rem;cursor:pointer" onclick="openArticle(${hero.id})">
-            ${hero.img?`<div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1.5rem"><img src="${hero.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
-            <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.8rem">${hero.cat}</div>
-            <h1 style="font-family:var(--serif);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:400;line-height:1.15;margin-bottom:1rem">${hero.title}</h1>
-            <p style="font-family:var(--serif-text);font-size:1rem;line-height:1.75;color:#444;margin-bottom:1.4rem;font-style:italic">${hero.deck}</p>
-            <div style="display:flex;align-items:center;gap:1rem;font-family:var(--sans);font-size:10px;letter-spacing:.08em;color:var(--gris);text-transform:uppercase">
-              <span>${hero.author}</span><span class="dot"></span><span>${hero.date}</span><span class="dot"></span><span>${readTime(hero.body)}</span>
-            </div>
-          </div>
-          <div style="padding-left:2.5rem;padding-top:.5rem">
-            <div style="font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);margin-bottom:1.5rem;padding-bottom:.7rem;border-bottom:.5px solid var(--gris-clair)">À lire aussi</div>
-            ${rest.slice(0,4).map(a=>`
-              <div style="padding:1.1rem 0;border-bottom:.5px solid var(--gris-clair);cursor:pointer;display:flex;gap:.9rem;align-items:flex-start" onclick="openArticle(${a.id})">
-                ${a.img?`<div style="width:72px;height:52px;flex-shrink:0;overflow:hidden"><img src="${a.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
-                <div style="flex:1">
-                  <div style="font-family:var(--sans);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--rouge);margin-bottom:.35rem">${a.cat}</div>
-                  <div style="font-family:var(--serif);font-size:.95rem;font-weight:400;line-height:1.3;margin-bottom:.3rem" onmouseover="this.style.color='var(--rouge)'" onmouseout="this.style.color=''">${a.title}</div>
-                  <div style="font-family:var(--sans);font-size:9.5px;color:var(--gris)">${a.date}</div>
-                </div>
-              </div>`).join('')}
-          </div>
-        </div>
-      </div>
-      ${rest.length>0?`<div class="sec-wrap reveal" style="padding-top:2.5rem">
-        <div class="sec-head"><span class="sec-name">${catLabel}</span></div>
-        <div class="grid-articles">${rest.map(a=>artCardHtml(a)).join('')}</div>
-      </div>`:''}
-    `;
-  }
-  triggerReveal();
-}
-
+// ═══════════════ HOME ═══════════════
 function artCardHtml(a){
   return `<div class="art-card" onclick="openArticle(${a.id})">
     <div class="art-thumb">${a.img?`<img class="art-thumb-img" src="${a.img}" alt="" onerror="this.parentNode.innerHTML='<div class=art-thumb-empty></div>'">`:`<div class="art-thumb-empty"></div>`}</div>
     <div class="art-card-body">
-      <div class="art-k">${a.cat}</div>
-      <div class="art-title">${a.title}</div>
+      <div class="art-k">${a.cat}</div><div class="art-title">${a.title}</div>
       <div class="art-excerpt">${a.deck}</div>
       <div class="art-foot"><span>${a.author}</span><span class="dot"></span><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)}</span></div>
-    </div>
-  </div>`;
+    </div></div>`;
 }
 
-// ═══════════════════════════════════════════════
-// ARTICLE FULL — visible par tous (connectés ou non)
-// ═══════════════════════════════════════════════
-function openArticle(id){
-  const a=articles.find(x=>x.id===id);if(!a)return;
+function renderHome(cat){
+  const wrap=document.getElementById('home-content');
+  const all=[...articles].reverse();
+  const filtered=cat==='all'?all:all.filter(a=>a.cat===cat);
+  if(filtered.length===0){
+    wrap.innerHTML=`<div class="empty-state reveal"><div class="empty-anim"><span></span><span></span><span></span></div>
+      <h2>Something <em>powerful</em><br>is coming.</h2>
+      <p>Une plateforme de média économique dédiée à l'<strong style="font-weight:500">Afrique</strong>, avec une <strong style="font-weight:500;color:var(--rouge)">perspective mondiale</strong>.</p>
+      <p>${cat==='all'?'Les articles publiés apparaîtront ici.':'Aucun article dans « '+cat+' » pour l\'instant.'}</p>
+      <span class="empty-cta" onclick="showPage('propose')">Proposer un article →</span></div>`;
+    triggerReveal();return;
+  }
+  const hero=filtered[0], rest=filtered.slice(1), catLabel=cat==='all'?'Tous les articles':cat;
+  const isMobile=window.innerWidth<768;
+  if(isMobile){
+    wrap.innerHTML=`<div class="sec-wrap reveal" style="padding-bottom:1rem">
+      <div style="cursor:pointer;border-bottom:.5px solid var(--gris-clair);padding-bottom:2rem" onclick="openArticle(${hero.id})">
+        ${hero.img?`<div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1rem"><img src="${hero.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
+        <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.5rem">${hero.cat}</div>
+        <h1 style="font-family:var(--serif);font-size:clamp(1.6rem,5vw,2.4rem);font-weight:400;line-height:1.2;margin-bottom:.8rem">${hero.title}</h1>
+        <p style="font-family:var(--serif-text);font-size:.95rem;line-height:1.7;color:#444;margin-bottom:1rem;font-style:italic">${hero.deck}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.6rem;font-family:var(--sans);font-size:10px;color:var(--gris);text-transform:uppercase"><span>${hero.author}</span><span class="dot"></span><span>${hero.date}</span><span class="dot"></span><span>${readTime(hero.body)}</span></div>
+      </div></div>
+      ${rest.length?`<div class="sec-wrap reveal" style="padding-top:1.5rem"><div class="sec-head"><span class="sec-name">${catLabel}</span></div><div class="grid-articles">${rest.map(a=>artCardHtml(a)).join('')}</div></div>`:''}`;
+  } else {
+    wrap.innerHTML=`<div class="sec-wrap reveal" style="padding-bottom:1rem">
+      <div style="display:grid;grid-template-columns:1fr 320px;border-bottom:.5px solid var(--gris-clair)">
+        <div style="padding-right:3rem;border-right:.5px solid var(--gris-clair);padding-bottom:3rem;cursor:pointer" onclick="openArticle(${hero.id})">
+          ${hero.img?`<div style="width:100%;aspect-ratio:16/9;overflow:hidden;margin-bottom:1.5rem"><img src="${hero.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
+          <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.8rem">${hero.cat}</div>
+          <h1 style="font-family:var(--serif);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:400;line-height:1.15;margin-bottom:1rem">${hero.title}</h1>
+          <p style="font-family:var(--serif-text);font-size:1rem;line-height:1.75;color:#444;margin-bottom:1.4rem;font-style:italic">${hero.deck}</p>
+          <div style="display:flex;align-items:center;gap:1rem;font-family:var(--sans);font-size:10px;color:var(--gris);text-transform:uppercase"><span>${hero.author}</span><span class="dot"></span><span>${hero.date}</span><span class="dot"></span><span>${readTime(hero.body)}</span></div>
+        </div>
+        <div style="padding-left:2.5rem;padding-top:.5rem">
+          <div style="font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);margin-bottom:1.5rem;padding-bottom:.7rem;border-bottom:.5px solid var(--gris-clair)">À lire aussi</div>
+          ${rest.slice(0,4).map(a=>`<div style="padding:1.1rem 0;border-bottom:.5px solid var(--gris-clair);cursor:pointer;display:flex;gap:.9rem;align-items:flex-start" onclick="openArticle(${a.id})">
+            ${a.img?`<div style="width:72px;height:52px;flex-shrink:0;overflow:hidden"><img src="${a.img}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.style.display='none'"></div>`:''}
+            <div style="flex:1"><div style="font-family:var(--sans);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--rouge);margin-bottom:.35rem">${a.cat}</div>
+            <div style="font-family:var(--serif);font-size:.95rem;line-height:1.3;margin-bottom:.3rem" onmouseover="this.style.color='var(--rouge)'" onmouseout="this.style.color=''">${a.title}</div>
+            <div style="font-family:var(--sans);font-size:9.5px;color:var(--gris)">${a.date}</div></div>
+          </div>`).join('')}
+        </div>
+      </div></div>
+      ${rest.length?`<div class="sec-wrap reveal" style="padding-top:2.5rem"><div class="sec-head"><span class="sec-name">${catLabel}</span></div><div class="grid-articles">${rest.map(a=>artCardHtml(a)).join('')}</div></div>`:''}`;
+  }
+  triggerReveal();
+}
+
+// ═══════════════ ARTICLE FULL ═══════════════
+async function openArticle(id){
+  const a=articles.find(x=>x.id===id); if(!a)return;
   a.reads=(a.reads||0)+1;
-  saveArticles().catch(()=>{});
+  await saveArticle(a);
   const bodyContent=a.bodyHtml||a.body.split(/\n\n+/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
   const authorUser=users.find(u=>u.first+' '+u.last===a.author);
-
-  // Bouton suppression : visible pour le propriétaire ET pour l'auteur de l'article
-  const canDelete = isOwner() || (currentUser && currentUser.first+' '+currentUser.last===a.author);
-  const deleteBtn = canDelete
-    ? `<button onclick="deleteArticle(${a.id})" style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:none;border:.5px solid rgba(139,26,26,0.4);color:var(--rouge);padding:5px 12px;cursor:pointer;margin-left:auto;transition:all .2s" onmouseover="this.style.background='var(--rouge)';this.style.color='white'" onmouseout="this.style.background='none';this.style.color='var(--rouge)'">🗑 Supprimer</button>`
-    : '';
-
+  const canDelete=isOwner()||(currentUser&&currentUser.first+' '+currentUser.last===a.author);
+  const delBtn=canDelete?`<button onclick="confirmDeleteArticle(${a.id})" style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:none;border:.5px solid rgba(139,26,26,0.4);color:var(--rouge);padding:5px 12px;cursor:pointer;transition:all .2s;margin-left:auto" onmouseover="this.style.background='var(--rouge)';this.style.color='white'" onmouseout="this.style.background='none';this.style.color='var(--rouge)'">🗑 Supprimer</button>`:'';
   document.getElementById('article-content').innerHTML=`
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;flex-wrap:wrap">
-      <button class="back-btn" style="margin-bottom:0" onclick="showPage('home')">← Retour</button>
-      ${deleteBtn}
+      <button class="back-btn" style="margin-bottom:0" onclick="showPage('home')">← Retour</button>${delBtn}
     </div>
     <div class="art-full-k">${a.cat}</div>
     <h1 class="art-full-title">${a.title}</h1>
     <div class="art-full-deck">${a.deck}</div>
     <div class="art-full-meta">
-      <span>Par <span class="author-chip" onclick="${authorUser?`showPage('profile');openProfile('${authorUser.email}')`:'void(0)'}">
-        ${a.author}
-      </span></span>
+      <span>Par <span class="author-chip" onclick="${authorUser?`showPage('profile');openProfile('${authorUser.email}')`:'void(0)'}">${a.author}</span></span>
       <span class="dot"></span><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)} de lecture</span>
     </div>
     ${a.img?`<div class="art-full-cover"><img src="${a.img}" alt="" onerror="this.parentNode.style.display='none'"></div><div class="art-full-caption">${a.cat} — ${a.date}</div>`:''}
-    <div class="art-full-body">${bodyContent}</div>
-  `;
+    <div class="art-full-body">${bodyContent}</div>`;
   showPage('article');
 }
 
-async function deleteArticle(id){
+async function confirmDeleteArticle(id){
   if(!confirm('Supprimer définitivement cet article ?'))return;
   articles=articles.filter(a=>a.id!==id);
-  await saveArticles();
+  await deleteArticleDB(id);
   showToast('Article supprimé.');
   showPage('home');
 }
 
-// ═══════════════════════════════════════════════
-// PROFIL PUBLIC — visible par tous
-// ═══════════════════════════════════════════════
+// ═══════════════ PROFIL PUBLIC ═══════════════
 function openProfile(email){
   const u=users.find(x=>x.email===email);
   if(!u){document.getElementById('profile-content').innerHTML=`<p style="font-family:var(--sans);color:#aaa">Profil introuvable.</p>`;return;}
@@ -1261,30 +971,21 @@ function openProfile(email){
   const avatarEl=u.avatar?`<div class="profile-avatar"><img src="${u.avatar}" alt="${u.first}"></div>`:`<div class="profile-avatar" style="font-size:2rem">${(u.first[0]+(u.last[0]||'')).toUpperCase()}</div>`;
   document.getElementById('profile-content').innerHTML=`
     <button class="back-btn" onclick="showPage('home')">← Retour</button>
-    <div class="profile-header">
-      ${avatarEl}
+    <div class="profile-header">${avatarEl}
       <div style="flex:1">
         <div class="profile-name">${u.first} ${u.last}</div>
-        <div class="profile-meta">Membre depuis ${u.joined||'—'}${userArticles.length>0?` · ${userArticles.length} article${userArticles.length>1?'s':''} publié${userArticles.length>1?'s':''}`:' · Lecteur'}</div>
+        <div class="profile-meta">Membre depuis ${u.joined||'—'}${userArticles.length?` · ${userArticles.length} article${userArticles.length>1?'s':''} publié${userArticles.length>1?'s':''}`:' · Lecteur'}</div>
         ${u.bio?`<div class="profile-bio">"${u.bio}"</div>`:''}
-        ${userArticles.length>0?`<div class="profile-badge">✍ Rédacteur</div>`:''}
+        ${userArticles.length?`<div class="profile-badge">✍ Rédacteur</div>`:''}
         ${isMe?`<button class="profile-edit-btn" onclick="openProfileEdit()">✏ Modifier mon profil</button>`:''}
       </div>
     </div>
-    ${userArticles.length===0
-      ?`<div class="profile-empty">Aucun article publié pour l'instant.</div>`
-      :`<div class="stats-section-title">Articles publiés</div>
-        <div class="grid-articles">${userArticles.map(a=>artCardHtml(a)).join('')}</div>`}
-  `;
+    ${userArticles.length?`<div class="stats-section-title">Articles publiés</div><div class="grid-articles">${userArticles.map(a=>artCardHtml(a)).join('')}</div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:3rem 0">Aucun article publié.</div>`}`;
 }
 
-// ═══════════════════════════════════════════════
-// MES STATISTIQUES
-// ═══════════════════════════════════════════════
+// ═══════════════ MES STATS ═══════════════
 function renderMyStats(){
-  if(!currentUser){
-    document.getElementById('my-stats-content').innerHTML=`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa">Connectez-vous pour voir vos statistiques.</div>`;return;
-  }
+  if(!currentUser){document.getElementById('my-stats-content').innerHTML=`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa">Connectez-vous.</div>`;return;}
   const myArts=articles.filter(a=>a.author===currentUser.first+' '+currentUser.last).reverse();
   const totalReads=myArts.reduce((s,a)=>s+(a.reads||0),0);
   const totalWords=myArts.reduce((s,a)=>s+(a.body||'').trim().split(/\s+/).length,0);
@@ -1293,286 +994,146 @@ function renderMyStats(){
       <div class="my-stat-card"><div class="my-stat-num">${myArts.length}</div><div class="my-stat-label">Articles publiés</div></div>
       <div class="my-stat-card"><div class="my-stat-num">${totalReads}</div><div class="my-stat-label">Lectures totales</div></div>
       <div class="my-stat-card"><div class="my-stat-num">${totalWords.toLocaleString('fr')}</div><div class="my-stat-label">Mots écrits</div></div>
-      <div class="my-stat-card"><div class="my-stat-num">${myArts.length>0?Math.round(totalReads/myArts.length):0}</div><div class="my-stat-label">Moy. lectures/article</div></div>
+      <div class="my-stat-card"><div class="my-stat-num">${myArts.length?Math.round(totalReads/myArts.length):0}</div><div class="my-stat-label">Moy. lectures/article</div></div>
     </div>
-    ${myArts.length===0
-      ?`<div style="font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:2rem 0">Vous n'avez pas encore publié d'article.</div>`
-      :`<div class="stats-section-title">Mes articles</div>
-        <div style="overflow-x:auto">
-          <table class="stats-table">
-            <thead><tr><th>Titre</th><th>Rubrique</th><th>Date</th><th>Lectures</th><th>Durée</th><th>Action</th></tr></thead>
-            <tbody>
-              ${myArts.map(a=>`<tr>
-                <td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td>
-                <td><span class="stats-cat-badge">${a.cat}</span></td>
-                <td>${a.date}</td>
-                <td><strong style="color:var(--rouge)">${a.reads||0}</strong></td>
-                <td>${readTime(a.body)}</td>
-                <td><button class="btn-danger" onclick="deleteArticle(${a.id})">Supprimer</button></td>
-              </tr>`).join('')}
-            </tbody>
-          </table>
-        </div>`}
-  `;
+    ${myArts.length?`<div class="stats-section-title">Mes articles</div><div style="overflow-x:auto">
+      <table class="stats-table"><thead><tr><th>Titre</th><th>Rubrique</th><th>Date</th><th>Lectures</th><th>Action</th></tr></thead><tbody>
+      ${myArts.map(a=>`<tr><td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td><td><span class="stats-cat-badge">${a.cat}</span></td><td>${a.date}</td><td><strong style="color:var(--rouge)">${a.reads||0}</strong></td><td><button class="btn-danger" onclick="confirmDeleteArticle(${a.id})">Supprimer</button></td></tr>`).join('')}
+      </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:2rem 0">Aucun article publié.</div>`}`;
 }
 
-// ═══════════════════════════════════════════════
-// ADMIN
-// ═══════════════════════════════════════════════
+// ═══════════════ ADMIN ═══════════════
 function renderAdmin(){
   const el=document.getElementById('admin-content');
-  if(!isOwner()){
-    el.innerHTML=`<div class="admin-gate"><p>Cet espace est réservé au propriétaire du site.<br>Connectez-vous avec le compte administrateur.</p><button class="btn-red" onclick="openModal('login')">Se connecter</button></div>`;
-    return;
-  }
+  if(!isOwner()){el.innerHTML=`<div style="border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.5rem;max-width:440px"><p style="font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.2rem;font-weight:300">Espace réservé au propriétaire.</p><button class="btn-red" onclick="openModal('login')">Se connecter</button></div>`;return;}
   const totalReads=articles.reduce((s,a)=>s+(a.reads||0),0);
-  el.innerHTML=`
-    <div class="admin-badge">⚙ Propriétaire · Accès complet</div>
+  el.innerHTML=`<div class="admin-badge">⚙ Propriétaire · Accès complet</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1.2rem;margin-bottom:3rem">
       <div class="my-stat-card"><div class="my-stat-num">${articles.length}</div><div class="my-stat-label">Articles</div></div>
       <div class="my-stat-card"><div class="my-stat-num">${users.length}</div><div class="my-stat-label">Membres</div></div>
       <div class="my-stat-card"><div class="my-stat-num">${totalReads}</div><div class="my-stat-label">Lectures</div></div>
-      <div class="my-stat-card"><div class="my-stat-num">${visitorCount}</div><div class="my-stat-label">Visiteurs</div></div>
     </div>
     <div class="stats-section-title">Gestion des articles</div>
-    ${articles.length===0
-      ?`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic;margin-bottom:2rem">Aucun article.</div>`
-      :`<div style="overflow-x:auto;margin-bottom:3rem">
-          <table class="stats-table">
-            <thead><tr><th>Titre</th><th>Auteur</th><th>Rubrique</th><th>Date</th><th>Lectures</th><th>Action</th></tr></thead>
-            <tbody>
-              ${[...articles].reverse().map(a=>`<tr>
-                <td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td>
-                <td style="font-family:var(--sans);font-size:.85rem">${a.author}</td>
-                <td><span class="stats-cat-badge">${a.cat}</span></td>
-                <td style="font-family:var(--sans);font-size:.85rem">${a.date}</td>
-                <td><strong style="color:var(--rouge)">${a.reads||0}</strong></td>
-                <td><button class="btn-danger" onclick="adminDeleteArticle(${a.id})">Supprimer</button></td>
-              </tr>`).join('')}
-            </tbody>
-          </table>
-        </div>`}
+    ${articles.length?`<div style="overflow-x:auto;margin-bottom:3rem"><table class="stats-table"><thead><tr><th>Titre</th><th>Auteur</th><th>Rubrique</th><th>Date</th><th>Lectures</th><th>Action</th></tr></thead><tbody>
+      ${[...articles].reverse().map(a=>`<tr><td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td><td>${a.author}</td><td><span class="stats-cat-badge">${a.cat}</span></td><td>${a.date}</td><td><strong style="color:var(--rouge)">${a.reads||0}</strong></td><td><button class="btn-danger" onclick="confirmDeleteArticle(${a.id})">Supprimer</button></td></tr>`).join('')}
+      </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic;margin-bottom:2rem">Aucun article.</div>`}
     <div class="stats-section-title">Membres inscrits</div>
-    ${users.length===0
-      ?`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic">Aucun membre.</div>`
-      :`<div style="overflow-x:auto">
-          <table class="stats-table">
-            <thead><tr><th>Nom</th><th>Email</th><th>Inscrit le</th><th>Articles</th><th>Profil</th></tr></thead>
-            <tbody>
-              ${users.map(u=>{const c=articles.filter(a=>a.author===u.first+' '+u.last).length;return `<tr>
-                <td>${u.first} ${u.last}</td>
-                <td style="color:var(--gris);font-family:var(--sans);font-size:.85rem">${u.email}</td>
-                <td style="font-family:var(--sans);font-size:.85rem">${u.joined||'—'}</td>
-                <td>${c}</td>
-                <td><span style="font-family:var(--sans);font-size:9.5px;color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('profile');openProfile('${u.email}')">Voir →</span></td>
-              </tr>`;}).join('')}
-            </tbody>
-          </table>
-        </div>`}
-  `;
+    ${users.length?`<div style="overflow-x:auto"><table class="stats-table"><thead><tr><th>Nom</th><th>Email</th><th>Inscrit le</th><th>Articles</th><th>Profil</th></tr></thead><tbody>
+      ${users.map(u=>{const c=articles.filter(a=>a.author===u.first+' '+u.last).length;return `<tr><td>${u.first} ${u.last}</td><td style="color:var(--gris);font-family:var(--sans);font-size:.85rem">${u.email}</td><td style="font-family:var(--sans);font-size:.85rem">${u.joined||'—'}</td><td>${c}</td><td><span style="font-family:var(--sans);font-size:9.5px;color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('profile');openProfile('${u.email}')">Voir →</span></td></tr>`;}).join('')}
+      </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic">Aucun membre.</div>`}`;
 }
 
-async function adminDeleteArticle(id){
-  if(!isOwner())return;
-  if(!confirm('Supprimer définitivement cet article ?'))return;
-  articles=articles.filter(a=>a.id!==id);
-  await saveArticles();
-  showToast('Article supprimé.');
-  const active=document.querySelector('.page.active');
-  if(active&&active.id==='page-admin') renderAdmin();
-  else if(active&&active.id==='page-article') showPage('home');
-  else renderHome(currentActiveCat);
-}
-
-// ═══════════════════════════════════════════════
-// PROPOSITION
-// ═══════════════════════════════════════════════
+// ═══════════════ PROPOSITION ═══════════════
 function submitRequest(){
-  const first=document.getElementById('r-first').value.trim();
-  const last =document.getElementById('r-last').value.trim();
-  const email=document.getElementById('r-email').value.trim();
-  const cat  =document.getElementById('r-cat').value.trim();
-  const subj =document.getElementById('r-subject').value.trim();
-  if(!first||!last||!email||!cat||!subj){showToast('Veuillez remplir tous les champs obligatoires.');return;}
-  const why=document.getElementById('r-why').value.trim();
-  const job=document.getElementById('r-job').value.trim();
-  const mailBody=encodeURIComponent(`Nouvelle proposition d'article — Economist\n\nNom : ${first} ${last}\nEmail : ${email}\n`+(job?`Profession : ${job}\n`:'')+`Rubrique : ${cat}\n\nSujet :\n${subj}\n\n`+(why?`Motivation :\n${why}\n\n`:'')+`---\nEnvoyé depuis le site Economist`);
-  const mailSubj=encodeURIComponent(`[Economist] Proposition d'article — ${first} ${last}`);
-  window.open(`mailto:theseeconomists@gmail.com?subject=${mailSubj}&body=${mailBody}`,'_blank');
+  const first=document.getElementById('r-first').value.trim(),last=document.getElementById('r-last').value.trim();
+  const email=document.getElementById('r-email').value.trim(),cat=document.getElementById('r-cat').value.trim();
+  const subj=document.getElementById('r-subject').value.trim();
+  if(!first||!last||!email||!cat||!subj){showToast('Remplissez tous les champs obligatoires.');return;}
+  const why=document.getElementById('r-why').value.trim(),job=document.getElementById('r-job').value.trim();
+  const body=encodeURIComponent(`Proposition d'article — Economist\n\nNom : ${first} ${last}\nEmail : ${email}\n`+(job?`Profession : ${job}\n`:'')+`Rubrique : ${cat}\n\nSujet :\n${subj}\n\n`+(why?`Motivation :\n${why}`:'')+`\n---\nEnviron depuis economist.ci`);
+  window.open(`mailto:theseeconomists@gmail.com?subject=${encodeURIComponent(`[Economist] Proposition — ${first} ${last}`)}&body=${body}`,'_blank');
   document.getElementById('reg-email-shown').textContent=email;
   document.getElementById('reg-success').style.display='block';
   document.getElementById('reg-success').scrollIntoView({behavior:'smooth',block:'center'});
-  showToast('Proposition envoyée à la rédaction !');
+  showToast('Proposition envoyée !');
 }
 
-// ═══════════════════════════════════════════════
-// WRITE PAGE GATE
-// ═══════════════════════════════════════════════
+// ═══════════════ WRITE PAGE ═══════════════
 function renderWritePage(){
-  const loginGate=document.getElementById('write-login-gate');
-  const codeGate =document.getElementById('code-gate');
-  const form     =document.getElementById('write-form');
-  if(!currentUser){
-    loginGate.style.display='block';
-    codeGate.style.display='none';
-    form.classList.add('form-hidden');form.style.display='none';
-  } else {
-    loginGate.style.display='none';
-    // Si l'auteur a déjà un code validé cette session
-    if(sessionStorage.getItem('eco_code_ok')){
-      codeGate.style.display='none';
-      form.classList.remove('form-hidden');form.style.display='block';
-      if(currentUser) document.getElementById('f-author').value=currentUser.first+' '+currentUser.last;
-    } else {
-      codeGate.style.display='block';
-      form.classList.add('form-hidden');form.style.display='none';
-    }
-  }
+  const lg=document.getElementById('write-login-gate'),cg=document.getElementById('code-gate'),f=document.getElementById('write-form');
+  if(!currentUser){lg.style.display='block';cg.style.display='none';f.style.display='none';}
+  else if(sessionStorage.getItem('eco_code_ok')){lg.style.display='none';cg.style.display='none';f.style.display='block';document.getElementById('f-author').value=currentUser.first+' '+currentUser.last;}
+  else{lg.style.display='none';cg.style.display='block';f.style.display='none';}
 }
-
 function checkCode(){
   const val=document.getElementById('access-code').value.trim();
   if(VALID_CODES.includes(val)){
     sessionStorage.setItem('eco_code_ok','1');
     document.getElementById('code-gate').style.display='none';
-    const f=document.getElementById('write-form');
-    f.classList.remove('form-hidden');f.style.display='block';
-    if(currentUser) document.getElementById('f-author').value=currentUser.first+' '+currentUser.last;
+    const f=document.getElementById('write-form');f.style.display='block';
+    document.getElementById('f-author').value=currentUser.first+' '+currentUser.last;
   } else {
     document.getElementById('gate-err').style.display='block';
-    document.getElementById('access-code').value='';
-    document.getElementById('access-code').focus();
+    document.getElementById('access-code').value='';document.getElementById('access-code').focus();
   }
 }
-
 function updateCount(fid,cid,max){
-  const v=document.getElementById(fid).value;
-  const el=document.getElementById(cid);
-  el.textContent=`${v.length} / ${max}`;
-  el.style.color=v.length>max?'var(--rouge)':'var(--gris)';
+  const v=document.getElementById(fid).value,el=document.getElementById(cid);
+  el.textContent=`${v.length} / ${max}`;el.style.color=v.length>max?'var(--rouge)':'var(--gris)';
 }
 
-// ═══════════════════════════════════════════════
-// PUBLICATION — article public partagé
-// ═══════════════════════════════════════════════
-let blockIdCounter=0, coverBase64=null, pendingInsertAfter=null;
-
+// ═══════════════ PUBLISH ═══════════════
+let blockIdCounter=0,coverBase64=null,pendingInsertAfter=null;
 async function publishArticle(){
   const btn=document.getElementById('btn-publish');
-  const cat   =document.getElementById('f-cat').value.trim();
-  const author=document.getElementById('f-author').value.trim();
-  const title =document.getElementById('f-title').value.trim();
-  const deck  =document.getElementById('f-deck').value.trim();
+  const cat=document.getElementById('f-cat').value.trim(),author=document.getElementById('f-author').value.trim();
+  const title=document.getElementById('f-title').value.trim(),deck=document.getElementById('f-deck').value.trim();
   const {html:bodyHtml,text:bodyText}=getBodyHtml();
-  if(!cat||!author||!title||!deck||!bodyText.trim()){
-    showToast('Veuillez remplir tous les champs obligatoires.');return;
-  }
+  if(!cat||!author||!title||!deck||!bodyText.trim()){showToast('Remplissez tous les champs obligatoires.');return;}
   btn.innerHTML='<span class="spinner"></span> Publication…';btn.disabled=true;
   const imgUrl=coverBase64||document.getElementById('f-img').value.trim();
-  const a={id:Date.now(),cat,author,title,deck,body:bodyText,bodyHtml,img:imgUrl,date:today(),reads:0,public:true};
+  const a={id:Date.now(),cat,author,title,deck,body:bodyText,bodyHtml,img:imgUrl,date:today(),reads:0};
   articles.push(a);
-  await saveArticles();
+  await saveArticle(a);
   btn.textContent='Publier →';btn.disabled=false;
   lastPublishedId=a.id;
   ['f-author','f-title','f-deck','f-img'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-cat').value='';
-  coverBase64=null;
-  document.getElementById('cover-preview').style.display='none';
-  document.getElementById('cover-placeholder').style.display='flex';
-  document.getElementById('article-blocks').innerHTML='';
-  blockIdCounter=0;insertBlock('paragraph');
+  document.getElementById('f-cat').value='';coverBase64=null;
+  document.getElementById('cover-preview').style.display='none';document.getElementById('cover-placeholder').style.display='flex';
+  document.getElementById('article-blocks').innerHTML='';blockIdCounter=0;insertBlock('paragraph');
   ['tc','dc'].forEach(id=>document.getElementById(id).textContent='0 / '+(id==='tc'?80:250));
   document.getElementById('bc').textContent='0 mot';
-  const sm=document.getElementById('success-msg');
-  sm.style.display='block';
+  const sm=document.getElementById('success-msg');sm.style.display='block';
   sm.scrollIntoView({behavior:'smooth',block:'center'});
-  showToast('Article publié et visible par tous !');
+  showToast('Article publié ! Visible par tous sur tous les appareils.');
 }
+function goToNewArticle(){ if(lastPublishedId)openArticle(lastPublishedId);document.getElementById('success-msg').style.display='none'; }
 
-function goToNewArticle(){
-  if(lastPublishedId) openArticle(lastPublishedId);
-  document.getElementById('success-msg').style.display='none';
-}
-
-// ═══════════════════════════════════════════════
-// BLOCK EDITOR
-// ═══════════════════════════════════════════════
+// ═══════════════ BLOCK EDITOR ═══════════════
 function insertBlock(type,afterEl){
   const id='blk-'+(++blockIdCounter);
-  const wrap=document.createElement('div');
-  wrap.className='block-wrap';wrap.dataset.type=type;wrap.dataset.id=id;
-  const delBtn=document.createElement('button');
-  delBtn.className='block-del';delBtn.type='button';delBtn.textContent='×';
-  delBtn.onclick=()=>{wrap.remove();updateWordCount()};
+  const wrap=document.createElement('div');wrap.className='block-wrap';wrap.dataset.type=type;wrap.dataset.id=id;
+  const del=document.createElement('button');del.className='block-del';del.type='button';del.textContent='×';del.onclick=()=>{wrap.remove();updateWordCount()};
   const content=document.createElement('div');content.className='block-content';
   if(type==='paragraph'){
-    const ta=document.createElement('textarea');
-    ta.className='block-para';ta.placeholder='Rédigez votre paragraphe…';ta.oninput=updateWordCount;
-    content.appendChild(ta);
-    const imgBtn=document.createElement('button');
-    imgBtn.type='button';imgBtn.className='add-block-btn';
-    imgBtn.style.cssText='display:block;width:100%;margin-top:3px;font-size:9px;padding:4px';
-    imgBtn.textContent='+ Insérer une image ici';
-    imgBtn.onclick=()=>{pendingInsertAfter=wrap;document.getElementById('inline-img-input').click()};
-    content.appendChild(imgBtn);
-  } else if(type==='h2'){
-    const inp=document.createElement('input');inp.type='text';inp.className='block-h2';inp.placeholder='Titre de section…';content.appendChild(inp);
-  } else if(type==='h3'){
-    const inp=document.createElement('input');inp.type='text';inp.className='block-h3';inp.placeholder='Sous-titre…';content.appendChild(inp);
-  } else if(type==='quote'){
-    const ta=document.createElement('textarea');ta.className='block-quote';ta.placeholder='"Citation…"';ta.oninput=updateWordCount;content.appendChild(ta);
-  } else if(type==='separator'){
-    const sp=document.createElement('div');sp.className='block-sep';sp.textContent='· · ·';content.appendChild(sp);
-  }
-  wrap.appendChild(delBtn);wrap.appendChild(content);
+    const ta=document.createElement('textarea');ta.className='block-para';ta.placeholder='Rédigez votre paragraphe…';ta.oninput=updateWordCount;content.appendChild(ta);
+    const ib=document.createElement('button');ib.type='button';ib.className='add-block-btn';ib.style.cssText='display:block;width:100%;margin-top:3px;font-size:9px;padding:4px';ib.textContent='+ Insérer une image ici';
+    ib.onclick=()=>{pendingInsertAfter=wrap;document.getElementById('inline-img-input').click()};content.appendChild(ib);
+  } else if(type==='h2'){const i=document.createElement('input');i.type='text';i.className='block-h2';i.placeholder='Titre de section…';content.appendChild(i);}
+  else if(type==='h3'){const i=document.createElement('input');i.type='text';i.className='block-h3';i.placeholder='Sous-titre…';content.appendChild(i);}
+  else if(type==='quote'){const ta=document.createElement('textarea');ta.className='block-quote';ta.placeholder='"Citation…"';ta.oninput=updateWordCount;content.appendChild(ta);}
+  else if(type==='separator'){const s=document.createElement('div');s.className='block-sep';s.textContent='· · ·';content.appendChild(s);}
+  wrap.appendChild(del);wrap.appendChild(content);
   const container=document.getElementById('article-blocks');
-  if(afterEl) afterEl.insertAdjacentElement('afterend',wrap);
-  else container.appendChild(wrap);
-  const f=wrap.querySelector('textarea,input[type=text]');
-  if(f) setTimeout(()=>f.focus(),50);
+  if(afterEl)afterEl.insertAdjacentElement('afterend',wrap);else container.appendChild(wrap);
+  const f=wrap.querySelector('textarea,input[type=text]');if(f)setTimeout(()=>f.focus(),50);
   updateWordCount();
 }
-
 function triggerInlineImg(){pendingInsertAfter=null;document.getElementById('inline-img-input').click();}
-function handleInlineImage(e){
-  const file=e.target.files[0];if(!file)return;
-  const r=new FileReader();r.onload=ev=>insertImageBlock(ev.target.result,file.name);
-  r.readAsDataURL(file);e.target.value='';
-}
+function handleInlineImage(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>insertImageBlock(ev.target.result,file.name);r.readAsDataURL(file);e.target.value='';}
 function insertImageBlock(src,name){
   const wrap=document.createElement('div');wrap.className='block-wrap';wrap.dataset.type='image';wrap.dataset.src=src;
-  const delBtn=document.createElement('button');delBtn.className='block-del';delBtn.type='button';delBtn.textContent='×';delBtn.onclick=()=>wrap.remove();
+  const del=document.createElement('button');del.className='block-del';del.type='button';del.textContent='×';del.onclick=()=>wrap.remove();
   const content=document.createElement('div');content.className='block-content';
-  const imgWrap=document.createElement('div');imgWrap.className='block-img-wrap';
+  const iw=document.createElement('div');iw.className='block-img-wrap';
   const img=document.createElement('img');img.src=src;img.alt=name||'';
   const cap=document.createElement('input');cap.type='text';cap.className='block-img-caption';cap.placeholder='Légende (optionnel)…';
-  imgWrap.appendChild(img);imgWrap.appendChild(cap);content.appendChild(imgWrap);
-  wrap.appendChild(delBtn);wrap.appendChild(content);
+  iw.appendChild(img);iw.appendChild(cap);content.appendChild(iw);
+  wrap.appendChild(del);wrap.appendChild(content);
   const container=document.getElementById('article-blocks');
-  if(pendingInsertAfter){pendingInsertAfter.insertAdjacentElement('afterend',wrap);pendingInsertAfter=null;}
-  else container.appendChild(wrap);
+  if(pendingInsertAfter){pendingInsertAfter.insertAdjacentElement('afterend',wrap);pendingInsertAfter=null;}else container.appendChild(wrap);
 }
 function handleCoverUpload(e){
   const file=e.target.files[0];if(!file)return;
-  const r=new FileReader();r.onload=ev=>{
-    coverBase64=ev.target.result;
-    document.getElementById('cover-preview').src=coverBase64;
-    document.getElementById('cover-preview').style.display='block';
-    document.getElementById('cover-placeholder').style.display='none';
-    document.getElementById('f-img').value='';
-  };r.readAsDataURL(file);
+  const r=new FileReader();r.onload=ev=>{coverBase64=ev.target.result;document.getElementById('cover-preview').src=coverBase64;document.getElementById('cover-preview').style.display='block';document.getElementById('cover-placeholder').style.display='none';document.getElementById('f-img').value='';};r.readAsDataURL(file);
 }
 function handleCoverUrl(url){
   if(url){coverBase64=null;document.getElementById('cover-preview').src=url;document.getElementById('cover-preview').style.display='block';document.getElementById('cover-placeholder').style.display='none';}
   else{document.getElementById('cover-preview').style.display='none';document.getElementById('cover-placeholder').style.display='flex';}
 }
 function updateWordCount(){
-  let words=0;
-  document.querySelectorAll('#article-blocks .block-para, #article-blocks .block-quote').forEach(b=>{
-    const v=(b.value||'').trim();if(v)words+=v.split(/\s+/).length;
-  });
-  const el=document.getElementById('bc');
-  if(el){el.textContent=`${words} mot${words>1?'s':''}`;el.style.color=words<50?'var(--gris)':'#6a9a6a';}
+  let words=0;document.querySelectorAll('#article-blocks .block-para,.block-quote').forEach(b=>{const v=(b.value||'').trim();if(v)words+=v.split(/\s+/).length;});
+  const el=document.getElementById('bc');if(el){el.textContent=`${words} mot${words>1?'s':''}`;el.style.color=words<50?'var(--gris)':'#6a9a6a';}
 }
 function getBodyHtml(){
   let html='',text='';
@@ -1588,75 +1149,48 @@ function getBodyHtml(){
   return {html,text};
 }
 
-// ═══════════════════════════════════════════════
-// DATE NAV
-// ═══════════════════════════════════════════════
+// ═══════════════ DATE + PLANET ═══════════════
 const JJ=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 const DD=new Date();
 document.getElementById('nav-date').textContent=`${JJ[DD.getDay()]} ${DD.getDate()} ${MM[DD.getMonth()]} ${DD.getFullYear()}`;
 
-// ═══════════════════════════════════════════════
-// PLANET ANIMATION
-// ═══════════════════════════════════════════════
-function initPlanet(canvasId,radius,dotCount,lineThreshold,speed){
-  const canvas=document.getElementById(canvasId);if(!canvas)return;
-  const size=canvas.offsetWidth||160;
-  canvas.width=size;canvas.height=size;
-  const cx=size/2,cy=size/2,r=radius*size/2;
-  const ctx=canvas.getContext('2d');
-  const col='139,26,26';
-  const dots=Array.from({length:dotCount},()=>{
-    const theta=Math.acos(1-2*Math.random());
-    const phi=2*Math.PI*Math.random();
-    return {theta,phi,vTheta:(Math.random()-.5)*0.0003*speed,vPhi:(Math.random()-.5)*0.0003*speed};
-  });
-  function project(theta,phi){
-    const x=r*Math.sin(theta)*Math.cos(phi);
-    const y=r*Math.cos(theta);
-    const z=r*Math.sin(theta)*Math.sin(phi);
-    return {x:cx+x,y:cy-y,alpha:Math.max(0,(z+r)/(2*r))};
-  }
-  function draw(){
-    ctx.clearRect(0,0,size,size);
-    const pts=dots.map(d=>project(d.theta,d.phi));
-    for(let i=0;i<pts.length;i++){
-      for(let j=i+1;j<pts.length;j++){
-        const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
-        if(d<lineThreshold){
-          const op=Math.min(pts[i].alpha,pts[j].alpha)*(1-d/lineThreshold)*0.35;
-          ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
-          ctx.strokeStyle=`rgba(${col},${op})`;ctx.lineWidth=.5;ctx.stroke();
-        }
-      }
-    }
+function initPlanet(id,radius,dotCount,lineThreshold,speed){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const size=canvas.offsetWidth||160;canvas.width=size;canvas.height=size;
+  const cx=size/2,cy=size/2,r=radius*size/2,ctx=canvas.getContext('2d'),col='139,26,26';
+  const dots=Array.from({length:dotCount},()=>{const theta=Math.acos(1-2*Math.random()),phi=2*Math.PI*Math.random();return{theta,phi,vT:(Math.random()-.5)*0.0003*speed,vP:(Math.random()-.5)*0.0003*speed};});
+  function project(theta,phi){const x=r*Math.sin(theta)*Math.cos(phi),y=r*Math.cos(theta),z=r*Math.sin(theta)*Math.sin(phi);return{x:cx+x,y:cy-y,alpha:Math.max(0,(z+r)/(2*r))};}
+  function draw(){ctx.clearRect(0,0,size,size);const pts=dots.map(d=>project(d.theta,d.phi));
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);if(d<lineThreshold){const op=Math.min(pts[i].alpha,pts[j].alpha)*(1-d/lineThreshold)*0.35;ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(${col},${op})`;ctx.lineWidth=.5;ctx.stroke();}}
     pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,1.4,0,Math.PI*2);ctx.fillStyle=`rgba(${col},${p.alpha*0.55})`;ctx.fill();});
-    dots.forEach(d=>{d.theta+=d.vTheta;d.phi+=d.vPhi;if(d.theta<0.1||d.theta>Math.PI-0.1)d.vTheta*=-1;});
-    requestAnimationFrame(draw);
-  }
+    dots.forEach(d=>{d.theta+=d.vT;d.phi+=d.vP;if(d.theta<0.1||d.theta>Math.PI-0.1)d.vT*=-1;});
+    requestAnimationFrame(draw);}
   draw();
 }
 
-// ═══════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════
-window.addEventListener('load', async ()=>{
+// ═══════════════ INIT ═══════════════
+async function init(){
+  document.getElementById('loading-text').textContent='Economist · Chargement des articles…';
   initPlanet('planet-tr',0.92,120,90,1.2);
   initPlanet('planet-bl',0.90,90,80,0.9);
+  await loadData();
 
-  document.getElementById('home-content').innerHTML='<div style="text-align:center;padding:6rem 2rem;font-family:var(--sans);font-size:.9rem;color:#bbb;letter-spacing:.1em">Chargement des articles…</div>';
-
-  await loadSharedData();
+  // Reconnexion automatique
+  const savedEmail=getLocalEmail();
+  if(savedEmail){
+    const found=users.find(u=>u.email===savedEmail);
+    if(found) currentUser=found;
+  }
   renderNav();
   insertBlock('paragraph');
   renderHome('all');
 
-  // Masquer l'écran de chargement
   setTimeout(()=>{
     const ls=document.getElementById('loading-screen');
     ls.classList.add('hidden');
     setTimeout(()=>ls.style.display='none',500);
-  }, 1800);
-});
+  },1500);
+}
 </script>
 </body>
 </html>
