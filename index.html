@@ -322,6 +322,10 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 .foot-link:hover{color:var(--rouge)}
 .foot-copy{font-family:var(--sans);font-size:10.5px;color:#3a3a3a}
 .foot-copy span{color:var(--rouge)}
+
+.period-tab{font-family:var(--sans);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;padding:.6rem 1.2rem;cursor:pointer;border-bottom:2px solid transparent;color:#888;transition:all .2s;margin-bottom:-1px;white-space:nowrap;flex-shrink:0}
+.period-tab.active{color:var(--rouge);border-bottom-color:var(--rouge)}
+
 .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
 .revealed{opacity:1;transform:translateY(0)}
 .spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:5px}
@@ -361,27 +365,93 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   </div>
 </div>
 
+
+<!-- WELCOME / INFO MODAL -->
+<div id="welcome-overlay" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:white;max-width:540px;width:100%;border-top:4px solid var(--rouge);padding:3rem;position:relative;animation:modalIn .3s ease;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:2rem">
+      <div style="font-family:var(--serif);font-size:48px;font-weight:400;line-height:1;position:relative;display:inline-block;color:var(--noir)">E<span style="position:absolute;bottom:3px;right:-1px;width:10px;height:10px;background:var(--rouge);clip-path:polygon(100% 0,100% 100%,0 100%);display:block"></span></div>
+      <div style="font-family:var(--sans);font-size:8px;letter-spacing:.45em;text-transform:uppercase;color:var(--noir);margin-top:2px">Economist</div>
+      <div style="width:28px;height:1px;background:var(--rouge);margin-top:3px"></div>
+    </div>
+    <div style="font-family:var(--serif);font-size:1.5rem;font-weight:400;text-align:center;margin-bottom:1.2rem">Bienvenue sur <em style="color:var(--rouge)">Economist</em></div>
+    <div style="font-family:var(--sans);font-size:.88rem;line-height:1.85;color:#555;font-weight:300;margin-bottom:2rem">
+      Economist est une plateforme de média économique dédiée à l'<strong style="color:var(--noir)">Afrique</strong> avec une <strong style="color:var(--noir)">perspective mondiale</strong>.<br><br>
+      Tous les articles publiés sont visibles par tous. Pour devenir rédacteur :
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.8rem;margin-bottom:2rem">
+      <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.2rem;border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge)">
+        <div style="font-family:var(--serif);font-size:1.2rem;color:var(--rouge);flex-shrink:0;line-height:1.2">1</div>
+        <div style="font-family:var(--sans);font-size:.84rem;color:#555;font-weight:300;line-height:1.6"><strong style="color:var(--noir)">Créez un compte</strong> gratuitement via "S'abonner / Connexion".</div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.2rem;border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge)">
+        <div style="font-family:var(--serif);font-size:1.2rem;color:var(--rouge);flex-shrink:0;line-height:1.2">2</div>
+        <div style="font-family:var(--sans);font-size:.84rem;color:#555;font-weight:300;line-height:1.6"><strong style="color:var(--noir)">Proposez votre sujet</strong> via "Proposer un article" — décrivez votre idée à la rédaction.</div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.2rem;border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge)">
+        <div style="font-family:var(--serif);font-size:1.2rem;color:var(--rouge);flex-shrink:0;line-height:1.2">3</div>
+        <div style="font-family:var(--sans);font-size:.84rem;color:#555;font-weight:300;line-height:1.6"><strong style="color:var(--noir)">Recevez votre code unique</strong> par e-mail si votre proposition est retenue.</div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.2rem;border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge)">
+        <div style="font-family:var(--serif);font-size:1.2rem;color:var(--rouge);flex-shrink:0;line-height:1.2">4</div>
+        <div style="font-family:var(--sans);font-size:.84rem;color:#555;font-weight:300;line-height:1.6"><strong style="color:var(--noir)">Rédigez et publiez</strong> votre article — visible par tous instantanément.</div>
+      </div>
+    </div>
+    <button onclick="closeWelcome()" style="font-family:var(--sans);font-size:10px;letter-spacing:.18em;text-transform:uppercase;background:var(--rouge);color:white;border:none;padding:13px 32px;cursor:pointer;width:100%">Accéder à la plateforme →</button>
+    <div onclick="closeWelcome()" style="font-family:var(--sans);font-size:.78rem;color:#aaa;text-align:center;margin-top:1rem;cursor:pointer">Passer cette introduction</div>
+  </div>
+</div>
+
 <canvas id="planet-tr" class="planet-canvas"></canvas>
 <canvas id="planet-bl" class="planet-canvas"></canvas>
 <div class="toast" id="toast"></div>
 
 <!-- MOBILE OVERLAY -->
 <div class="nav-mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
-<div class="nav-mobile-menu" id="mob-menu">
-  <button class="modal-close" onclick="closeMobileMenu()" style="top:.8rem;right:1rem;position:absolute">×</button>
-  <div style="margin-bottom:1.2rem">
-    <div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-bottom:.5rem">Rechercher</div>
-    <input type="text" id="mob-search" placeholder="Articles, auteurs…" oninput="doMobSearch(this.value)"
-      style="width:100%;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.65rem 1rem;outline:none;"
-      onfocus="this.style.borderColor='var(--rouge)'" onblur="this.style.borderColor='var(--gris-clair)'">
-    <div id="mob-search-results" style="margin-top:.4rem;border:.5px solid var(--gris-clair);display:none;max-height:240px;overflow-y:auto;background:white"></div>
+<div class="nav-mobile-menu" id="mob-menu" style="display:flex;flex-direction:column">
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:.5px solid var(--gris-clair);flex-shrink:0">
+    <div style="font-family:var(--serif);font-size:22px;font-weight:400;position:relative;display:inline-block;color:var(--noir)">E<span style="position:absolute;bottom:2px;right:-1px;width:6px;height:6px;background:var(--rouge);clip-path:polygon(100% 0,100% 100%,0 100%);display:block"></span></div>
+    <button onclick="closeMobileMenu()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;line-height:1;padding:4px">×</button>
   </div>
-  <div class="nav-mobile-item" onclick="navGo('home')">La Une</div>
-  <div class="nav-mobile-item" onclick="navGo('propose')">Proposer un article</div>
-  <div class="nav-mobile-item" id="mob-write-item" style="display:none" onclick="navGo('write')">✏ Écrire</div>
+  <!-- User block -->
+  <div id="mob-user-block" style="display:none;padding:1rem 1.5rem;border-bottom:.5px solid var(--gris-clair);align-items:center;gap:.8rem"></div>
+  <!-- Search -->
+  <div style="padding:1rem 1.5rem;border-bottom:.5px solid var(--gris-clair);flex-shrink:0">
+    <input type="text" id="mob-search" placeholder="Rechercher articles, auteurs…" oninput="doMobSearch(this.value)"
+      style="width:100%;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.65rem 1rem;outline:none;transition:border .2s"
+      onfocus="this.style.borderColor='var(--rouge)'" onblur="this.style.borderColor='var(--gris-clair)'">
+    <div id="mob-search-results" style="margin-top:.4rem;border:.5px solid var(--gris-clair);display:none;max-height:200px;overflow-y:auto;background:white"></div>
+  </div>
+  <!-- Nav items -->
+  <div style="padding:.4rem 1.5rem .1rem;font-family:var(--sans);font-size:8.5px;letter-spacing:.25em;text-transform:uppercase;color:#bbb;margin-top:.3rem">Navigation</div>
+  <div class="nav-mobile-item" onclick="navGo('home')">🏠 La Une</div>
+  <div class="nav-mobile-item" onclick="navGo('propose')">✉ Proposer un article</div>
+  <div class="nav-mobile-item" id="mob-write-item" style="display:none" onclick="navGo('write')">✏ Écrire un article</div>
   <div class="nav-mobile-item" id="mob-mystats-item" style="display:none" onclick="navGo('mystats')">📊 Mes statistiques</div>
-  <div class="nav-mobile-item" id="mob-admin-item" style="display:none" onclick="navGo('admin')">⚙ Admin</div>
-  <div class="nav-mobile-actions" id="mob-actions"></div>
+  <div class="nav-mobile-item" id="mob-admin-item" style="display:none" onclick="navGo('admin')">⚙ Administration</div>
+  <!-- Rubriques -->
+  <div style="padding:.4rem 1.5rem .1rem;font-family:var(--sans);font-size:8.5px;letter-spacing:.25em;text-transform:uppercase;color:#bbb;margin-top:.3rem">Rubriques</div>
+  <div class="nav-mobile-item" onclick="filterCat(null,'all');navGo('home')">La Une — Tous les articles</div>
+  <div class="nav-mobile-item" onclick="filterCat(null,'Macroéconomie');navGo('home')">Macroéconomie</div>
+  <div class="nav-mobile-item" onclick="filterCat(null,'Finance');navGo('home')">Finance</div>
+  <div class="nav-mobile-item" onclick="filterCat(null,'Marchés');navGo('home')">Marchés</div>
+  <div class="nav-mobile-item" onclick="filterCat(null,'Politiques publiques');navGo('home')">Politiques publiques</div>
+  <div class="nav-mobile-item" onclick="filterCat(null,'Afrique');navGo('home')">Afrique</div>
+  <div class="nav-mobile-item" onclick="filterCat(null,'Monde');navGo('home')">Monde</div>
+  <div class="nav-mobile-item" onclick="filterCat(null,'Analyses');navGo('home')">Analyses</div>
+  <div class="nav-mobile-item" onclick="filterCat(null,'Tribunes');navGo('home')">Tribunes</div>
+  <!-- Actions -->
+  <div class="nav-mobile-actions" id="mob-actions" style="padding:1rem 1.5rem;display:flex;flex-direction:column;gap:.6rem"></div>
+  <!-- Footer legal -->
+  <div style="margin-top:auto;padding:1rem 1.5rem;border-top:.5px solid var(--gris-clair);flex-shrink:0">
+    <div style="display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;margin-bottom:.5rem">
+      <span onclick="navGo('legal')" style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;cursor:pointer">Mentions légales</span>
+      <span onclick="navGo('privacy')" style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;cursor:pointer">Confidentialité</span>
+      <span onclick="navGo('cgu')" style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;cursor:pointer">CGU</span>
+    </div>
+    <div style="font-family:var(--sans);font-size:9px;color:#555">© 2026 Economist · Abidjan · Paris · Londres</div>
+  </div>
 </div>
 
 <!-- MODAL AUTH -->
@@ -592,11 +662,46 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   <div class="profile-page" id="profile-content"></div>
 </div>
 
+
+<!-- PAGES LÉGALES -->
+<div id="page-legal" class="page">
+  <div style="max-width:760px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1">
+    <button class="back-btn" onclick="showPage('home')">← Retour</button>
+    <h2 style="font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:2rem">Mentions <em style="color:var(--rouge)">légales</em></h2>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Éditeur</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">Economist est une plateforme de média économique indépendante. Contact : <strong>theseeconomists@gmail.com</strong></p></div>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Hébergement</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">Ce site est hébergé par GitHub Pages (GitHub Inc., San Francisco, USA) et utilise Firebase (Google LLC) comme base de données.</p></div>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Propriété intellectuelle</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">Les contenus publiés sur Economist (textes, images, logos) sont la propriété de leurs auteurs respectifs. Toute reproduction sans autorisation est interdite.</p></div>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Responsabilité</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">Les opinions exprimées dans les articles n'engagent que leurs auteurs et ne reflètent pas nécessairement la position de la rédaction.</p></div>
+  </div>
+</div>
+<div id="page-privacy" class="page">
+  <div style="max-width:760px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1">
+    <button class="back-btn" onclick="showPage('home')">← Retour</button>
+    <h2 style="font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:2rem">Politique de <em style="color:var(--rouge)">confidentialité</em></h2>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Données collectées</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">Economist collecte uniquement les données nécessaires au fonctionnement : nom, prénom, email, mot de passe, photo de profil (optionnel), biographie (optionnel), et contenu des articles publiés.</p></div>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Utilisation des données</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">Vos données sont utilisées exclusivement pour gérer votre compte, afficher votre profil public, et calculer les statistiques de lecture. Elles ne sont jamais vendues ni partagées à des fins commerciales.</p></div>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Stockage et sécurité</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">Vos données sont stockées sur Firebase Realtime Database (Google LLC). Aucun cookie de tracking ou publicitaire n'est utilisé — uniquement le localStorage de votre navigateur pour maintenir votre session.</p></div>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Vos droits</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">Vous pouvez demander la suppression de votre compte et de vos données à tout moment en contactant : <strong>theseeconomists@gmail.com</strong></p></div>
+  </div>
+</div>
+<div id="page-cgu" class="page">
+  <div style="max-width:760px;margin:0 auto;padding:4rem 2rem;position:relative;z-index:1">
+    <button class="back-btn" onclick="showPage('home')">← Retour</button>
+    <h2 style="font-family:var(--serif);font-size:2.2rem;font-weight:400;margin-bottom:2rem">Conditions générales <em style="color:var(--rouge)">d'utilisation</em></h2>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Accès à la plateforme</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">L'accès au site est libre et gratuit. La création d'un compte est nécessaire pour publier des articles.</p></div>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Publication d'articles</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">Pour publier, vous devez : disposer d'un compte actif, avoir soumis une proposition à la rédaction, et avoir reçu un code d'accès unique validant votre participation.</p></div>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Contenu publié</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">En publiant, vous certifiez que le contenu est original, vous appartient, ne viole aucune loi, et ne contient pas de propos diffamatoires, haineux ou illicites.</p></div>
+    <div style="margin-bottom:2.5rem"><h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:.8rem">Modération</h3><p style="font-family:var(--sans);font-size:.9rem;line-height:1.85;color:#555;font-weight:300">La rédaction se réserve le droit de supprimer tout contenu ne respectant pas ces conditions ou les valeurs éditoriales d'Economist, sans préavis.</p></div>
+  </div>
+</div>
+
 <footer>
   <div class="foot-top">
     <div><div class="foot-logo-e">E</div><div class="foot-sub">Economist</div></div>
     <div class="foot-links">
-      <span class="foot-link">À propos</span>
+      <span class="foot-link" onclick="showPage('legal')">Mentions légales</span>
+      <span class="foot-link" onclick="showPage('privacy')">Confidentialité</span>
+      <span class="foot-link" onclick="showPage('cgu')">CGU</span>
       <span class="foot-link" onclick="showPage('propose')">Proposer un article</span>
       <span class="foot-link" onclick="showPage('write')">Écrire</span>
     </div>
@@ -682,6 +787,7 @@ function avHtml(u,size=28){
 function renderNav(){
   const el=document.getElementById('nav-actions');
   const mob=document.getElementById('mob-actions');
+  const mobUser=document.getElementById('mob-user-block');
   document.getElementById('nav-cats-write').style.display   = currentUser?'':'none';
   document.getElementById('nav-cats-mystats').style.display = currentUser?'':'none';
   document.getElementById('nav-cats-admin').style.display   = isOwner()?'':'none';
@@ -706,6 +812,7 @@ function renderNav(){
       <button class="btn-outline" style="width:100%" onclick="closeMobileMenu();showPage('mystats')">📊 Mes statistiques</button>
       ${isOwner()?`<button class="btn-outline" style="width:100%;border-color:var(--rouge);color:var(--rouge)" onclick="closeMobileMenu();showPage('admin')">⚙ Admin</button>`:''}
       <button class="btn-outline" style="width:100%" onclick="doLogout();closeMobileMenu()">Déconnexion</button>`;
+  if(mobUser){mobUser.style.display='flex';mobUser.innerHTML=avHtml(currentUser,36)+`<div onclick="closeMobileMenu();showPage('profile');openProfile('${currentUser.email}')" style="cursor:pointer;flex:1"><div style="font-family:var(--sans);font-size:11px;font-weight:500">${currentUser.first} ${currentUser.last}${isOwner()?' · Admin':''}</div><div style="font-family:var(--sans);font-size:9px;color:var(--gris);margin-top:2px">${currentUser.email}</div></div>`;}
   } else {
     el.innerHTML=`
       <div class="nav-search-wrap">
@@ -715,6 +822,7 @@ function renderNav(){
       </div>
       <button class="btn-outline" onclick="openModal('login')">Connexion</button>
       <button class="btn-red" onclick="showPage('propose')">Proposer un article</button>`;
+    if(mobUser)mobUser.style.display='none';
     mob.innerHTML=`
       <button class="btn-outline" style="width:100%" onclick="closeMobileMenu();openModal('login')">Connexion</button>
       <button class="btn-red" style="width:100%" onclick="closeMobileMenu();showPage('propose')">Proposer un article</button>`;
@@ -876,7 +984,7 @@ function artCardHtml(a){
     <div class="art-card-body">
       <div class="art-k">${a.cat}</div><div class="art-title">${a.title}</div>
       <div class="art-excerpt">${a.deck}</div>
-      <div class="art-foot"><span>${a.author}</span><span class="dot"></span><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)}</span></div>
+      <div class="art-foot"><span>${a.author}</span><span class="dot"></span><span>${a.date}</span><span class="dot"></span><span>${readTime(a.body)}</span><span class="dot"></span><span>👁 ${a.reads||0}</span></div>
     </div></div>`;
 }
 
@@ -968,6 +1076,7 @@ function openProfile(email){
   if(!u){document.getElementById('profile-content').innerHTML=`<p style="font-family:var(--sans);color:#aaa">Profil introuvable.</p>`;return;}
   const userArticles=articles.filter(a=>a.author===u.first+' '+u.last).reverse();
   const isMe=currentUser&&currentUser.email===email;
+  const totalReads=userArticles.reduce((s,a)=>s+(a.reads||0),0);
   const avatarEl=u.avatar?`<div class="profile-avatar"><img src="${u.avatar}" alt="${u.first}"></div>`:`<div class="profile-avatar" style="font-size:2rem">${(u.first[0]+(u.last[0]||'')).toUpperCase()}</div>`;
   document.getElementById('profile-content').innerHTML=`
     <button class="back-btn" onclick="showPage('home')">← Retour</button>
@@ -977,6 +1086,11 @@ function openProfile(email){
         <div class="profile-meta">Membre depuis ${u.joined||'—'}${userArticles.length?` · ${userArticles.length} article${userArticles.length>1?'s':''} publié${userArticles.length>1?'s':''}`:' · Lecteur'}</div>
         ${u.bio?`<div class="profile-bio">"${u.bio}"</div>`:''}
         ${userArticles.length?`<div class="profile-badge">✍ Rédacteur</div>`:''}
+        <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-top:.8rem">
+          <div style="text-align:center"><div style="font-family:var(--serif);font-size:1.6rem;color:var(--rouge);font-weight:400;line-height:1">${userArticles.length}</div><div style="font-family:var(--sans);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gris);margin-top:2px">Articles</div></div>
+          <div style="text-align:center"><div style="font-family:var(--serif);font-size:1.6rem;color:var(--rouge);font-weight:400;line-height:1">${totalReads}</div><div style="font-family:var(--sans);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gris);margin-top:2px">Lectures</div></div>
+          <div style="text-align:center"><div style="font-family:var(--serif);font-size:1.6rem;color:var(--rouge);font-weight:400;line-height:1">${userArticles.length?Math.round(totalReads/userArticles.length):0}</div><div style="font-family:var(--sans);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gris);margin-top:2px">Moy./article</div></div>
+        </div>
         ${isMe?`<button class="profile-edit-btn" onclick="openProfileEdit()">✏ Modifier mon profil</button>`:''}
       </div>
     </div>
@@ -984,18 +1098,35 @@ function openProfile(email){
 }
 
 // ═══════════════ MES STATS ═══════════════
-function renderMyStats(){
+async function renderMyStats(){
   if(!currentUser){document.getElementById('my-stats-content').innerHTML=`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa">Connectez-vous.</div>`;return;}
   const myArts=articles.filter(a=>a.author===currentUser.first+' '+currentUser.last).reverse();
   const totalReads=myArts.reduce((s,a)=>s+(a.reads||0),0);
   const totalWords=myArts.reduce((s,a)=>s+(a.body||'').trim().split(/\s+/).length,0);
+
+  // Charger stats période
+  const td=dateKey(),wk=weekKey(),mo=monthKey(),yr=new Date().getFullYear().toString();
+  const [sd,sw,sm,sy,sg]=await Promise.all([dbGet('stats/daily/'+td),dbGet('stats/weekly/'+wk),dbGet('stats/monthly/'+mo),dbGet('stats/yearly/'+yr),dbGet('stats/global')]);
+  window._sp={today:sd,week:sw,month:sm,year:sy,global:sg};
+  window._sl={today:"Aujourd\'hui",week:"Cette semaine",month:"Ce mois",year:"Cette année",global:"Global"};
+
   document.getElementById('my-stats-content').innerHTML=`
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1.2rem;margin-bottom:3rem">
-      <div class="my-stat-card"><div class="my-stat-num">${myArts.length}</div><div class="my-stat-label">Articles publiés</div></div>
-      <div class="my-stat-card"><div class="my-stat-num">${totalReads}</div><div class="my-stat-label">Lectures totales</div></div>
-      <div class="my-stat-card"><div class="my-stat-num">${totalWords.toLocaleString('fr')}</div><div class="my-stat-label">Mots écrits</div></div>
-      <div class="my-stat-card"><div class="my-stat-num">${myArts.length?Math.round(totalReads/myArts.length):0}</div><div class="my-stat-label">Moy. lectures/article</div></div>
+    <div class="stats-section-title">Mes articles</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1.2rem;margin-bottom:2.5rem">
+      <div style="border:.5px solid var(--gris-clair);padding:1.5rem;text-align:center;border-top:3px solid var(--rouge)"><div style="font-family:var(--serif);font-size:2.4rem;font-weight:400;color:var(--rouge);line-height:1">${myArts.length}</div><div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:.5rem">Articles publiés</div></div>
+      <div style="border:.5px solid var(--gris-clair);padding:1.5rem;text-align:center;border-top:3px solid var(--rouge)"><div style="font-family:var(--serif);font-size:2.4rem;font-weight:400;color:var(--rouge);line-height:1">${totalReads}</div><div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:.5rem">Lectures totales</div></div>
+      <div style="border:.5px solid var(--gris-clair);padding:1.5rem;text-align:center;border-top:3px solid var(--rouge)"><div style="font-family:var(--serif);font-size:2.4rem;font-weight:400;color:var(--rouge);line-height:1">${totalWords.toLocaleString('fr')}</div><div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:.5rem">Mots écrits</div></div>
+      <div style="border:.5px solid var(--gris-clair);padding:1.5rem;text-align:center;border-top:3px solid var(--rouge)"><div style="font-family:var(--serif);font-size:2.4rem;font-weight:400;color:var(--rouge);line-height:1">${myArts.length?Math.round(totalReads/myArts.length):0}</div><div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:.5rem">Moy. lectures/article</div></div>
     </div>
+    <div class="stats-section-title">Statistiques de la plateforme</div>
+    <div style="display:flex;gap:0;margin-bottom:2rem;border-bottom:1px solid var(--gris-clair);overflow-x:auto;scrollbar-width:none">
+      <div class="period-tab active" onclick="switchStatPeriod(this,'today')">Aujourd'hui</div>
+      <div class="period-tab" onclick="switchStatPeriod(this,'week')">Cette semaine</div>
+      <div class="period-tab" onclick="switchStatPeriod(this,'month')">Ce mois</div>
+      <div class="period-tab" onclick="switchStatPeriod(this,'year')">Cette année</div>
+      <div class="period-tab" onclick="switchStatPeriod(this,'global')">Global</div>
+    </div>
+    <div id="period-stats">${renderPeriodStats(sd,"Aujourd\'hui")}</div>
     ${myArts.length?`<div class="stats-section-title">Mes articles</div><div style="overflow-x:auto">
       <table class="stats-table"><thead><tr><th>Titre</th><th>Rubrique</th><th>Date</th><th>Lectures</th><th>Action</th></tr></thead><tbody>
       ${myArts.map(a=>`<tr><td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td><td><span class="stats-cat-badge">${a.cat}</span></td><td>${a.date}</td><td><strong style="color:var(--rouge)">${a.reads||0}</strong></td><td><button class="btn-danger" onclick="confirmDeleteArticle(${a.id})">Supprimer</button></td></tr>`).join('')}
@@ -1003,7 +1134,7 @@ function renderMyStats(){
 }
 
 // ═══════════════ ADMIN ═══════════════
-function renderAdmin(){
+async function renderAdmin(){
   const el=document.getElementById('admin-content');
   if(!isOwner()){el.innerHTML=`<div style="border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.5rem;max-width:440px"><p style="font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.2rem;font-weight:300">Espace réservé au propriétaire.</p><button class="btn-red" onclick="openModal('login')">Se connecter</button></div>`;return;}
   const totalReads=articles.reduce((s,a)=>s+(a.reads||0),0);
@@ -1168,6 +1299,41 @@ function initPlanet(id,radius,dotCount,lineThreshold,speed){
   draw();
 }
 
+
+// ══════════ STATS TRACKING ══════════
+function dateKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function weekKey(){const d=new Date(),j=d.getDay()||7;d.setDate(d.getDate()-j+1);const wn=Math.ceil((((d-new Date(d.getFullYear(),0,1))/86400000)+1)/7);return d.getFullYear()+'-W'+String(wn).padStart(2,'0');}
+function monthKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+async function trackVisit(){
+  const td=dateKey(),wk=weekKey(),mo=monthKey(),yr=new Date().getFullYear().toString();
+  if(sessionStorage.getItem('eco_visited_'+td)) return;
+  sessionStorage.setItem('eco_visited_'+td,'1');
+  const paths=['stats/global/visits','stats/daily/'+td+'/visits','stats/weekly/'+wk+'/visits','stats/monthly/'+mo+'/visits','stats/yearly/'+yr+'/visits'];
+  for(const p of paths){const v=await dbGet(p)||0;await dbSet(p,v+1);}
+}
+async function trackPageView(){
+  const td=dateKey(),wk=weekKey(),mo=monthKey(),yr=new Date().getFullYear().toString();
+  const paths=['stats/global/pageviews','stats/daily/'+td+'/pageviews','stats/weekly/'+wk+'/pageviews','stats/monthly/'+mo+'/pageviews','stats/yearly/'+yr+'/pageviews'];
+  for(const p of paths){const v=await dbGet(p)||0;await dbSet(p,v+1);}
+}
+function renderPeriodStats(data,label){
+  const v=data&&data.visits?data.visits:0;
+  const pv=data&&data.pageviews?data.pageviews:0;
+  return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1.2rem;margin-bottom:2rem">'
+    +'<div style="border:.5px solid var(--gris-clair);padding:1.5rem;text-align:center;border-top:3px solid var(--rouge)"><div style="font-family:var(--serif);font-size:2.4rem;font-weight:400;color:var(--rouge);line-height:1">'+v+'</div><div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:.5rem">Visiteurs · '+label+'</div></div>'
+    +'<div style="border:.5px solid var(--gris-clair);padding:1.5rem;text-align:center;border-top:3px solid var(--rouge)"><div style="font-family:var(--serif);font-size:2.4rem;font-weight:400;color:var(--rouge);line-height:1">'+pv+'</div><div style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:.5rem">Pages vues · '+label+'</div></div>'
+    +'</div>';
+}
+function switchStatPeriod(el,period){
+  document.querySelectorAll('.period-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  document.getElementById('period-stats').innerHTML=renderPeriodStats(window._sp&&window._sp[period],window._sl&&window._sl[period]||period);
+}
+function switchAdminPeriod(el,period){
+  document.querySelectorAll('.period-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  document.getElementById('admin-period-stats').innerHTML=renderPeriodStats(window._ap&&window._ap[period],window._al&&window._al[period]||period);
+}
+
+
 // ═══════════════ INIT ═══════════════
 async function init(){
   document.getElementById('loading-text').textContent='Economist · Chargement des articles…';
@@ -1184,12 +1350,16 @@ async function init(){
   renderNav();
   insertBlock('paragraph');
   renderHome('all');
+  await trackVisit();
 
   setTimeout(()=>{
     const ls=document.getElementById('loading-screen');
     ls.classList.add('hidden');
-    setTimeout(()=>ls.style.display='none',500);
-  },1500);
+    setTimeout(()=>{
+      ls.style.display='none';
+      try{if(!sessionStorage.getItem('eco_welcomed')){const wo=document.getElementById('welcome-overlay');if(wo)wo.style.display='flex';}}catch(e){}
+    },500);
+  },1600);
 }
 </script>
 </body>
