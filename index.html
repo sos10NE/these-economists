@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
@@ -348,6 +348,93 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
   .gate-row{flex-direction:column;align-items:flex-start}
   .gate input[type=password]{width:100%}
 }
+
+/* ═══════════ DARK MODE ═══════════ */
+[data-theme="dark"]{
+  --blanc:#111010;
+  --noir:#F5F4F0;
+  --gris-clair:#2a2a2a;
+  --gris:#888;
+  --bg-card:#1a1a1a;
+  --bg-input:#1e1e1e;
+}
+[data-theme="dark"] body{background:#111010;color:#F5F4F0}
+[data-theme="dark"] nav{background:rgba(17,16,16,0.97);border-color:#222}
+[data-theme="dark"] .modal-box,[data-theme="dark"] .gate,[data-theme="dark"] .form-row input,[data-theme="dark"] .form-row select,[data-theme="dark"] .form-row textarea,[data-theme="dark"] .m-row input,[data-theme="dark"] .m-row textarea{background:#1a1a1a;color:#F5F4F0;border-color:#2a2a2a}
+[data-theme="dark"] .nav-mobile-menu{background:#151515;border-color:#222}
+[data-theme="dark"] .article-blocks-editor{background:#1a1a1a;border-color:#2a2a2a}
+[data-theme="dark"] .block-para{color:#F5F4F0}
+[data-theme="dark"] .block-para:focus{background:#1e1e1e;border-color:#333}
+[data-theme="dark"] .block-h2,[data-theme="dark"] .block-h3{color:#F5F4F0;border-color:#2a2a2a}
+[data-theme="dark"] .block-quote{background:#1e1618;color:#ddd}
+[data-theme="dark"] .srd{background:#1a1a1a;border-color:#2a2a2a}
+[data-theme="dark"] .srd-item:hover{background:#1e1e1e}
+[data-theme="dark"] .art-full-body{color:#e0ddd8}
+[data-theme="dark"] .art-full-deck{color:#bbb}
+[data-theme="dark"] .art-full-body blockquote{background:#1e1618}
+[data-theme="dark"] .art-card{border-color:#222}
+[data-theme="dark"] .art-thumb-empty{background:linear-gradient(135deg,#1a1a1a,#222)}
+[data-theme="dark"] .stats-table td,[data-theme="dark"] .stats-table th{border-color:#222}
+[data-theme="dark"] .stats-table tr:hover td{background:#1e1e1e}
+[data-theme="dark"] .my-stat-card,[data-theme="dark"] .reg-card,[data-theme="dark"] .success-msg,[data-theme="dark"] .reg-success{background:#1a1a1a;border-color:#2a2a2a}
+[data-theme="dark"] .tb-btn{background:#1a1a1a;border-color:#2a2a2a;color:#bbb}
+[data-theme="dark"] .add-block-btn{color:#666;border-color:#2a2a2a}
+[data-theme="dark"] .block-insert-line{background:#2a2a2a}
+[data-theme="dark"] .block-insert-line:hover .insert-line-bar{background:var(--rouge)}
+[data-theme="dark"] .art-info-box{background:#1a1618;border-color:rgba(139,26,26,0.3)}
+[data-theme="dark"] .art-credits-box{background:#161616;border-color:#2a2a2a}
+[data-theme="dark"] .art-sources-box{background:#161616}
+[data-theme="dark"] .loading-screen,[data-theme="dark"] #loading-screen{background:#111010}
+[data-theme="dark"] .loading-logo-e{color:#F5F4F0}
+[data-theme="dark"] .img-upload-zone{background:#1a1a1a;border-color:#2a2a2a}
+[data-theme="dark"] .img-upload-zone:hover{background:#1e1618}
+[data-theme="dark"] footer{background:#0a0909}
+[data-theme="dark"] .nav-cats-sep{background:#2a2a2a}
+
+/* ═══════════ CTRL BUTTONS (lang + theme) ═══════════ */
+.nav-top-controls{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.ctrl-btn{font-family:var(--sans);font-size:10px;letter-spacing:.12em;background:none;border:.5px solid var(--gris-clair);color:var(--gris);padding:5px 10px;cursor:pointer;transition:all .2s;text-transform:uppercase;display:flex;align-items:center;gap:4px;line-height:1}
+.ctrl-btn:hover{border-color:var(--rouge);color:var(--rouge)}
+@media(max-width:900px){.nav-top-controls{gap:.3rem}.ctrl-btn{padding:4px 7px;font-size:9px}}
+
+/* ═══════════ BLOCK INSERT LINE ═══════════ */
+.block-insert-line{height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .2s;position:relative}
+.block-insert-line:hover{opacity:1}
+.insert-line-bar{height:1px;width:100%;background:var(--gris-clair);position:relative;transition:background .15s}
+.insert-line-plus{position:absolute;left:50%;transform:translateX(-50%);background:var(--rouge);color:white;font-size:10px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;line-height:1;font-weight:400}
+.article-blocks-editor:hover .block-insert-line{opacity:.6}
+.block-insert-line:hover{opacity:1!important}
+
+/* ═══════════ FORMAT TOOLBAR (bold/italic) ═══════════ */
+.fmt-toolbar{display:none;position:absolute;z-index:50;background:var(--noir);color:var(--blanc);border-radius:2px;padding:3px 4px;gap:2px;font-family:var(--sans);font-size:11px;box-shadow:0 4px 12px rgba(0,0,0,.2);flex-wrap:nowrap;align-items:center}
+.fmt-toolbar.show{display:flex}
+.fmt-btn{background:none;border:none;color:inherit;cursor:pointer;padding:3px 7px;border-radius:2px;font-size:12px;transition:background .1s;line-height:1}
+.fmt-btn:hover{background:rgba(255,255,255,.15)}
+.fmt-sep{width:1px;height:14px;background:rgba(255,255,255,.2);margin:0 2px}
+
+/* ═══════════ NEW BLOCK TYPES ═══════════ */
+/* Sources block */
+.block-sources{font-family:var(--sans);font-size:.88rem;border:none;border-top:.5px solid var(--gris-clair);padding:.6rem 0;outline:none;width:100%;color:#666;line-height:1.7;resize:vertical;min-height:60px;background:transparent}
+.block-sources-label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);padding:.3rem 0 .2rem;display:block}
+/* Info box */
+.block-infobox{font-family:var(--sans);font-size:.9rem;background:#fff8f8;border:.5px solid rgba(139,26,26,0.15);border-left:3px solid var(--rouge);padding:.8rem 1rem;outline:none;width:100%;line-height:1.75;resize:vertical;min-height:60px;color:#333}
+.block-infobox-label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);padding:.3rem 0 .2rem;display:block}
+/* Credits block */
+.block-credits{font-family:var(--sans);font-size:.85rem;border:.5px solid var(--gris-clair);padding:.7rem 1rem;outline:none;width:100%;color:#777;line-height:1.75;resize:vertical;min-height:50px;background:transparent}
+.block-credits-label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);padding:.3rem 0 .2rem;display:block}
+
+/* Article view — new block types */
+.art-sources-box{margin:2.5rem 0 1rem;padding-top:1.2rem;border-top:.5px solid var(--gris-clair)}
+.art-sources-title{font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);margin-bottom:.6rem}
+.art-sources-body{font-family:var(--sans);font-size:.85rem;line-height:1.8;color:#666}
+.art-info-box{margin:1.8rem 0;padding:1.1rem 1.4rem;background:#fff8f8;border:.5px solid rgba(139,26,26,0.15);border-left:3px solid var(--rouge)}
+.art-info-box-title{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);margin-bottom:.5rem}
+.art-info-box-body{font-family:var(--sans);font-size:.9rem;line-height:1.75;color:#444}
+.art-credits-box{float:right;clear:right;width:200px;margin:0 0 1.5rem 2.5rem;padding:1rem 1.2rem;border:.5px solid var(--gris-clair);border-top:2px solid var(--gris-clair)}
+.art-credits-title{font-family:var(--sans);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-bottom:.5rem}
+.art-credits-body{font-family:var(--sans);font-size:.8rem;line-height:1.65;color:#666}
+@media(max-width:600px){.art-credits-box{float:none;width:100%;margin:1.5rem 0}}
+
 </style>
 </head>
 <body>
@@ -376,10 +463,10 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
       onfocus="this.style.borderColor='var(--rouge)'" onblur="this.style.borderColor='var(--gris-clair)'">
     <div id="mob-search-results" style="margin-top:.4rem;border:.5px solid var(--gris-clair);display:none;max-height:240px;overflow-y:auto;background:white"></div>
   </div>
-  <div class="nav-mobile-item" onclick="navGo('home')">La Une</div>
-  <div class="nav-mobile-item" onclick="navGo('propose')">Proposer un article</div>
-  <div class="nav-mobile-item" id="mob-write-item" style="display:none" onclick="navGo('write')">✏ Écrire</div>
-  <div class="nav-mobile-item" id="mob-mystats-item" style="display:none" onclick="navGo('mystats')">📊 Mes statistiques</div>
+  <div class="nav-mobile-item" onclick="navGo('home')" data-i18n="cat_une">À la une</div>
+  <div class="nav-mobile-item" onclick="navGo('propose')" data-i18n="nav_propose">Proposer un article</div>
+  <div class="nav-mobile-item" id="mob-write-item" style="display:none" onclick="navGo('write')">✏ <span data-i18n="nav_write">Écrire</span></div>
+  <div class="nav-mobile-item" id="mob-mystats-item" style="display:none" onclick="navGo('mystats')">📊 <span data-i18n="nav_stats">Mes statistiques</span></div>
   <div class="nav-mobile-item" id="mob-admin-item" style="display:none" onclick="navGo('admin')">⚙ Admin</div>
   <div class="nav-mobile-actions" id="mob-actions"></div>
 </div>
@@ -441,27 +528,36 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
       <div class="logo-underline"></div>
     </div>
     <div class="nav-actions" id="nav-actions"></div>
+    <div class="nav-top-controls">
+      <button class="ctrl-btn" id="lang-toggle" onclick="toggleLang()" title="Traduire / Translate">FR</button>
+      <button class="ctrl-btn" id="theme-toggle" onclick="toggleTheme()" title="Thème sombre">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
     <button class="nav-hamburger" id="hamburger" onclick="toggleMobileMenu()">
       <span></span><span></span><span></span>
     </button>
   </div>
   <div class="nav-cats">
-    <div class="cat active" onclick="filterCat(this,'all')">La Une</div>
-    <div class="cat" onclick="filterCat(this,'Macroéconomie')">Macroéconomie</div>
-    <div class="cat" onclick="filterCat(this,'Finance')">Finance</div>
-    <div class="cat" onclick="filterCat(this,'Marchés')">Marchés</div>
-    <div class="cat" onclick="filterCat(this,'Politiques publiques')">Politiques publiques</div>
-    <div class="cat" onclick="filterCat(this,'Afrique')">Afrique</div>
-    <div class="cat" onclick="filterCat(this,'Monde')">Monde</div>
-    <div class="cat" onclick="filterCat(this,'Analyses')">Analyses</div>
-    <div class="cat" onclick="filterCat(this,'Tribunes')">Tribunes</div>
+    <div class="cat active" onclick="filterCat(this,'all')" data-i18n="cat_une">À la une</div>
+    <div class="cat" onclick="filterCat(this,'Économie')" data-i18n="cat_eco">Économie</div>
+    <div class="cat" onclick="filterCat(this,'Finance')" data-i18n="cat_fin">Finance</div>
+    <div class="cat" onclick="filterCat(this,'Politiques')" data-i18n="cat_pol">Politiques</div>
+    <div class="cat" onclick="filterCat(this,'Sociologie')" data-i18n="cat_soc">Sociologie</div>
+    <div class="cat" onclick="filterCat(this,'Droit')" data-i18n="cat_dro">Droit</div>
+    <div class="cat" onclick="filterCat(this,'Technologies')" data-i18n="cat_tec">Technologies</div>
+    <div class="cat" onclick="filterCat(this,'Afrique')" data-i18n="cat_afr">Afrique</div>
+    <div class="cat" onclick="filterCat(this,'Monde')" data-i18n="cat_mon">Monde</div>
+    <div class="cat" onclick="filterCat(this,'Écologie')" data-i18n="cat_ecol">Écologie</div>
+    <div class="cat" onclick="filterCat(this,'IA')" data-i18n="cat_ia">IA</div>
+    <div class="cat" onclick="filterCat(this,'Data Science')" data-i18n="cat_data">Data Science</div>
     <div class="nav-cats-sep"></div>
-    <div class="cat nav-link-item" onclick="showPage('propose')">Proposer un article</div>
-    <div class="cat nav-link-item" id="nav-cats-write" style="display:none" onclick="showPage('write')">Écrire</div>
-    <div class="cat nav-link-item" id="nav-cats-mystats" style="display:none" onclick="showPage('mystats')">Mes stats</div>
-    <div class="cat nav-link-item" id="nav-cats-admin" style="display:none" onclick="showPage('admin')">Admin</div>
-    <div class="cat nav-link-item" id="nav-cats-login" onclick="openModal('login')">S'abonner / Connexion</div>
-    <div class="cat nav-link-item" id="nav-cats-logout" style="display:none" onclick="doLogout()">Déconnexion</div>
+    <div class="cat nav-link-item" onclick="showPage('propose')" data-i18n="nav_propose">Proposer un article</div>
+    <div class="cat nav-link-item" id="nav-cats-write" style="display:none" onclick="showPage('write')" data-i18n="nav_write">Écrire</div>
+    <div class="cat nav-link-item" id="nav-cats-mystats" style="display:none" onclick="showPage('mystats')" data-i18n="nav_stats">Mes stats</div>
+    <div class="cat nav-link-item" id="nav-cats-admin" style="display:none" onclick="showPage('admin')" data-i18n="nav_admin">Admin</div>
+    <div class="cat nav-link-item" id="nav-cats-login" onclick="openModal('login')" data-i18n="nav_login">S'abonner / Connexion</div>
+    <div class="cat nav-link-item" id="nav-cats-logout" style="display:none" onclick="doLogout()" data-i18n="nav_logout">Déconnexion</div>
   </div>
 </nav>
 
@@ -484,7 +580,7 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
     <div class="reg-card">
       <div class="reg-section">Votre idée</div>
       <div class="reg-row"><label>Rubrique *</label>
-        <select id="r-cat"><option value="">— Sélectionner —</option><option>Macroéconomie</option><option>Finance</option><option>Marchés</option><option>Politiques publiques</option><option>Afrique</option><option>Monde</option><option>Analyses</option><option>Tribunes</option></select>
+        <select id="r-cat"><option value="">— Sélectionner —</option><option>Économie</option><option>Finance</option><option>Politiques</option><option>Sociologie</option><option>Droit</option><option>Technologies</option><option>Afrique</option><option>Monde</option><option>Écologie</option><option>IA</option><option>Data Science</option></select>
       </div>
       <div class="reg-row"><label>Sujet *</label><textarea id="r-subject" placeholder="Décrivez brièvement votre idée…"></textarea></div>
       <div class="reg-row"><label>Motivation (optionnel)</label><textarea id="r-why" style="min-height:80px" placeholder="Pourquoi ce sujet ?"></textarea></div>
@@ -522,8 +618,8 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
     <div style="display:none" id="write-form">
       <div class="form-wrap">
         <div class="form-two-col">
-          <div class="form-row"><label>Rubrique *</label>
-            <select id="f-cat"><option value="">— Sélectionner —</option><option>Macroéconomie</option><option>Finance</option><option>Marchés</option><option>Politiques publiques</option><option>Afrique</option><option>Monde</option><option>Analyses</option><option>Tribunes</option></select>
+          <div class="form-row"><label data-i18n="lbl_rubrique">Rubrique *</label>
+            <select id="f-cat"><option value="">— Sélectionner —</option><option>Économie</option><option>Finance</option><option>Politiques</option><option>Sociologie</option><option>Droit</option><option>Technologies</option><option>Afrique</option><option>Monde</option><option>Écologie</option><option>IA</option><option>Data Science</option></select>
           </div>
           <div class="form-row"><label>Auteur *</label><input type="text" id="f-author" placeholder="Prénom Nom"></div>
         </div>
@@ -543,7 +639,7 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
           <input type="file" id="f-img-file" accept="image/*" style="display:none" onchange="handleCoverUpload(event)">
           <input type="url" id="f-img" placeholder="https://… (URL alternative)" style="margin-top:.5rem;font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.6rem 1rem;outline:none;width:100%" oninput="handleCoverUrl(this.value)">
         </div>
-        <div class="form-row"><label>Corps de l'article *</label>
+        <div class="form-row"><label data-i18n="lbl_corps">Corps de l'article *</label>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem">
             <div class="editor-toolbar">
               <button type="button" class="tb-btn" onclick="insertBlock('paragraph')">¶ Paragraphe</button>
@@ -552,8 +648,16 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
               <button type="button" class="tb-btn" style="background:#fff8f8;border-color:rgba(139,26,26,0.2)" onclick="triggerInlineImg()">🖼 Image</button>
               <button type="button" class="tb-btn" onclick="insertBlock('quote')">« Citation</button>
               <button type="button" class="tb-btn" onclick="insertBlock('separator')">— —</button>
+              <button type="button" class="tb-btn" onclick="insertBlock('infobox')" title="Encadré d'information">ℹ Info</button>
+              <button type="button" class="tb-btn" onclick="insertBlock('sources')" title="Sources bibliographiques">🔗 Sources</button>
+              <button type="button" class="tb-btn" onclick="insertBlock('credits')" title="Crédits / auteurs">✍ Crédits</button>
             </div>
             <span class="char-count" id="bc">0 mot</span>
+          </div>
+          <div id="fmt-toolbar" class="fmt-toolbar">
+            <button class="fmt-btn" onmousedown="event.preventDefault();applyFormat('bold')" title="Gras"><b>G</b></button>
+            <div class="fmt-sep"></div>
+            <button class="fmt-btn" onmousedown="event.preventDefault();applyFormat('italic')" title="Italique"><em>I</em></button>
           </div>
           <input type="file" id="inline-img-input" accept="image/*" style="display:none" onchange="handleInlineImage(event)">
           <div id="article-blocks" class="article-blocks-editor"></div>
@@ -606,7 +710,8 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 
 <script>
 // ═══════════════ CONFIG ═══════════════
-const VALID_CODES  = ["economist2026"];
+const VALID_CODES  = ["economist2026"]; // code permanent illimité
+const ONE_TIME_CODES_PATH = 'access_codes'; // Firebase path for limited codes
 const OWNER_EMAIL  = "theseeconomists@gmail.com";
 const MM = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
@@ -1002,7 +1107,6 @@ function renderMyStats(){
       </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:var(--gris);font-style:italic;padding:2rem 0">Aucun article publié.</div>`}`;
 }
 
-// ═══════════════ ADMIN ═══════════════
 function renderAdmin(){
   const el=document.getElementById('admin-content');
   if(!isOwner()){el.innerHTML=`<div style="border:.5px solid var(--gris-clair);border-left:3px solid var(--rouge);padding:2.5rem;max-width:440px"><p style="font-family:var(--sans);font-size:.9rem;color:#555;margin-bottom:1.2rem;font-weight:300">Espace réservé au propriétaire.</p><button class="btn-red" onclick="openModal('login')">Se connecter</button></div>`;return;}
@@ -1013,6 +1117,24 @@ function renderAdmin(){
       <div class="my-stat-card"><div class="my-stat-num">${users.length}</div><div class="my-stat-label">Membres</div></div>
       <div class="my-stat-card"><div class="my-stat-num">${totalReads}</div><div class="my-stat-label">Lectures</div></div>
     </div>
+
+    <div class="stats-section-title">Codes d'accès rédacteur</div>
+    <div style="border:.5px solid var(--gris-clair);padding:1.5rem;margin-bottom:3rem;max-width:520px">
+      <p style="font-family:var(--sans);font-size:.85rem;color:#666;margin-bottom:1.2rem;line-height:1.65;font-weight:300">Créez des codes à usage limité (max 2 utilisations par défaut). Le code <strong>economist2026</strong> reste permanent et illimité.</p>
+      <div style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1rem">
+        <div style="display:flex;flex-direction:column;gap:.3rem;flex:1">
+          <label style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)">Nouveau code</label>
+          <input type="text" id="new-code-val" placeholder="ex: writer2026abc" style="font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.55rem .9rem;outline:none;width:100%">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.3rem">
+          <label style="font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)">Max utilisations</label>
+          <input type="number" id="new-code-max" value="2" min="1" max="99" style="font-family:var(--sans);font-size:.9rem;border:.5px solid var(--gris-clair);padding:.55rem .9rem;outline:none;width:80px">
+        </div>
+        <button class="btn-red" onclick="adminAddCode()" style="padding:10px 18px;white-space:nowrap">Créer →</button>
+      </div>
+      <div id="admin-codes-list" style="font-family:var(--sans);font-size:.85rem;color:#888;font-style:italic">Chargement…</div>
+    </div>
+
     <div class="stats-section-title">Gestion des articles</div>
     ${articles.length?`<div style="overflow-x:auto;margin-bottom:3rem"><table class="stats-table"><thead><tr><th>Titre</th><th>Auteur</th><th>Rubrique</th><th>Date</th><th>Lectures</th><th>Action</th></tr></thead><tbody>
       ${[...articles].reverse().map(a=>`<tr><td><span class="td-title" onclick="openArticle(${a.id})">${a.title}</span></td><td>${a.author}</td><td><span class="stats-cat-badge">${a.cat}</span></td><td>${a.date}</td><td><strong style="color:var(--rouge)">${a.reads||0}</strong></td><td><button class="btn-danger" onclick="confirmDeleteArticle(${a.id})">Supprimer</button></td></tr>`).join('')}
@@ -1021,6 +1143,45 @@ function renderAdmin(){
     ${users.length?`<div style="overflow-x:auto"><table class="stats-table"><thead><tr><th>Nom</th><th>Email</th><th>Inscrit le</th><th>Articles</th><th>Profil</th></tr></thead><tbody>
       ${users.map(u=>{const c=articles.filter(a=>a.author===u.first+' '+u.last).length;return `<tr><td>${u.first} ${u.last}</td><td style="color:var(--gris);font-family:var(--sans);font-size:.85rem">${u.email}</td><td style="font-family:var(--sans);font-size:.85rem">${u.joined||'—'}</td><td>${c}</td><td><span style="font-family:var(--sans);font-size:9.5px;color:var(--rouge);cursor:pointer;text-decoration:underline" onclick="showPage('profile');openProfile('${u.email}')">Voir →</span></td></tr>`;}).join('')}
       </tbody></table></div>`:`<div style="font-family:var(--sans);font-size:.9rem;color:#aaa;font-style:italic">Aucun membre.</div>`}`;
+  loadAdminCodes();
+}
+
+async function loadAdminCodes(){
+  const el=document.getElementById('admin-codes-list');if(!el)return;
+  const codes=await dbGet(ONE_TIME_CODES_PATH);
+  if(!codes){el.textContent='Aucun code créé.';el.style.fontStyle='italic';return;}
+  const rows=Object.entries(codes).map(([k,v])=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:.5px solid var(--gris-clair);gap:.8rem;flex-wrap:wrap">
+      <div>
+        <span style="font-family:var(--sans);font-weight:500;color:var(--noir);letter-spacing:.05em">${v.code||k}</span>
+        <span style="font-family:var(--sans);font-size:.78rem;color:var(--gris);margin-left:.8rem">${v.used||0} / ${v.max||2} utilisations</span>
+      </div>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        ${(v.used||0)>=(v.max||2)?'<span style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#aaa">Épuisé</span>':'<span style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#4a9a5a">Actif</span>'}
+        <button class="btn-danger" onclick="adminDeleteCode('${k}')">✕</button>
+      </div>
+    </div>`).join('');
+  el.innerHTML=rows||'<span>Aucun code créé.</span>';el.style.fontStyle='normal';
+}
+
+async function adminAddCode(){
+  const val=document.getElementById('new-code-val').value.trim();
+  const max=parseInt(document.getElementById('new-code-max').value)||2;
+  if(!val){showToast('Entrez un code.');return;}
+  const key=val.replace(/[^a-zA-Z0-9]/g,'_');
+  const existing=await dbGet(`${ONE_TIME_CODES_PATH}/${key}`);
+  if(existing){showToast('Ce code existe déjà.');return;}
+  await dbSet(`${ONE_TIME_CODES_PATH}/${key}`,{code:val,max,used:0});
+  document.getElementById('new-code-val').value='';
+  showToast(`Code "${val}" créé (max ${max} utilisations).`);
+  loadAdminCodes();
+}
+
+async function adminDeleteCode(key){
+  if(!confirm('Supprimer ce code ?'))return;
+  await _remove(_ref(_db,`${ONE_TIME_CODES_PATH}/${key}`));
+  showToast('Code supprimé.');
+  loadAdminCodes();
 }
 
 // ═══════════════ PROPOSITION ═══════════════
@@ -1047,15 +1208,50 @@ function renderWritePage(){
 }
 function checkCode(){
   const val=document.getElementById('access-code').value.trim();
+  const errEl=document.getElementById('gate-err');
+  // Code permanent (owner)
   if(VALID_CODES.includes(val)){
     sessionStorage.setItem('eco_code_ok','1');
     document.getElementById('code-gate').style.display='none';
     const f=document.getElementById('write-form');f.style.display='block';
     document.getElementById('f-author').value=currentUser.first+' '+currentUser.last;
-  } else {
-    document.getElementById('gate-err').style.display='block';
-    document.getElementById('access-code').value='';document.getElementById('access-code').focus();
+    return;
   }
+  // Code à usage limité (Firebase)
+  checkLimitedCode(val);
+}
+
+async function checkLimitedCode(code){
+  const errEl=document.getElementById('gate-err');
+  errEl.style.display='none';
+  const btn=document.querySelector('#code-gate .btn-red');
+  if(btn){btn.innerHTML='<span class="spinner"></span>';btn.disabled=true;}
+  try {
+    const codeKey=code.replace(/[^a-zA-Z0-9]/g,'_');
+    const codeData=await dbGet(`${ONE_TIME_CODES_PATH}/${codeKey}`);
+    if(!codeData){
+      errEl.textContent='Code incorrect.';errEl.style.display='block';
+    } else {
+      const used=codeData.used||0;
+      const max=codeData.max||2;
+      if(used>=max){
+        errEl.textContent=`Ce code a déjà été utilisé ${used} fois (max ${max}).`;errEl.style.display='block';
+      } else {
+        // Incrémenter le compteur
+        await dbSet(`${ONE_TIME_CODES_PATH}/${codeKey}`,{...codeData,used:used+1});
+        sessionStorage.setItem('eco_code_ok','1');
+        document.getElementById('code-gate').style.display='none';
+        const f=document.getElementById('write-form');f.style.display='block';
+        document.getElementById('f-author').value=currentUser.first+' '+currentUser.last;
+        showToast(`Code accepté (${used+1}/${max} utilisation${max>1?'s':''}).`);
+      }
+    }
+  } catch(e){
+    errEl.textContent='Erreur de vérification. Réessayez.';errEl.style.display='block';
+  }
+  if(btn){btn.textContent='Déverrouiller';btn.disabled=false;}
+  document.getElementById('access-code').value='';
+  document.getElementById('access-code').focus();
 }
 function updateCount(fid,cid,max){
   const v=document.getElementById(fid).value,el=document.getElementById(cid);
@@ -1089,31 +1285,147 @@ async function publishArticle(){
 }
 function goToNewArticle(){ if(lastPublishedId)openArticle(lastPublishedId);document.getElementById('success-msg').style.display='none'; }
 
+// ═══════════════ FORMAT TOOLBAR ═══════════════
+let _activeFormatTarget=null;
+function applyFormat(type){
+  if(!_activeFormatTarget)return;
+  const ta=_activeFormatTarget;
+  const s=ta.selectionStart,e=ta.selectionEnd;
+  if(s===e)return;
+  const sel=ta.value.substring(s,e);
+  const tag=type==='bold'?'b':'em';
+  const wrapped=`<${tag}>${sel}</${tag}>`;
+  ta.value=ta.value.substring(0,s)+wrapped+ta.value.substring(e);
+  ta.selectionStart=s;ta.selectionEnd=s+wrapped.length;
+  hideFmtToolbar();updateWordCount();
+}
+function showFmtToolbar(ta){
+  _activeFormatTarget=ta;
+  const ft=document.getElementById('fmt-toolbar');if(!ft)return;
+  const s=ta.selectionStart,e=ta.selectionEnd;
+  if(s===e){hideFmtToolbar();return;}
+  // Position near textarea
+  const rect=ta.getBoundingClientRect();
+  const edRect=document.getElementById('article-blocks').getBoundingClientRect();
+  ft.style.top=(ta.offsetTop-30)+'px';
+  ft.style.left=(ta.offsetLeft)+'px';
+  ft.classList.add('show');
+}
+function hideFmtToolbar(){
+  const ft=document.getElementById('fmt-toolbar');if(ft)ft.classList.remove('show');
+  _activeFormatTarget=null;
+}
+
 // ═══════════════ BLOCK EDITOR ═══════════════
+function makeInsertLine(afterEl){
+  const line=document.createElement('div');line.className='block-insert-line';
+  const bar=document.createElement('div');bar.className='insert-line-bar';
+  const plus=document.createElement('div');plus.className='insert-line-plus';plus.textContent='+';
+  bar.appendChild(plus);line.appendChild(bar);
+  line.onclick=()=>showInsertMenu(afterEl,line);
+  return line;
+}
+
+function showInsertMenu(afterEl,lineEl){
+  // Remove any existing menus
+  document.querySelectorAll('.insert-menu').forEach(m=>m.remove());
+  const menu=document.createElement('div');menu.className='insert-menu';
+  menu.style.cssText='position:absolute;z-index:100;background:var(--noir);color:var(--blanc);padding:6px 4px;display:flex;flex-wrap:wrap;gap:4px;border-radius:2px;box-shadow:0 4px 16px rgba(0,0,0,.3);left:30px';
+  const types=[
+    {type:'paragraph',label:'¶ Paragraphe'},
+    {type:'h2',label:'H2'},
+    {type:'h3',label:'H3'},
+    {type:'quote',label:'« Citation'},
+    {type:'image',label:'🖼 Image'},
+    {type:'separator',label:'— —'},
+    {type:'infobox',label:'ℹ Info'},
+    {type:'sources',label:'🔗 Sources'},
+    {type:'credits',label:'✍ Crédits'},
+  ];
+  types.forEach(({type,label})=>{
+    const btn=document.createElement('button');btn.type='button';
+    btn.style.cssText='font-family:var(--sans);font-size:10px;letter-spacing:.08em;background:rgba(255,255,255,.1);border:none;color:var(--blanc);padding:5px 10px;cursor:pointer;border-radius:2px;white-space:nowrap;transition:background .1s';
+    btn.textContent=label;
+    btn.onmouseover=()=>btn.style.background='var(--rouge)';
+    btn.onmouseout=()=>btn.style.background='rgba(255,255,255,.1)';
+    btn.onclick=()=>{
+      menu.remove();
+      if(type==='image'){pendingInsertAfter=afterEl;document.getElementById('inline-img-input').click();}
+      else insertBlock(type,afterEl);
+    };
+    menu.appendChild(btn);
+  });
+  // Close on outside click
+  setTimeout(()=>document.addEventListener('click',function h(e){if(!menu.contains(e.target)){menu.remove();document.removeEventListener('click',h);}},true),10);
+  // Position relative to line
+  const lineRect=lineEl.getBoundingClientRect();
+  lineEl.style.position='relative';
+  lineEl.appendChild(menu);
+}
+
 function insertBlock(type,afterEl){
   const id='blk-'+(++blockIdCounter);
   const wrap=document.createElement('div');wrap.className='block-wrap';wrap.dataset.type=type;wrap.dataset.id=id;
-  const del=document.createElement('button');del.className='block-del';del.type='button';del.textContent='×';del.onclick=()=>{wrap.remove();updateWordCount()};
+  const del=document.createElement('button');del.className='block-del';del.type='button';del.textContent='×';del.onclick=()=>{
+    // Also remove surrounding insert lines
+    const prev=wrap.previousElementSibling;const next=wrap.nextElementSibling;
+    if(prev&&prev.classList.contains('block-insert-line'))prev.remove();
+    wrap.remove();updateWordCount();
+  };
   const content=document.createElement('div');content.className='block-content';
+
   if(type==='paragraph'){
-    const ta=document.createElement('textarea');ta.className='block-para';ta.placeholder='Rédigez votre paragraphe…';ta.oninput=updateWordCount;content.appendChild(ta);
-    const ib=document.createElement('button');ib.type='button';ib.className='add-block-btn';ib.style.cssText='display:block;width:100%;margin-top:3px;font-size:9px;padding:4px';ib.textContent='+ Insérer une image ici';
-    ib.onclick=()=>{pendingInsertAfter=wrap;document.getElementById('inline-img-input').click()};content.appendChild(ib);
+    const ta=document.createElement('textarea');ta.className='block-para';ta.placeholder='Rédigez votre paragraphe…';ta.oninput=updateWordCount;
+    ta.addEventListener('mouseup',()=>showFmtToolbar(ta));
+    ta.addEventListener('keyup',()=>showFmtToolbar(ta));
+    content.appendChild(ta);
   } else if(type==='h2'){const i=document.createElement('input');i.type='text';i.className='block-h2';i.placeholder='Titre de section…';content.appendChild(i);}
   else if(type==='h3'){const i=document.createElement('input');i.type='text';i.className='block-h3';i.placeholder='Sous-titre…';content.appendChild(i);}
-  else if(type==='quote'){const ta=document.createElement('textarea');ta.className='block-quote';ta.placeholder='"Citation…"';ta.oninput=updateWordCount;content.appendChild(ta);}
+  else if(type==='quote'){const ta=document.createElement('textarea');ta.className='block-quote';ta.placeholder='"Citation…"';ta.oninput=updateWordCount;ta.addEventListener('mouseup',()=>showFmtToolbar(ta));content.appendChild(ta);}
   else if(type==='separator'){const s=document.createElement('div');s.className='block-sep';s.textContent='· · ·';content.appendChild(s);}
+  else if(type==='infobox'){
+    const lbl=document.createElement('span');lbl.className='block-infobox-label';lbl.textContent='ℹ Encadré';
+    const ta=document.createElement('textarea');ta.className='block-infobox';ta.placeholder='Information importante, chiffre clé, point à retenir…';ta.oninput=updateWordCount;
+    ta.addEventListener('mouseup',()=>showFmtToolbar(ta));
+    content.appendChild(lbl);content.appendChild(ta);
+  }
+  else if(type==='sources'){
+    const lbl=document.createElement('span');lbl.className='block-sources-label';lbl.textContent='🔗 Sources';
+    const ta=document.createElement('textarea');ta.className='block-sources';ta.placeholder='1. Auteur, Titre, Éditeur, Année\n2. URL — consulté le…';ta.oninput=updateWordCount;
+    content.appendChild(lbl);content.appendChild(ta);
+  }
+  else if(type==='credits'){
+    const lbl=document.createElement('span');lbl.className='block-credits-label';lbl.textContent='✍ Crédits / Auteurs du travail';
+    const ta=document.createElement('textarea');ta.className='block-credits';ta.placeholder='Recherches : …\nAnalyse : …\nRelecture : …';ta.oninput=updateWordCount;
+    content.appendChild(lbl);content.appendChild(ta);
+  }
+
   wrap.appendChild(del);wrap.appendChild(content);
   const container=document.getElementById('article-blocks');
-  if(afterEl)afterEl.insertAdjacentElement('afterend',wrap);else container.appendChild(wrap);
+
+  if(afterEl){
+    // Insert wrap after afterEl, plus an insert line after the wrap
+    afterEl.insertAdjacentElement('afterend',wrap);
+    wrap.insertAdjacentElement('afterend',makeInsertLine(wrap));
+  } else {
+    // Append insert line before wrap, then wrap
+    const insertLine=makeInsertLine(wrap);
+    container.appendChild(insertLine);
+    container.appendChild(wrap);
+  }
+
   const f=wrap.querySelector('textarea,input[type=text]');if(f)setTimeout(()=>f.focus(),50);
   updateWordCount();
 }
+
 function triggerInlineImg(){pendingInsertAfter=null;document.getElementById('inline-img-input').click();}
 function handleInlineImage(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>insertImageBlock(ev.target.result,file.name);r.readAsDataURL(file);e.target.value='';}
 function insertImageBlock(src,name){
   const wrap=document.createElement('div');wrap.className='block-wrap';wrap.dataset.type='image';wrap.dataset.src=src;
-  const del=document.createElement('button');del.className='block-del';del.type='button';del.textContent='×';del.onclick=()=>wrap.remove();
+  const del=document.createElement('button');del.className='block-del';del.type='button';del.textContent='×';del.onclick=()=>{
+    const prev=wrap.previousElementSibling;if(prev&&prev.classList.contains('block-insert-line'))prev.remove();
+    wrap.remove();
+  };
   const content=document.createElement('div');content.className='block-content';
   const iw=document.createElement('div');iw.className='block-img-wrap';
   const img=document.createElement('img');img.src=src;img.alt=name||'';
@@ -1121,7 +1433,15 @@ function insertImageBlock(src,name){
   iw.appendChild(img);iw.appendChild(cap);content.appendChild(iw);
   wrap.appendChild(del);wrap.appendChild(content);
   const container=document.getElementById('article-blocks');
-  if(pendingInsertAfter){pendingInsertAfter.insertAdjacentElement('afterend',wrap);pendingInsertAfter=null;}else container.appendChild(wrap);
+  if(pendingInsertAfter){
+    pendingInsertAfter.insertAdjacentElement('afterend',wrap);
+    wrap.insertAdjacentElement('afterend',makeInsertLine(wrap));
+    pendingInsertAfter=null;
+  } else {
+    const insertLine=makeInsertLine(wrap);
+    container.appendChild(insertLine);
+    container.appendChild(wrap);
+  }
 }
 function handleCoverUpload(e){
   const file=e.target.files[0];if(!file)return;
@@ -1145,8 +1465,57 @@ function getBodyHtml(){
     else if(type==='quote'){const v=b.querySelector('textarea').value.trim();if(v){html+=`<blockquote>${v}</blockquote>`;text+=v+'\n\n';}}
     else if(type==='separator'){html+='<div class="art-sep">· · ·</div>';}
     else if(type==='image'){const src=b.dataset.src||b.querySelector('img').src;const cap=b.querySelector('input.block-img-caption').value.trim();html+=`<div class="art-inline-img"><img src="${src}" alt="${cap}"/>${cap?`<div class="art-inline-caption">${cap}</div>`:''}</div>`;}
+    else if(type==='infobox'){const v=b.querySelector('textarea').value.trim();if(v){html+=`<div class="art-info-box"><div class="art-info-box-title">À retenir</div><div class="art-info-box-body">${v.replace(/\n/g,'<br>')}</div></div>`;text+=v+'\n\n';}}
+    else if(type==='sources'){const v=b.querySelector('textarea').value.trim();if(v){html+=`<div class="art-sources-box"><div class="art-sources-title">Sources</div><div class="art-sources-body">${v.replace(/\n/g,'<br>')}</div></div>`;text+=v+'\n\n';}}
+    else if(type==='credits'){const v=b.querySelector('textarea').value.trim();if(v){html+=`<div class="art-credits-box"><div class="art-credits-title">Ce travail</div><div class="art-credits-body">${v.replace(/\n/g,'<br>')}</div></div>`;text+=v+'\n\n';}}
   });
   return {html,text};
+}
+
+// ═══════════════ DARK MODE ═══════════════
+function toggleTheme(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const newTheme=isDark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',newTheme);
+  try{localStorage.setItem('eco_theme',newTheme);}catch(e){}
+  const btn=document.getElementById('theme-toggle');
+  if(btn) btn.innerHTML=isDark
+    ?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`
+    :`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+}
+
+// ═══════════════ i18n ═══════════════
+let _lang='fr';
+const _i18n={
+  fr:{
+    cat_une:'À la une',cat_eco:'Économie',cat_fin:'Finance',cat_pol:'Politiques',
+    cat_soc:'Sociologie',cat_dro:'Droit',cat_tec:'Technologies',cat_afr:'Afrique',
+    cat_mon:'Monde',cat_ecol:'Écologie',cat_ia:'IA',cat_data:'Data Science',
+    nav_propose:'Proposer un article',nav_write:'Écrire',nav_stats:'Mes stats',
+    nav_admin:'Admin',nav_login:"S'abonner / Connexion",nav_logout:'Déconnexion',
+    lbl_rubrique:'Rubrique *',lbl_corps:"Corps de l'article *",
+  },
+  en:{
+    cat_une:'Top Stories',cat_eco:'Economics',cat_fin:'Finance',cat_pol:'Politics',
+    cat_soc:'Sociology',cat_dro:'Law',cat_tec:'Technology',cat_afr:'Africa',
+    cat_mon:'World',cat_ecol:'Ecology',cat_ia:'AI',cat_data:'Data Science',
+    nav_propose:'Submit an article',nav_write:'Write',nav_stats:'My stats',
+    nav_admin:'Admin',nav_login:'Subscribe / Log in',nav_logout:'Log out',
+    lbl_rubrique:'Section *',lbl_corps:'Article body *',
+  }
+};
+function toggleLang(){
+  _lang=_lang==='fr'?'en':'fr';
+  document.getElementById('lang-toggle').textContent=_lang==='fr'?'FR':'EN';
+  applyTranslations();
+  try{localStorage.setItem('eco_lang',_lang);}catch(e){}
+}
+function applyTranslations(){
+  const t=_i18n[_lang]||_i18n.fr;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key=el.getAttribute('data-i18n');
+    if(t[key])el.textContent=t[key];
+  });
 }
 
 // ═══════════════ DATE + PLANET ═══════════════
@@ -1174,6 +1543,11 @@ async function init(){
   initPlanet('planet-tr',0.92,120,90,1.2);
   initPlanet('planet-bl',0.90,90,80,0.9);
   await loadData();
+
+  // Restore theme
+  try{const t=localStorage.getItem('eco_theme');if(t){document.documentElement.setAttribute('data-theme',t);const btn=document.getElementById('theme-toggle');if(btn&&t==='dark')btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;}}catch(e){}
+  // Restore language
+  try{const l=localStorage.getItem('eco_lang');if(l){_lang=l;document.getElementById('lang-toggle').textContent=l==='fr'?'FR':'EN';applyTranslations();}}catch(e){}
 
   // Reconnexion automatique
   const savedEmail=getLocalEmail();
