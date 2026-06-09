@@ -271,14 +271,18 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .block-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:1rem;line-height:1;padding:2px 4px;flex-shrink:0;margin-top:2px;transition:color .15s;}
 .block-del:hover{color:var(--rouge)}
 .block-content{flex:1}
-.block-para{font-family:var(--serif-text);font-size:1rem;font-weight:400;font-style:normal;border:.5px solid transparent;background:transparent;padding:.5rem .6rem;outline:none;width:100%;line-height:1.8;resize:vertical;min-height:80px;transition:border-color .2s;}
-.block-para b,.block-para strong{font-weight:700}
+.block-para{font-family:var(--sans);font-size:.97rem;font-weight:300;font-style:normal;border:.5px solid transparent;background:transparent;padding:.5rem .6rem;outline:none;width:100%;line-height:1.85;min-height:80px;transition:border-color .2s;white-space:pre-wrap;word-break:break-word;cursor:text;}
+.block-para b,.block-para strong{font-weight:700;font-family:var(--sans)}
 .block-para em,.block-para i{font-style:italic}
-.article-blocks-editor textarea,.article-blocks-editor input[type=text]{font-weight:400}
-.block-para:focus{border-color:var(--gris-clair);background:#fafafa}
+.block-para:focus,.block-para:focus-within{border-color:var(--gris-clair);background:#fafafa}
+.block-para[contenteditable]:empty:before{content:attr(data-placeholder);color:#bbb;pointer-events:none}
 .block-h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;border:none;border-bottom:.5px solid var(--gris-clair);background:transparent;padding:.4rem 0;outline:none;width:100%;}
 .block-h3{font-family:var(--serif);font-size:1.15rem;font-weight:400;border:none;background:transparent;padding:.3rem 0;outline:none;width:100%;}
-.block-quote{font-family:var(--serif-text);font-size:1rem;font-style:italic;border:none;border-left:3px solid var(--rouge);padding:.5rem 1rem;outline:none;width:100%;background:#fff8f8;color:#444;line-height:1.75;resize:vertical;min-height:60px;}
+.block-quote{font-family:var(--sans);font-size:.93rem;font-weight:300;font-style:italic;border:none;border-left:3px solid var(--rouge);padding:.5rem 1rem;outline:none;width:100%;background:#fff8f8;color:#444;line-height:1.8;min-height:60px;white-space:pre-wrap;word-break:break-word;cursor:text;}
+.block-quote b,.block-quote strong{font-weight:700}
+.block-quote[contenteditable]:empty:before{content:attr(data-placeholder);color:#bbb;pointer-events:none}
+.block-infobox{font-family:var(--sans);font-size:.9rem;font-weight:300;background:#fff8f8;border:.5px solid rgba(139,26,26,0.15);border-left:3px solid var(--rouge);padding:.8rem 1rem;outline:none;width:100%;line-height:1.75;min-height:60px;color:#333;white-space:pre-wrap;word-break:break-word;cursor:text;}
+.block-infobox[contenteditable]:empty:before{content:attr(data-placeholder);color:#bbb;pointer-events:none}
 .block-sep{text-align:center;padding:.8rem 0;font-family:var(--sans);font-size:1.1rem;letter-spacing:.6em;color:var(--rouge);user-select:none;width:100%;}
 .block-img-wrap{width:100%;background:#f5f5f5;display:flex;flex-direction:column;align-items:center;}
 .block-img-wrap img{width:100%;max-height:400px;object-fit:cover}
@@ -370,6 +374,7 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 [data-theme="dark"] .block-para:focus{background:#1e1e1e;border-color:#333}
 [data-theme="dark"] .block-h2,[data-theme="dark"] .block-h3{color:#F5F4F0;border-color:#2a2a2a}
 [data-theme="dark"] .block-quote{background:#1e1618;color:#ddd}
+[data-theme="dark"] .block-infobox{background:#1e1618;color:#ddd}
 [data-theme="dark"] .srd{background:#1a1a1a;border-color:#2a2a2a}
 [data-theme="dark"] .srd-item:hover{background:#1e1e1e}
 [data-theme="dark"] .art-full-body{color:#e0ddd8}
@@ -438,10 +443,9 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 [data-theme="dark"] .onboard-step{border-color:#2a2a2a}
 
 /* Sources block */
-.block-sources{font-family:var(--sans);font-size:.88rem;border:none;border-top:.5px solid var(--gris-clair);padding:.6rem 0;outline:none;width:100%;color:#666;line-height:1.7;resize:vertical;min-height:60px;background:transparent}
+.block-sources{font-family:var(--sans);font-size:.88rem;font-weight:300;border:none;border-top:.5px solid var(--gris-clair);padding:.6rem 0;outline:none;width:100%;color:#666;line-height:1.7;resize:vertical;min-height:60px;background:transparent}
 .block-sources-label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);padding:.3rem 0 .2rem;display:block}
 /* Info box */
-.block-infobox{font-family:var(--sans);font-size:.9rem;background:#fff8f8;border:.5px solid rgba(139,26,26,0.15);border-left:3px solid var(--rouge);padding:.8rem 1rem;outline:none;width:100%;line-height:1.75;resize:vertical;min-height:60px;color:#333}
 .block-infobox-label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--rouge);padding:.3rem 0 .2rem;display:block}
 /* Credits block */
 .block-credits{font-family:var(--sans);font-size:.85rem;border:.5px solid var(--gris-clair);padding:.7rem 1rem;outline:none;width:100%;color:#777;line-height:1.75;resize:vertical;min-height:50px;background:transparent}
@@ -1383,37 +1387,47 @@ async function publishArticle(){
 }
 function goToNewArticle(){ if(lastPublishedId)openArticle(lastPublishedId);document.getElementById('success-msg').style.display='none'; }
 
-// ═══════════════ FORMAT TOOLBAR ═══════════════
+// ═══════════════ FORMAT TOOLBAR (contenteditable) ═══════════════
 let _activeFormatTarget=null;
 function applyFormat(type){
-  if(!_activeFormatTarget)return;
-  const ta=_activeFormatTarget;
-  const s=ta.selectionStart,e=ta.selectionEnd;
-  if(s===e)return;
-  const sel=ta.value.substring(s,e);
+  const sel=window.getSelection();
+  if(!sel||sel.rangeCount===0||sel.isCollapsed)return;
   const tag=type==='bold'?'b':'em';
-  const wrapped=`<${tag}>${sel}</${tag}>`;
-  ta.value=ta.value.substring(0,s)+wrapped+ta.value.substring(e);
-  ta.selectionStart=s;ta.selectionEnd=s+wrapped.length;
+  // Check if already wrapped — toggle off
+  const range=sel.getRangeAt(0);
+  const parent=range.commonAncestorContainer.parentElement;
+  if(parent&&parent.tagName===tag.toUpperCase()){
+    const txt=document.createTextNode(parent.textContent);
+    parent.replaceWith(txt);
+    hideFmtToolbar();updateWordCount();return;
+  }
+  document.execCommand(type==='bold'?'bold':'italic',false,null);
   hideFmtToolbar();updateWordCount();
 }
-function showFmtToolbar(ta){
-  _activeFormatTarget=ta;
+function showFmtToolbar(){
+  const sel=window.getSelection();
   const ft=document.getElementById('fmt-toolbar');if(!ft)return;
-  const s=ta.selectionStart,e=ta.selectionEnd;
-  if(s===e){hideFmtToolbar();return;}
-  // Position above the textarea using fixed coords
-  const rect=ta.getBoundingClientRect();
-  ft.style.top=(rect.top - 36 + window.scrollY)+'px';
-  ft.style.left=(rect.left)+'px';
+  if(!sel||sel.isCollapsed||sel.rangeCount===0){hideFmtToolbar();return;}
+  // Only show inside .block-para / .block-quote / .block-infobox
+  const anchor=sel.anchorNode;
+  let el=anchor.nodeType===3?anchor.parentElement:anchor;
+  while(el&&!el.classList?.contains('block-content'))el=el.parentElement;
+  if(!el){hideFmtToolbar();return;}
+  const range=sel.getRangeAt(0);
+  const rect=range.getBoundingClientRect();
   ft.style.position='fixed';
-  ft.style.top=(rect.top - 36)+'px';
+  ft.style.top=(rect.top-40)+'px';
+  ft.style.left=Math.max(8,rect.left)+'px';
   ft.classList.add('show');
 }
 function hideFmtToolbar(){
   const ft=document.getElementById('fmt-toolbar');if(ft)ft.classList.remove('show');
-  _activeFormatTarget=null;
 }
+document.addEventListener('selectionchange',()=>{
+  // Small delay so selection is settled
+  clearTimeout(window._fmtTimer);
+  window._fmtTimer=setTimeout(showFmtToolbar,80);
+});
 
 // ═══════════════ BLOCK EDITOR ═══════════════
 function makeInsertLine(afterEl){
@@ -1466,7 +1480,6 @@ function insertBlock(type,afterEl){
   const id='blk-'+(++blockIdCounter);
   const wrap=document.createElement('div');wrap.className='block-wrap';wrap.dataset.type=type;wrap.dataset.id=id;
   const del=document.createElement('button');del.className='block-del';del.type='button';del.textContent='×';del.onclick=()=>{
-    // Also remove surrounding insert lines
     const prev=wrap.previousElementSibling;const next=wrap.nextElementSibling;
     if(prev&&prev.classList.contains('block-insert-line'))prev.remove();
     wrap.remove();updateWordCount();
@@ -1474,26 +1487,35 @@ function insertBlock(type,afterEl){
   const content=document.createElement('div');content.className='block-content';
 
   if(type==='paragraph'){
-    const ta=document.createElement('textarea');ta.className='block-para';ta.placeholder='Rédigez votre paragraphe…';ta.oninput=updateWordCount;
-    ta.addEventListener('mouseup',()=>showFmtToolbar(ta));
-    ta.addEventListener('keyup',()=>showFmtToolbar(ta));
-    content.appendChild(ta);
-  } else if(type==='h2'){const i=document.createElement('input');i.type='text';i.className='block-h2';i.placeholder='Titre de section…';content.appendChild(i);}
-  else if(type==='h3'){const i=document.createElement('input');i.type='text';i.className='block-h3';i.placeholder='Sous-titre…';content.appendChild(i);}
-  else if(type==='quote'){const ta=document.createElement('textarea');ta.className='block-quote';ta.placeholder='"Citation…"';ta.oninput=updateWordCount;ta.addEventListener('mouseup',()=>showFmtToolbar(ta));content.appendChild(ta);}
-  else if(type==='separator'){const s=document.createElement('div');s.className='block-sep';s.textContent='· · ·';content.appendChild(s);}
-  else if(type==='infobox'){
+    const div=document.createElement('div');
+    div.className='block-para';div.contentEditable='true';
+    div.setAttribute('data-placeholder','Rédigez votre paragraphe…');
+    div.addEventListener('input',updateWordCount);
+    content.appendChild(div);
+  } else if(type==='h2'){
+    const i=document.createElement('input');i.type='text';i.className='block-h2';i.placeholder='Titre de section…';content.appendChild(i);
+  } else if(type==='h3'){
+    const i=document.createElement('input');i.type='text';i.className='block-h3';i.placeholder='Sous-titre…';content.appendChild(i);
+  } else if(type==='quote'){
+    const div=document.createElement('div');
+    div.className='block-quote';div.contentEditable='true';
+    div.setAttribute('data-placeholder','"Citation…"');
+    div.addEventListener('input',updateWordCount);
+    content.appendChild(div);
+  } else if(type==='separator'){
+    const s=document.createElement('div');s.className='block-sep';s.textContent='· · ·';content.appendChild(s);
+  } else if(type==='infobox'){
     const lbl=document.createElement('span');lbl.className='block-infobox-label';lbl.textContent='ℹ Encadré';
-    const ta=document.createElement('textarea');ta.className='block-infobox';ta.placeholder='Information importante, chiffre clé, point à retenir…';ta.oninput=updateWordCount;
-    ta.addEventListener('mouseup',()=>showFmtToolbar(ta));
-    content.appendChild(lbl);content.appendChild(ta);
-  }
-  else if(type==='sources'){
+    const div=document.createElement('div');
+    div.className='block-infobox';div.contentEditable='true';
+    div.setAttribute('data-placeholder','Information importante, chiffre clé, point à retenir…');
+    div.addEventListener('input',updateWordCount);
+    content.appendChild(lbl);content.appendChild(div);
+  } else if(type==='sources'){
     const lbl=document.createElement('span');lbl.className='block-sources-label';lbl.textContent='🔗 Sources';
     const ta=document.createElement('textarea');ta.className='block-sources';ta.placeholder='1. Auteur, Titre, Éditeur, Année\n2. URL — consulté le…';ta.oninput=updateWordCount;
     content.appendChild(lbl);content.appendChild(ta);
-  }
-  else if(type==='credits'){
+  } else if(type==='credits'){
     const lbl=document.createElement('span');lbl.className='block-credits-label';lbl.textContent='✍ Crédits / Auteurs du travail';
     const ta=document.createElement('textarea');ta.className='block-credits';ta.placeholder='Recherches : …\nAnalyse : …\nRelecture : …';ta.oninput=updateWordCount;
     content.appendChild(lbl);content.appendChild(ta);
@@ -1503,17 +1525,16 @@ function insertBlock(type,afterEl){
   const container=document.getElementById('article-blocks');
 
   if(afterEl){
-    // Insert wrap after afterEl, plus an insert line after the wrap
     afterEl.insertAdjacentElement('afterend',wrap);
     wrap.insertAdjacentElement('afterend',makeInsertLine(wrap));
   } else {
-    // Append insert line before wrap, then wrap
     const insertLine=makeInsertLine(wrap);
     container.appendChild(insertLine);
     container.appendChild(wrap);
   }
 
-  const f=wrap.querySelector('textarea,input[type=text]');if(f)setTimeout(()=>f.focus(),50);
+  const f=wrap.querySelector('[contenteditable],input[type=text]');
+  if(f)setTimeout(()=>f.focus(),50);
   updateWordCount();
 }
 
@@ -1551,20 +1572,39 @@ function handleCoverUrl(url){
   else{document.getElementById('cover-preview').style.display='none';document.getElementById('cover-placeholder').style.display='flex';}
 }
 function updateWordCount(){
-  let words=0;document.querySelectorAll('#article-blocks .block-para,.block-quote').forEach(b=>{const v=(b.value||'').trim();if(v)words+=v.split(/\s+/).length;});
+  let words=0;
+  document.querySelectorAll('#article-blocks .block-para,.block-quote').forEach(b=>{
+    const v=(b.innerText||b.value||'').trim();
+    if(v)words+=v.split(/\s+/).length;
+  });
   const el=document.getElementById('bc');if(el){el.textContent=`${words} mot${words>1?'s':''}`;el.style.color=words<50?'var(--gris)':'#6a9a6a';}
 }
 function getBodyHtml(){
   let html='',text='';
   document.querySelectorAll('#article-blocks .block-wrap').forEach(b=>{
     const type=b.dataset.type;
-    if(type==='paragraph'){const v=b.querySelector('textarea').value.trim();if(v){html+=`<p>${v.replace(/\n/g,'<br>')}</p>`;text+=v+'\n\n';}}
+    if(type==='paragraph'){
+      const el=b.querySelector('.block-para');
+      const inner=(el.innerHTML||'').trim();
+      const plain=(el.innerText||'').trim();
+      if(plain){html+=`<p>${inner}</p>`;text+=plain+'\n\n';}
+    }
     else if(type==='h2'){const v=b.querySelector('input').value.trim();if(v){html+=`<h2>${v}</h2>`;text+=v+'\n\n';}}
     else if(type==='h3'){const v=b.querySelector('input').value.trim();if(v){html+=`<h3>${v}</h3>`;text+=v+'\n\n';}}
-    else if(type==='quote'){const v=b.querySelector('textarea').value.trim();if(v){html+=`<blockquote>${v}</blockquote>`;text+=v+'\n\n';}}
+    else if(type==='quote'){
+      const el=b.querySelector('.block-quote');
+      const inner=(el.innerHTML||'').trim();
+      const plain=(el.innerText||'').trim();
+      if(plain){html+=`<blockquote>${inner}</blockquote>`;text+=plain+'\n\n';}
+    }
     else if(type==='separator'){html+='<div class="art-sep">· · ·</div>';}
     else if(type==='image'){const src=b.dataset.src||b.querySelector('img').src;const cap=b.querySelector('input.block-img-caption').value.trim();html+=`<div class="art-inline-img"><img src="${src}" alt="${cap}"/>${cap?`<div class="art-inline-caption">${cap}</div>`:''}</div>`;}
-    else if(type==='infobox'){const v=b.querySelector('textarea').value.trim();if(v){html+=`<div class="art-info-box"><div class="art-info-box-title">À retenir</div><div class="art-info-box-body">${v.replace(/\n/g,'<br>')}</div></div>`;text+=v+'\n\n';}}
+    else if(type==='infobox'){
+      const el=b.querySelector('.block-infobox');
+      const inner=(el.innerHTML||'').trim();
+      const plain=(el.innerText||'').trim();
+      if(plain){html+=`<div class="art-info-box"><div class="art-info-box-title">À retenir</div><div class="art-info-box-body">${inner}</div></div>`;text+=plain+'\n\n';}
+    }
     else if(type==='sources'){const v=b.querySelector('textarea').value.trim();if(v){html+=`<div class="art-sources-box"><div class="art-sources-title">Sources</div><div class="art-sources-body">${v.replace(/\n/g,'<br>')}</div></div>`;text+=v+'\n\n';}}
     else if(type==='credits'){const v=b.querySelector('textarea').value.trim();if(v){html+=`<div class="art-credits-box"><div class="art-credits-title">Ce travail</div><div class="art-credits-body">${v.replace(/\n/g,'<br>')}</div></div>`;text+=v+'\n\n';}}
   });
