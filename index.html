@@ -271,7 +271,10 @@ nav{background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1p
 .block-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:1rem;line-height:1;padding:2px 4px;flex-shrink:0;margin-top:2px;transition:color .15s;}
 .block-del:hover{color:var(--rouge)}
 .block-content{flex:1}
-.block-para{font-family:var(--serif-text);font-size:1rem;font-weight:400;border:.5px solid transparent;background:transparent;padding:.5rem .6rem;outline:none;width:100%;line-height:1.8;resize:vertical;min-height:80px;transition:border-color .2s;}
+.block-para{font-family:var(--serif-text);font-size:1rem;font-weight:400;font-style:normal;border:.5px solid transparent;background:transparent;padding:.5rem .6rem;outline:none;width:100%;line-height:1.8;resize:vertical;min-height:80px;transition:border-color .2s;}
+.block-para b,.block-para strong{font-weight:700}
+.block-para em,.block-para i{font-style:italic}
+.article-blocks-editor textarea,.article-blocks-editor input[type=text]{font-weight:400}
 .block-para:focus{border-color:var(--gris-clair);background:#fafafa}
 .block-h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;border:none;border-bottom:.5px solid var(--gris-clair);background:transparent;padding:.4rem 0;outline:none;width:100%;}
 .block-h3{font-family:var(--serif);font-size:1.15rem;font-weight:400;border:none;background:transparent;padding:.3rem 0;outline:none;width:100%;}
@@ -412,7 +415,28 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 .fmt-btn:hover{background:rgba(255,255,255,.15)}
 .fmt-sep{width:1px;height:14px;background:rgba(255,255,255,.2);margin:0 2px}
 
-/* ═══════════ NEW BLOCK TYPES ═══════════ */
+/* ═══════════ ONBOARDING MODAL ═══════════ */
+#onboard-overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:1rem;}
+#onboard-overlay.open{display:flex;}
+#onboard-box{background:white;width:100%;max-width:520px;border-top:3px solid var(--rouge);padding:2.8rem 2.5rem 2rem;position:relative;animation:modalIn .25s ease;max-height:90vh;overflow-y:auto;}
+.onboard-label{font-family:var(--sans);font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--rouge);margin-bottom:.8rem}
+.onboard-title{font-family:var(--serif);font-size:2rem;font-weight:400;line-height:1.15;margin-bottom:.5rem}
+.onboard-title em{font-style:italic;color:var(--rouge)}
+.onboard-sub{font-family:var(--sans);font-size:.85rem;color:var(--gris);font-weight:300;line-height:1.7;margin-bottom:2rem}
+.onboard-steps{display:flex;flex-direction:column;gap:0;margin-bottom:2rem}
+.onboard-step{display:flex;align-items:flex-start;gap:1.2rem;padding:1rem 0;border-bottom:.5px solid var(--gris-clair);}
+.onboard-step:last-child{border-bottom:none}
+.onboard-num{font-family:var(--serif);font-size:1.4rem;font-weight:400;color:var(--rouge);line-height:1;flex-shrink:0;width:24px;padding-top:2px}
+.onboard-step-body{}
+.onboard-step-title{font-family:var(--sans);font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:500;margin-bottom:.3rem}
+.onboard-step-desc{font-family:var(--sans);font-size:.82rem;color:#666;line-height:1.65;font-weight:300}
+.onboard-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem}
+.onboard-check{display:flex;align-items:center;gap:.5rem;font-family:var(--sans);font-size:.78rem;color:#aaa;cursor:pointer;user-select:none}
+.onboard-check input{accent-color:var(--rouge);cursor:pointer}
+[data-theme="dark"] #onboard-box{background:#1a1a1a;color:#F5F4F0}
+[data-theme="dark"] .onboard-step-desc{color:#aaa}
+[data-theme="dark"] .onboard-step{border-color:#2a2a2a}
+
 /* Sources block */
 .block-sources{font-family:var(--sans);font-size:.88rem;border:none;border-top:.5px solid var(--gris-clair);padding:.6rem 0;outline:none;width:100%;color:#666;line-height:1.7;resize:vertical;min-height:60px;background:transparent}
 .block-sources-label{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);padding:.3rem 0 .2rem;display:block}
@@ -451,6 +475,50 @@ footer{background:var(--noir);color:white;padding:3.5rem;margin-top:4rem;positio
 <canvas id="planet-tr" class="planet-canvas"></canvas>
 <canvas id="planet-bl" class="planet-canvas"></canvas>
 <div class="toast" id="toast"></div>
+
+<!-- ONBOARDING MODAL -->
+<div id="onboard-overlay">
+  <div id="onboard-box">
+    <button class="modal-close" onclick="closeOnboard()">×</button>
+    <div class="onboard-label">Bienvenue sur Economist</div>
+    <h2 class="onboard-title">Comment <em>publier</em><br>votre article</h2>
+    <p class="onboard-sub">En quelques étapes simples, votre article sera visible par tous les lecteurs, sur tous les appareils.</p>
+    <div class="onboard-steps">
+      <div class="onboard-step">
+        <div class="onboard-num">1</div>
+        <div class="onboard-step-body">
+          <div class="onboard-step-title">Créez un compte</div>
+          <div class="onboard-step-desc">Inscrivez-vous avec votre e-mail. Votre profil est synchronisé sur tous vos appareils.</div>
+        </div>
+      </div>
+      <div class="onboard-step">
+        <div class="onboard-num">2</div>
+        <div class="onboard-step-body">
+          <div class="onboard-step-title">Obtenez un code d'accès</div>
+          <div class="onboard-step-desc">Proposez votre idée d'article à la rédaction via le formulaire. Si retenue, vous recevez un code par e-mail.</div>
+        </div>
+      </div>
+      <div class="onboard-step">
+        <div class="onboard-num">3</div>
+        <div class="onboard-step-body">
+          <div class="onboard-step-title">Rédigez votre article</div>
+          <div class="onboard-step-desc">Entrez votre code, choisissez votre rubrique, ajoutez titres, paragraphes, images et citations via l'éditeur de blocs.</div>
+        </div>
+      </div>
+      <div class="onboard-step">
+        <div class="onboard-num">4</div>
+        <div class="onboard-step-body">
+          <div class="onboard-step-title">Publiez en un clic</div>
+          <div class="onboard-step-desc">Votre article est immédiatement visible par tous les lecteurs, partout dans le monde.</div>
+        </div>
+      </div>
+    </div>
+    <div class="onboard-footer">
+      <button class="btn-modal" style="width:auto" onclick="closeOnboard()">Commencer →</button>
+      <label class="onboard-check"><input type="checkbox" id="onboard-no-show"> Ne plus afficher</label>
+    </div>
+  </div>
+</div>
 
 <!-- MOBILE OVERLAY -->
 <div class="nav-mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
@@ -1538,7 +1606,7 @@ const _i18n={
     home_alire:'À lire aussi',home_read:'de lecture',home_par:'Par',home_back:'← Retour',
     home_by:'Par',home_none_cat:'Aucun article dans «',home_none_all:'Les articles publiés apparaîtront ici.',
     home_cta:'Proposer un article →',home_coming:'Something <em>powerful</em><br>is coming.',
-    home_desc:'Une plateforme de média économique dédiée à l\'<strong style="font-weight:500">Afrique</strong>, avec une <strong style="font-weight:500;color:var(--rouge)">perspective mondiale</strong>.',
+    home_desc:'Une plateforme mondiale d\'articles économiques, financiers et politiques — <strong style="font-weight:500;color:var(--rouge)">ouverte à toutes les voix</strong>.',
     // Write page
     write_title:'Écrire un article',write_sub:'Connectez-vous et entrez votre code d\'accès pour rédiger.',
     write_connect:'Vous devez être connecté pour rédiger.',write_btn_connect:'Se connecter',write_or:'ou',
@@ -1626,7 +1694,7 @@ const _i18n={
     home_alire:'Also read',home_read:'read',home_par:'By',home_back:'← Back',
     home_by:'By',home_none_cat:'No articles in «',home_none_all:'Published articles will appear here.',
     home_cta:'Submit an article →',home_coming:'Something <em>powerful</em><br>is coming.',
-    home_desc:'An economic media platform dedicated to <strong style="font-weight:500">Africa</strong>, with a <strong style="font-weight:500;color:var(--rouge)">global perspective</strong>.',
+    home_desc:'A global platform for economic, financial and political articles — <strong style="font-weight:500;color:var(--rouge)">open to all voices</strong>.',
     // Write page
     write_title:'Write an article',write_sub:'Log in and enter your access code to write.',
     write_connect:'You must be logged in to write.',write_btn_connect:'Log in',write_or:'or',
@@ -1784,6 +1852,20 @@ function initPlanet(id,radius,dotCount,lineThreshold,speed){
   draw();
 }
 
+// ═══════════════ ONBOARDING ═══════════════
+function openOnboard(){
+  try{if(localStorage.getItem('eco_onboard_done')==='1')return;}catch(e){}
+  document.getElementById('onboard-overlay').classList.add('open');
+}
+function closeOnboard(){
+  document.getElementById('onboard-overlay').classList.remove('open');
+  try{
+    if(document.getElementById('onboard-no-show').checked)
+      localStorage.setItem('eco_onboard_done','1');
+  }catch(e){}
+}
+document.getElementById('onboard-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeOnboard();});
+
 // ═══════════════ INIT ═══════════════
 async function init(){
   document.getElementById('loading-text').textContent=_lang==='en'?'Economist · Loading articles…':'Economist · Chargement des articles…';
@@ -1810,7 +1892,7 @@ async function init(){
   setTimeout(()=>{
     const ls=document.getElementById('loading-screen');
     ls.classList.add('hidden');
-    setTimeout(()=>ls.style.display='none',500);
+    setTimeout(()=>{ls.style.display='none';openOnboard();},500);
   },1500);
 }
 </script>
